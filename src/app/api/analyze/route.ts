@@ -6,126 +6,89 @@ import type { GEOAnalysisResult } from '@/lib/types'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-const SYSTEM_PROMPT = `You are a world-class GEO (Generative Engine Optimization) analyst. GEO is the practice of optimizing content so AI search engines (ChatGPT, Perplexity, Gemini, Claude) cite and reference it in their answers.
+const SYSTEM_PROMPT = `You are a world-class GEO (Generative Engine Optimization) analyst with deep knowledge of Korean and global digital services.
 
-You analyze services based on their name, category, and optional website URL. When a URL is provided, consider typical content patterns for that specific site. When not provided, base your analysis on industry-standard patterns for that category.
+GEO = the practice of optimizing content so AI search engines (ChatGPT, Perplexity, Gemini, Claude) cite and reference it.
 
-GEO Scoring Dimensions (Total 100pts):
-1. **Content Structure** (20pts): H1-H6 hierarchy, FAQ sections, bullet/numbered lists, answer capsules (self-contained direct-answer paragraphs), table of contents, clear information architecture
-2. **E-E-A-T Signals** (25pts): Author credentials/bio, statistics & data with sources, expert quotes, external citations, non-promotional tone (-26% citation if promotional), trustworthiness markers
-3. **Technical Signals** (20pts): JSON-LD schema markup (+30-40% AI citation), meta tags, publication/update dates, structured data, bot crawler accessibility
-4. **Freshness** (15pts): Date presence, update frequency signals (76.4% of ChatGPT cited pages updated within 30 days), recency markers
-5. **Readability** (20pts): Clarity, scannability, sentence length, vocabulary diversity, question-answer format, jargon balance
+## SCORING DIMENSIONS (100pts total)
+1. **콘텐츠 구조** (20pts): H1-H6 hierarchy, FAQ sections, answer capsules, TOC, lists
+2. **E-E-A-T 신뢰성** (25pts): Author credentials, statistics with sources, expert citations, non-promotional tone
+3. **기술 신호** (20pts): JSON-LD schema markup, meta tags, dates, structured data, crawler access
+4. **최신성** (15pts): Publication dates, update frequency, recency signals
+5. **가독성** (20pts): Clarity, scannability, sentence length, jargon balance, Q&A format
 
-Industry-specific scoring tendencies:
-- 이커머스: Product pages often promotional (bad), but review content can be strong
-- SaaS: Technical documentation strong, but marketing pages often jargon-heavy
-- 금융/핀테크: High authority signals, but compliance language hurts readability
-- 의료/헬스케어: High E-E-A-T potential, but often lacks schema markup
-- 교육/이러닝: Good structure (courses, lessons), often lacks freshness
-- 뉴스/미디어: Strong freshness/dates, but author attribution varies
-- 법률/전문직: High authority, poor readability from legal jargon
+## ⚠️ CRITICAL: SERVICE-SPECIFIC DIFFERENTIATION REQUIRED
 
-Key research findings to apply:
-- Statistics inclusion: +41% visibility
-- Source citation: +115% visibility for low-ranked content
-- Schema markup: 30-40% higher AI citation rate
-- Combined Fluency+Statistics: 5.5x improvement
-- FAQ sections: strong AI extraction signal
+You MUST analyze the specific service named by the user based on your actual knowledge of it.
+DO NOT use industry averages as the target — individual services vary from 25 to 92.
 
-Respond ONLY with valid JSON (no markdown wrapper) matching this exact structure:
+**Reasoning process (required before scoring):**
+1. What do you actually know about THIS specific service?
+   - Is it a major established brand or a niche startup?
+   - Does it have a content marketing strategy? (blog, help docs, newsroom?)
+   - What is its tech sophistication? (affects schema, technical signals)
+   - Is its content authoritative or promotional?
+   - Does it have a FAQ/help center?
+
+2. Score each dimension based on that SPECIFIC service's characteristics:
+   - Major SaaS with extensive docs (e.g., Notion, Slack) → structure: 16-18/20
+   - Fintech startup with only landing pages → structure: 6-9/20
+   - News media company → freshness: 13-15/15
+   - E-commerce with no blog → freshness: 4-7/15
+   - Service known for E-E-A-T (medical, legal) → eeat: 18-22/25
+   - New startup, minimal content → eeat: 8-12/25
+
+3. FORBIDDEN behaviors:
+   - Giving 토스 and 쿠팡 the same score when they have completely different content strategies
+   - Regressing to the industry mean (e.g., giving everyone 62-68)
+   - Giving round numbers like exactly 65/100 or 70/100 to every service
+   - Ignoring what you know about a service just to be "safe"
+
+4. Score reality check: Final scores should genuinely vary:
+   - World-class content strategy (Notion, HubSpot style): 78-90
+   - Good but not optimized (most large Korean platforms): 55-72
+   - Average (typical SMB websites): 40-57
+   - Poor (pure promotional, no content strategy): 25-42
+
+## OUTPUT FORMAT
+Return ONLY valid JSON:
 {
-  "totalScore": <integer 0-100>,
+  "totalScore": <integer — MUST reflect this specific service, NOT industry average>,
   "dimensions": [
-    {
-      "id": "structure",
-      "nameKo": "콘텐츠 구조",
-      "score": <0-20>,
-      "maxScore": 20,
-      "observations": ["<Korean observation 1>", "<Korean observation 2>", "<Korean observation 3>"],
-      "improvements": ["<Korean improvement 1>", "<Korean improvement 2>"]
-    },
-    {
-      "id": "eeat",
-      "nameKo": "E-E-A-T 신뢰성",
-      "score": <0-25>,
-      "maxScore": 25,
-      "observations": ["<Korean observation 1>", "<Korean observation 2>", "<Korean observation 3>"],
-      "improvements": ["<Korean improvement 1>", "<Korean improvement 2>"]
-    },
-    {
-      "id": "technical",
-      "nameKo": "기술 신호",
-      "score": <0-20>,
-      "maxScore": 20,
-      "observations": ["<Korean observation 1>", "<Korean observation 2>", "<Korean observation 3>"],
-      "improvements": ["<Korean improvement 1>", "<Korean improvement 2>"]
-    },
-    {
-      "id": "freshness",
-      "nameKo": "최신성",
-      "score": <0-15>,
-      "maxScore": 15,
-      "observations": ["<Korean observation 1>", "<Korean observation 2>"],
-      "improvements": ["<Korean improvement 1>", "<Korean improvement 2>"]
-    },
-    {
-      "id": "readability",
-      "nameKo": "가독성",
-      "score": <0-20>,
-      "maxScore": 20,
-      "observations": ["<Korean observation 1>", "<Korean observation 2>", "<Korean observation 3>"],
-      "improvements": ["<Korean improvement 1>", "<Korean improvement 2>"]
-    }
+    {"id": "structure", "nameKo": "콘텐츠 구조", "score": <0-20>, "maxScore": 20,
+     "observations": ["<specific to THIS service>", "<specific>", "<specific>"],
+     "improvements": ["<actionable for THIS service>", "<actionable>"]},
+    {"id": "eeat", "nameKo": "E-E-A-T 신뢰성", "score": <0-25>, "maxScore": 25,
+     "observations": ["<specific>", "<specific>", "<specific>"],
+     "improvements": ["<actionable>", "<actionable>"]},
+    {"id": "technical", "nameKo": "기술 신호", "score": <0-20>, "maxScore": 20,
+     "observations": ["<specific>", "<specific>", "<specific>"],
+     "improvements": ["<actionable>", "<actionable>"]},
+    {"id": "freshness", "nameKo": "최신성", "score": <0-15>, "maxScore": 15,
+     "observations": ["<specific>", "<specific>"],
+     "improvements": ["<actionable>", "<actionable>"]},
+    {"id": "readability", "nameKo": "가독성", "score": <0-20>, "maxScore": 20,
+     "observations": ["<specific>", "<specific>", "<specific>"],
+     "improvements": ["<actionable>", "<actionable>"]}
   ],
-  "summary": "<2-3 sentence overall assessment specific to this service and category in Korean>",
-  "topIssues": ["<top issue 1 in Korean>", "<top issue 2 in Korean>", "<top issue 3 in Korean>"],
+  "summary": "<2-3 Korean sentences — MUST mention the service by name and describe its SPECIFIC content strategy weaknesses/strengths>",
+  "topIssues": ["<specific issue unique to this service>", "<specific>", "<specific>"],
   "recommendations": [
-    {
-      "priority": "critical",
-      "title": "<Korean title for most critical issue>",
-      "description": "<Korean detailed description>",
-      "expectedImpact": "<e.g. +10-15점 예상>",
-      "effort": "low|medium|high"
-    },
-    {
-      "priority": "high",
-      "title": "<Korean title for second priority issue>",
-      "description": "<Korean detailed description>",
-      "expectedImpact": "<e.g. +8-12점 예상>",
-      "effort": "low|medium|high"
-    },
-    {
-      "priority": "high",
-      "title": "<Korean title for third priority issue>",
-      "description": "<Korean detailed description>",
-      "expectedImpact": "<e.g. +5-8점 예상>",
-      "effort": "low|medium|high"
-    },
-    {
-      "priority": "medium",
-      "title": "<Korean title for fourth priority issue>",
-      "description": "<Korean detailed description>",
-      "expectedImpact": "<e.g. +3-5점 예상>",
-      "effort": "low|medium|high"
-    }
+    {"priority": "critical", "title": "<Korean>", "description": "<Korean>", "expectedImpact": "<+Xpt>", "effort": "low|medium|high"},
+    {"priority": "high", "title": "<Korean>", "description": "<Korean>", "expectedImpact": "<+Xpt>", "effort": "low|medium|high"},
+    {"priority": "high", "title": "<Korean>", "description": "<Korean>", "expectedImpact": "<+Xpt>", "effort": "low|medium|high"},
+    {"priority": "medium", "title": "<Korean>", "description": "<Korean>", "expectedImpact": "<+Xpt>", "effort": "low|medium|high"}
   ],
-  "citationProbability": <integer 0-100>,
-  "competitiveInsight": "<Korean sentence about competitive position in this category>",
-  "quickWins": ["<Korean quick win 1>", "<Korean quick win 2>", "<Korean quick win 3>"]
-}
-
-IMPORTANT: You MUST return exactly 4 recommendations, ordered by priority (critical → high → high → medium).
-Each recommendation must be specific and actionable for the analyzed service.`
+  "citationProbability": <integer — based on THIS service's actual content quality>,
+  "competitiveInsight": "<Korean — compare this service specifically to competitors in its category>",
+  "quickWins": ["<3 quick wins specific to THIS service's known weaknesses>", "<specific>", "<specific>"]
+}`
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { serviceName, category, url, previousScore } = body as {
-      serviceName: string
-      category: string
-      url?: string
-      previousScore?: number
+      serviceName: string; category: string; url?: string; previousScore?: number
     }
 
     if (!serviceName?.trim() || !category?.trim()) {
@@ -133,22 +96,39 @@ export async function POST(req: NextRequest) {
     }
 
     const catInfo = getCategoryInfo(category)
-    const urlContext = url ? `Website URL: ${url} (analyze based on known/typical content patterns for this URL/domain)` : 'No URL provided (analyze based on industry-typical patterns)'
-    const historyContext = previousScore != null
-      ? `\nImportant: This service was previously analyzed with a score of ${previousScore}/100. Provide a fresh, independent assessment - scores may be similar or different based on industry patterns.`
+
+    const urlLine = url
+      ? `Website URL provided: ${url}\n→ Factor in what you know about this domain's content strategy.`
+      : `No URL provided. Use your knowledge of "${serviceName}" specifically.`
+
+    const prevLine = previousScore != null
+      ? `⚠️ Previously scored ${previousScore}/100. Re-analyze independently — the score may change significantly.`
       : ''
 
-    const userMessage = `Analyze this service for GEO optimization:
-Service Name: "${serviceName}"
-Category: ${catInfo.label} (${category})
-Industry Average Score: ${catInfo.avgScore}/100
-${urlContext}${historyContext}
+    // The key: ask the model to REASON about the specific service first
+    const userMessage = `Analyze this specific service for GEO optimization:
 
-Generate a realistic, industry-specific GEO assessment. Be specific to this service type and category. Provide actionable Korean insights.`
+Service: "${serviceName}"
+Category: ${catInfo.label} (${category})
+${urlLine}
+${prevLine}
+
+STEP 1 — Before scoring, write your reasoning (internal, not in output):
+"What do I specifically know about ${serviceName}?
+- Content marketing approach?
+- Technical sophistication?
+- Blog/FAQ/Help center presence?
+- Known strengths or weaknesses vs competitors?"
+
+STEP 2 — Score each dimension based on YOUR ACTUAL KNOWLEDGE of this service.
+The score must reflect ${serviceName} specifically. If ${serviceName} has a different GEO profile than ${catInfo.label} industry average (${catInfo.avgScore}), SHOW THAT difference.
+
+All observations and improvements must specifically mention "${serviceName}" by name.`
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       max_tokens: 3500,
+      temperature: 0.4,   // lower = more consistent, but instructions force differentiation
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
@@ -159,7 +139,8 @@ Generate a realistic, industry-specific GEO assessment. Be specific to this serv
     const raw = response.choices[0]?.message?.content ?? '{}'
     const parsed = JSON.parse(raw)
 
-    const totalScore = parsed.totalScore ?? parsed.dimensions?.reduce((s: number, d: { score: number }) => s + d.score, 0) ?? 50
+    const totalScore = parsed.totalScore ??
+      parsed.dimensions?.reduce((s: number, d: { score: number }) => s + d.score, 0) ?? 50
     const grade = getGrade(totalScore)
 
     const result: GEOAnalysisResult = {
@@ -187,6 +168,6 @@ Generate a realistic, industry-specific GEO assessment. Be specific to this serv
     return NextResponse.json(result)
   } catch (error) {
     console.error('Analyze error:', error)
-    return NextResponse.json({ error: '분석 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' }, { status: 500 })
+    return NextResponse.json({ error: '분석 중 오류가 발생했습니다.' }, { status: 500 })
   }
 }

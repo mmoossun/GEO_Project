@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe } from 'lucide-react'
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe, BarChart3 } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
 import { getGradeConfig, getScoreColor, getScoreLabel, getPriorityConfig, getEffortLabel, VISIBILITY_LABELS, formatDate, cn } from '@/lib/utils'
 import { DIMENSION_META } from '@/lib/constants'
@@ -194,8 +194,15 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
               </Link>
             )}
             <Link
-              href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
+              href="/detail"
               className="flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
+            >
+              <BarChart3 size={13} />
+              <span className="hidden sm:inline">상세 분석</span>
+            </Link>
+            <Link
+              href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
+              className="flex items-center gap-1 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition-colors"
             >
               <Sparkles size={13} />
               <span className="hidden sm:inline">콘텐츠 생성</span>
@@ -351,6 +358,25 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
             </div>
           </div>
         )}
+
+        {/* Detail Dashboard CTA Banner */}
+        <Link href="/detail"
+          className="block bg-gradient-to-r from-slate-800 to-indigo-900 hover:from-slate-900 hover:to-indigo-950 text-white rounded-2xl p-5 transition-all hover:shadow-xl group"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
+              <BarChart3 size={22} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <p className="font-bold text-base">상세 GEO 대시보드 보기</p>
+                <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full font-semibold">NEW</span>
+              </div>
+              <p className="text-slate-300 text-sm">AI 플랫폼별 분석 · GEO 체크리스트 · 액션 매트릭스 · 30일 로드맵</p>
+            </div>
+            <span className="text-white/40 group-hover:text-white transition-all text-xl">→</span>
+          </div>
+        </Link>
 
         {/* CTA Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
