@@ -146,7 +146,7 @@ function ActionMatrixChart({ items }: { items: ActionItem[] }) {
 
       {/* Priority list */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-        {items
+        {[...items]
           .sort((a, b) => (b.impact - b.effort * 0.3) - (a.impact - a.effort * 0.3))
           .slice(0, 8)
           .map((item, i) => (
