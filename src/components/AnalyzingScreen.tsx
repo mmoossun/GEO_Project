@@ -3,12 +3,17 @@
 import { useEffect, useState } from 'react'
 import { getCategoryInfo } from '@/lib/constants'
 
-const STEPS = [
-  { label: '서비스 정보 수집 중...', duration: 800 },
-  { label: 'AI 업계 데이터 분석 중...', duration: 1200 },
-  { label: 'GEO 5가지 차원 점수 계산 중...', duration: 1500 },
-  { label: '최적화 권고안 생성 중...', duration: 1000 },
-  { label: '리포트 완성 중...', duration: 500 },
+// Two parallel tracks shown simultaneously
+const GEO_STEPS = [
+  { label: 'GEO 기술 신호 분석 중...', duration: 1200 },
+  { label: '5가지 차원 점수 계산 중...', duration: 1500 },
+  { label: '권고안 생성 중...', duration: 800 },
+]
+
+const CITATION_STEPS = [
+  { label: 'ChatGPT에 질문 전송 중...', duration: 1000 },
+  { label: 'Claude / Gemini 실측 중...', duration: 1800 },
+  { label: 'Perplexity 검증 중...', duration: 700 },
 ]
 
 interface AnalyzingScreenProps {
@@ -16,95 +21,112 @@ interface AnalyzingScreenProps {
   category: string
 }
 
+function TrackStep({ label, status }: { label: string; status: 'done' | 'active' | 'pending' }) {
+  return (
+    <div className={`flex items-center gap-2.5 text-xs transition-all duration-300 ${
+      status === 'done' ? 'text-green-600' : status === 'active' ? 'text-indigo-600 font-semibold' : 'text-gray-300'
+    }`}>
+      <span className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border">
+        {status === 'done'
+          ? <span className="text-green-600 w-full h-full rounded-full border border-green-400 flex items-center justify-center text-xs">✓</span>
+          : status === 'active'
+            ? <span className="w-full h-full rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+            : <span className="text-gray-300 border-gray-200 w-full h-full rounded-full border flex items-center justify-center" />
+        }
+      </span>
+      <span>{label}</span>
+    </div>
+  )
+}
+
 export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps) {
-  const [stepIndex, setStepIndex] = useState(0)
+  const [geoStep, setGeoStep] = useState(0)
+  const [citStep, setCitStep] = useState(0)
   const [progress, setProgress] = useState(0)
   const catInfo = getCategoryInfo(category)
 
   useEffect(() => {
-    let current = 0
-    const totalDuration = STEPS.reduce((s, step) => s + step.duration, 0)
+    const totalDuration = 5500
     let elapsed = 0
 
     const interval = setInterval(() => {
-      elapsed += 80
-      setProgress(Math.min((elapsed / totalDuration) * 100, 95))
+      elapsed += 100
+      setProgress(Math.min((elapsed / totalDuration) * 100, 96))
 
-      let acc = 0
-      for (let i = 0; i < STEPS.length; i++) {
-        acc += STEPS[i].duration
-        if (elapsed < acc) {
-          if (i !== current) {
-            current = i
-            setStepIndex(i)
-          }
-          break
-        }
-      }
-    }, 80)
+      // GEO track timing
+      if (elapsed > 1200 && geoStep < 1) setGeoStep(1)
+      if (elapsed > 2700 && geoStep < 2) setGeoStep(2)
+      if (elapsed > 3500 && geoStep < 3) setGeoStep(3)
+
+      // Citation track timing (slightly offset)
+      if (elapsed > 400 && citStep < 1) setCitStep(1)
+      if (elapsed > 1400 && citStep < 2) setCitStep(2)
+      if (elapsed > 3200 && citStep < 3) setCitStep(3)
+    }, 100)
 
     return () => clearInterval(interval)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
     <div className="min-h-screen bg-[#F0F4FF] flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm text-center">
+      <div className="w-full max-w-md text-center">
         {/* Animated Icon */}
-        <div className="relative w-24 h-24 mx-auto mb-8">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 animate-ping opacity-20" />
-          <div className="absolute inset-2 rounded-full bg-gradient-to-br from-indigo-500 to-violet-600 animate-pulse opacity-40" />
-          <div className="absolute inset-4 rounded-full bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center">
+        <div className="relative w-20 h-20 mx-auto mb-6">
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 animate-ping opacity-20" />
+          <div className="absolute inset-1 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 animate-pulse opacity-40" />
+          <div className="absolute inset-2 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center">
             <span className="text-2xl">{catInfo.emoji}</span>
           </div>
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mb-1">
-          <span className="text-indigo-600">{serviceName}</span> 분석 중
+          <span className="text-indigo-600">{serviceName}</span> 종합 분석 중
         </h2>
-        <p className="text-sm text-gray-500 mb-8">
-          {catInfo.label} 업계 기준으로 GEO 점수를 산출하고 있어요
+        <p className="text-sm text-gray-500 mb-6">
+          GEO 기술 분석과 AI 실측 테스트를 동시에 진행합니다
         </p>
 
         {/* Progress Bar */}
-        <div className="bg-gray-200 rounded-full h-2 mb-4 overflow-hidden">
-          <div
-            className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 transition-all duration-300 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
+          <div className="h-2 rounded-full bg-gradient-to-r from-indigo-500 to-violet-600 transition-all duration-300"
+            style={{ width: `${progress}%` }} />
         </div>
 
-        {/* Steps */}
-        <div className="space-y-2 mt-6">
-          {STEPS.map((step, i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-2.5 text-sm transition-all duration-300 ${
-                i < stepIndex
-                  ? 'text-green-600'
-                  : i === stepIndex
-                    ? 'text-indigo-600 font-semibold'
-                    : 'text-gray-300'
-              }`}
-            >
-              <span className="w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold border transition-all">
-                {i < stepIndex ? (
-                  <span className="text-green-600 border-green-400 w-full h-full rounded-full border flex items-center justify-center">✓</span>
-                ) : i === stepIndex ? (
-                  <span className="w-full h-full rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
-                ) : (
-                  <span className="text-gray-300 border-gray-200 w-full h-full rounded-full border flex items-center justify-center">{i + 1}</span>
-                )}
-              </span>
-              <span>{step.label}</span>
+        {/* Two parallel tracks */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* GEO Analysis track */}
+          <div className="bg-white rounded-2xl border border-indigo-100 p-4 text-left">
+            <p className="text-xs font-bold text-indigo-700 mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+              GEO 기술 분석
+            </p>
+            <div className="space-y-2">
+              {GEO_STEPS.map((step, i) => (
+                <TrackStep key={i} label={step.label}
+                  status={i < geoStep ? 'done' : i === geoStep && geoStep < GEO_STEPS.length ? 'active' : 'pending'} />
+              ))}
             </div>
-          ))}
+          </div>
+
+          {/* Citation test track */}
+          <div className="bg-white rounded-2xl border border-violet-100 p-4 text-left">
+            <p className="text-xs font-bold text-violet-700 mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
+              AI 실측 테스트
+            </p>
+            <div className="space-y-2">
+              {CITATION_STEPS.map((step, i) => (
+                <TrackStep key={i} label={step.label}
+                  status={i < citStep ? 'done' : i === citStep && citStep < CITATION_STEPS.length ? 'active' : 'pending'} />
+              ))}
+            </div>
+          </div>
         </div>
 
-        {/* Fun fact */}
-        <div className="mt-8 bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-left">
-          <p className="text-xs font-semibold text-indigo-700 mb-1">💡 알고 계셨나요?</p>
-          <p className="text-xs text-indigo-600 leading-relaxed">
-            통계 데이터를 포함한 콘텐츠는 그렇지 않은 콘텐츠보다 AI 검색 인용율이 <strong>41% 높습니다</strong>. (프린스턴 GEO 연구, 2024)
+        <div className="mt-5 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-left">
+          <p className="text-xs text-indigo-700 leading-relaxed">
+            <span className="font-bold">💡 종합 분석이란?</span> GEO 기술 신호(내부)와 AI 검색 실측(외부)을 교차 검증해 점수의 신뢰도를 높입니다. 약 20-30초 소요됩니다.
           </p>
         </div>
       </div>

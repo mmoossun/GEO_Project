@@ -7,19 +7,29 @@ import { DashboardScreen } from '@/components/DashboardScreen'
 import { AIAgentChat } from '@/components/AIAgentChat'
 import { saveToHistory, getPreviousScore } from '@/lib/utils'
 import type { GEOAnalysisResult, AppView } from '@/lib/types'
+import type { CombinedAnalysisResult } from '@/app/api/analyze/combined/route'
 
 export default function Home() {
   const [view, setView] = useState<AppView>('landing')
   const [analysis, setAnalysis] = useState<GEOAnalysisResult | null>(null)
+  const [combined, setCombined] = useState<CombinedAnalysisResult | null>(null)
   const [pendingInput, setPendingInput] = useState<{ name: string; category: string; url?: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [chatMessage, setChatMessage] = useState<string | undefined>(undefined)
   const [chatForceOpen, setChatForceOpen] = useState(false)
   const [previousScore, setPreviousScore] = useState<number | null>(null)
 
-  // Resume last session on mount
+  // Resume last session
   useEffect(() => {
     try {
+      const savedCombined = sessionStorage.getItem('geo_combined')
+      if (savedCombined) {
+        const parsed: CombinedAnalysisResult = JSON.parse(savedCombined)
+        setCombined(parsed)
+        setAnalysis(parsed.geoAnalysis)
+        setView('dashboard')
+        return
+      }
       const saved = sessionStorage.getItem('geo_current')
       if (saved) {
         const parsed: GEOAnalysisResult = JSON.parse(saved)
@@ -27,6 +37,7 @@ export default function Home() {
         setView('dashboard')
       }
     } catch {
+      sessionStorage.removeItem('geo_combined')
       sessionStorage.removeItem('geo_current')
     }
   }, [])
@@ -35,27 +46,33 @@ export default function Home() {
     setPendingInput({ name: serviceName, category, url })
     setView('analyzing')
     setError(null)
+    setCombined(null)
 
     const prevScore = getPreviousScore(serviceName, category)
     setPreviousScore(prevScore)
 
     try {
-      const res = await fetch('/api/analyze', {
+      // ── Use combined endpoint (GEO + Citation in parallel) ──────────────────
+      const res = await fetch('/api/analyze/combined', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ serviceName, category, url, previousScore: prevScore }),
       })
-      const data = await res.json()
+      const data: CombinedAnalysisResult = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? '분석에 실패했습니다.')
+        setError((data as { error?: string }).error ?? '분석에 실패했습니다.')
         setView('landing')
         return
       }
 
-      saveToHistory(data)
-      sessionStorage.setItem('geo_current', JSON.stringify(data))
-      setAnalysis(data)
+      // Save both combined and individual GEO result
+      saveToHistory(data.geoAnalysis)
+      sessionStorage.setItem('geo_combined', JSON.stringify(data))
+      sessionStorage.setItem('geo_current', JSON.stringify(data.geoAnalysis))
+
+      setCombined(data)
+      setAnalysis(data.geoAnalysis)
       setView('dashboard')
     } catch {
       setError('네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
@@ -64,16 +81,15 @@ export default function Home() {
   }
 
   function handleReanalyze() {
-    // Always derive from analysis if no pendingInput — fixes reanalyze after session restore
     const input = pendingInput ?? (analysis ? { name: analysis.serviceName, category: analysis.category, url: analysis.url } : null)
-    if (input) {
-      handleAnalyze(input.name, input.category, input.url)
-    }
+    if (input) handleAnalyze(input.name, input.category, input.url)
   }
 
   function handleBack() {
+    sessionStorage.removeItem('geo_combined')
     sessionStorage.removeItem('geo_current')
     setAnalysis(null)
+    setCombined(null)
     setView('landing')
     setError(null)
   }
@@ -86,10 +102,7 @@ export default function Home() {
   return (
     <>
       {view === 'landing' && (
-        <LandingScreen
-          onAnalyze={handleAnalyze}
-          isLoading={false}
-        />
+        <LandingScreen onAnalyze={handleAnalyze} isLoading={false} />
       )}
 
       {view === 'analyzing' && pendingInput && (
@@ -100,6 +113,7 @@ export default function Home() {
         <>
           <DashboardScreen
             analysis={analysis}
+            combined={combined}
             previousScore={previousScore}
             onBack={handleBack}
             onReanalyze={handleReanalyze}
@@ -115,7 +129,6 @@ export default function Home() {
         </>
       )}
 
-      {/* Error Toast */}
       {error && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm px-5 py-3 rounded-xl shadow-lg max-w-sm text-center">
           {error}

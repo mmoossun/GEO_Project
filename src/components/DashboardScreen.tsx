@@ -2,11 +2,10 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe, BarChart3, FlaskConical, Info } from 'lucide-react'
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe, BarChart3, FlaskConical, Info, MessageCircle } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
 import { getGradeConfig, getScoreColor, getScoreLabel, getPriorityConfig, getEffortLabel, VISIBILITY_LABELS, formatDate, cn } from '@/lib/utils'
 import { DIMENSION_META } from '@/lib/constants'
-import { CitationTestPanel } from './CitationTestPanel'
 import type { GEOAnalysisResult, GEODimension } from '@/lib/types'
 
 function ScoreArc({ score }: { score: number }) {
@@ -122,13 +121,14 @@ function BenchmarkBar({ label, score, isMe, color }: { label: string; score: num
 
 interface DashboardScreenProps {
   analysis: GEOAnalysisResult
+  combined?: import('@/app/api/analyze/combined/route').CombinedAnalysisResult | null
   previousScore: number | null
   onBack: () => void
   onReanalyze: () => void
   onOpenChat: (message?: string) => void
 }
 
-export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, onOpenChat }: DashboardScreenProps) {
+export function DashboardScreen({ analysis, combined, previousScore, onBack, onReanalyze, onOpenChat }: DashboardScreenProps) {
   const [copied, setCopied] = useState(false)
   const gradeConfig = getGradeConfig(analysis.grade)
   const scoreDiff = previousScore != null ? analysis.totalScore - previousScore : null
@@ -277,6 +277,113 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
           </div>
         </div>
 
+        {/* ── Combined Analysis Panel ── */}
+        {combined && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            {/* Header */}
+            <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-slate-800 to-indigo-900 text-white">
+              <span className="text-2xl">{combined.combined.gapEmoji}</span>
+              <div className="flex-1">
+                <p className="font-bold text-base">{combined.combined.gapLabel}</p>
+                <p className="text-slate-300 text-xs mt-0.5">GEO 준비도 + AI 실측 종합 분석</p>
+              </div>
+              <div className="text-right flex-shrink-0">
+                <p className="text-3xl font-extrabold">{combined.combined.unifiedScore}</p>
+                <p className="text-slate-400 text-xs">종합 점수</p>
+              </div>
+            </div>
+
+            <div className="p-5 space-y-4">
+              {/* Score comparison */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-indigo-600 mb-1">GEO 준비도 (내부 신호)</p>
+                  <div className="flex items-end gap-1.5">
+                    <span className="text-2xl font-extrabold text-indigo-700">{combined.combined.geoReadinessScore}</span>
+                    <span className="text-xs text-indigo-400 mb-0.5">/100 · {combined.geoAnalysis.analysisMode === 'real_url' ? '실측' : '추정'}</span>
+                  </div>
+                  <div className="mt-1.5 bg-indigo-100 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full bg-indigo-500 transition-all" style={{ width: `${combined.combined.geoReadinessScore}%` }} />
+                  </div>
+                </div>
+                <div className="bg-violet-50 border border-violet-100 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-violet-600 mb-1">AI 실측 인용율 (외부 신호)</p>
+                  <div className="flex items-end gap-1.5">
+                    <span className="text-2xl font-extrabold text-violet-700">{combined.combined.citationRate}</span>
+                    <span className="text-xs text-violet-400 mb-0.5">% · {combined.citationTest.hasOpenRouter ? '4플랫폼' : '1플랫폼'} 실측</span>
+                  </div>
+                  <div className="mt-1.5 bg-violet-100 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full bg-violet-500 transition-all" style={{ width: `${combined.combined.citationRate}%` }} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Gap insight */}
+              <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 space-y-2">
+                <p className="text-sm font-bold text-gray-800">격차 분석</p>
+                <p className="text-sm text-gray-600 leading-relaxed">{combined.combined.gapInsight}</p>
+                <div className="pt-2 border-t border-gray-100">
+                  <p className="text-xs font-semibold text-indigo-700">👉 권장 전략</p>
+                  <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{combined.combined.gapAction}</p>
+                </div>
+              </div>
+
+              {/* Platform results mini */}
+              <div>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">AI 플랫폼 실측 결과</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {combined.citationTest.platforms.map(p => (
+                    <div key={p.platform} className={cn(
+                      'flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center',
+                      p.status === 'mentioned' ? 'bg-green-50 border-green-200' :
+                      p.status === 'not_mentioned' ? 'bg-red-50 border-red-200' :
+                      p.status === 'error' ? 'bg-amber-50 border-amber-200' :
+                      'bg-gray-50 border-gray-200'
+                    )}>
+                      <span className="text-lg">{p.emoji}</span>
+                      <span className="text-xs font-semibold text-gray-700">{p.platformKo}</span>
+                      <span className={cn('text-xs font-bold', p.status === 'mentioned' ? 'text-green-600' : p.status === 'not_mentioned' ? 'text-red-500' : 'text-gray-400')}>
+                        {p.status === 'mentioned' ? `${p.mentionCount}/${p.totalQueries}회` : p.status === 'not_mentioned' ? '미언급' : p.status === 'error' ? '오류' : '미설정'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Unified recommendations */}
+              {combined.combined.unifiedRecommendations.length > 0 && (
+                <div>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">통합 우선순위 개선안</p>
+                  <div className="space-y-2">
+                    {combined.combined.unifiedRecommendations.slice(0, 3).map((rec, i) => {
+                      const sourceLabel = { geo: '기술분석', citation: '실측결과', combined: '교차분석' }[rec.source]
+                      const sourceBg = { geo: 'bg-indigo-50 text-indigo-700', citation: 'bg-violet-50 text-violet-700', combined: 'bg-pink-50 text-pink-700' }[rec.source]
+                      const pc = getPriorityConfig(rec.priority)
+                      return (
+                        <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-gray-100">
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5"
+                            style={{ color: pc.color, backgroundColor: pc.bg }}>{pc.label}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <p className="text-sm font-semibold text-gray-800">{rec.title}</p>
+                              <span className={cn('text-xs px-1.5 py-0.5 rounded-full font-medium', sourceBg)}>{sourceLabel}</span>
+                            </div>
+                            <p className="text-xs text-gray-500 leading-relaxed">{rec.description}</p>
+                          </div>
+                          <span className="text-xs text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex-shrink-0 font-medium">{rec.expectedImpact}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Correlation note */}
+              <p className="text-xs text-gray-400 italic text-center">{combined.combined.correlationNote}</p>
+            </div>
+          </div>
+        )}
+
         {/* Radar + Benchmark */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Radar */}
@@ -397,9 +504,6 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
             <span className="text-white/40 group-hover:text-white transition-all text-xl">→</span>
           </div>
         </Link>
-
-        {/* Real AI Citation Test */}
-        <CitationTestPanel serviceName={analysis.serviceName} category={analysis.category} />
 
         {/* CTA Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
