@@ -108,7 +108,7 @@ function IterationCard({ entry }: { entry: IterationEntry }) {
       {entry.pass && (
         <div className="flex items-center gap-1.5 text-xs text-green-700 font-semibold">
           <Award size={13} />
-          88점 이상 달성! 품질 기준 통과
+          90점 이상 달성! 즉시 업로드 가능 퀄리티
         </div>
       )}
     </div>
@@ -173,8 +173,10 @@ export function QualityProgress({ events, finalScore, totalIterations, improveme
           <p className="font-bold text-sm">AI 품질 에이전트</p>
           <p className="text-indigo-200 text-xs">
             {isDone
-              ? `${totalIterations}회 반복으로 ${finalScore}점 달성`
-              : '90점 달성까지 자동 개선 중...'}
+              ? `${totalIterations}회 반복 완료 — ${finalScore}점 달성`
+              : events.some(e => e.type === 'briefing') && !events.some(e => e.type === 'generating')
+                ? '콘텐츠 브리프 생성 중...'
+                : '90점 달성까지 자동 개선 중 (최대 5회)'}
           </p>
         </div>
         {isDone && finalScore != null && (

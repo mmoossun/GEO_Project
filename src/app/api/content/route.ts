@@ -6,18 +6,16 @@ import type { ContentRequest, GeneratedContent } from '@/lib/content-strategy'
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
 const DEPTH_CONFIG: Record<string, { maxTokens: number; minChars: number; maxChars: number; targetChars: string }> = {
-  light:  { maxTokens: 1400, minChars: 500,  maxChars: 1000, targetChars: '600-900자' },
-  medium: { maxTokens: 2200, minChars: 900,  maxChars: 1700, targetChars: '1000-1500자' },
-  deep:   { maxTokens: 4500, minChars: 1800, maxChars: 3200, targetChars: '2000-3000자' },
+  light:  { maxTokens: 3000, minChars:  600, maxChars: 1200, targetChars: '700-1000자' },
+  medium: { maxTokens: 5000, minChars: 1400, maxChars: 2500, targetChars: '1500-2000자' },
+  deep:   { maxTokens: 8000, minChars: 2600, maxChars: 4000, targetChars: '2800-3500자' },
 }
 
-/** Extract hashtags embedded in content body (e.g., "#태그1 #태그2") */
 function extractHashtagsFromContent(content: string): string[] {
   const matches = content.match(/#([가-힣a-zA-Z0-9_]+)/g) ?? []
   return matches.map(h => h.slice(1)).filter(h => h.length > 1)
 }
 
-/** Smart truncate: cut at sentence boundary near targetLen */
 function smartTruncate(text: string, maxLen: number): string {
   if (text.length <= maxLen) return text
   const boundaries = ['. ', '.\n', '!\n', '?\n', '\n\n']
@@ -44,17 +42,19 @@ export async function POST(req: NextRequest) {
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       max_tokens: depthCfg.maxTokens,
-      temperature: 0.75,
+      temperature: 0.7,
       response_format: { type: 'json_object' },
       messages: [
         { role: 'system', content: systemPrompt },
         {
           role: 'user',
-          content: `"${body.topic}" 주제로 콘텐츠를 생성해주세요.
+          content: `"${body.topic}" 주제로 콘텐츠를 작성해주세요.
 
-content 필드 분량: ${depthCfg.targetChars} (이 범위를 엄격히 지키세요)
+요구 분량: ${depthCfg.targetChars} (반드시 충족)
 언어: 자연스러운 한국어
-형식: JSON만 반환`,
+핵심: 즉시 업로드 가능한 퀄리티 — 구체적 수치, 실제 예시, 독자가 오늘 바로 실행할 수 있는 팁 포함
+
+JSON만 반환.`,
         },
       ],
     })
@@ -62,17 +62,13 @@ content 필드 분량: ${depthCfg.targetChars} (이 범위를 엄격히 지키�
     const raw = response.choices[0]?.message?.content ?? '{}'
     const parsed: GeneratedContent = JSON.parse(raw)
 
-    // ── Post-processing ───────────────────────────────────────────────────────
-
-    // 1. Hashtag recovery: if array is empty, extract from content body
+    // Hashtag recovery
     let hashtags = Array.isArray(parsed.hashtags) ? parsed.hashtags : []
     if (hashtags.length === 0 && body.platform !== 'company') {
       hashtags = extractHashtagsFromContent(parsed.content ?? '')
     }
-    // For naver_blog, ensure minimum hashtag count
     const [minTags, maxTags] = platformCfg.hashtagRange
     if (body.platform === 'naver_blog' && hashtags.length < 10) {
-      // Generate additional generic hashtags based on topic
       const genericTags = [
         body.topic.replace(/\s+/g, ''),
         ...((body.keywords ?? []).slice(0, 3)),
@@ -81,10 +77,9 @@ content 필드 분량: ${depthCfg.targetChars} (이 범위를 엄격히 지키�
       ].filter(t => t && !hashtags.includes(t))
       hashtags = [...hashtags, ...genericTags].slice(0, maxTags)
     }
-    // Deduplicate hashtags
     hashtags = [...new Set(hashtags)].slice(0, maxTags || 30)
 
-    // 2. Content length enforcement via smart truncation
+    // Length enforcement
     let content = parsed.content ?? ''
     if (content.length > depthCfg.maxChars) {
       content = smartTruncate(content, depthCfg.maxChars)
@@ -98,16 +93,14 @@ content 필드 분량: ${depthCfg.targetChars} (이 범위를 엄격히 지키�
       estimated_read_time: parsed.estimated_read_time ?? '약 3분',
       platform_optimization_notes: parsed.platform_optimization_notes ?? '',
       seo_keywords: Array.isArray(parsed.seo_keywords) ? parsed.seo_keywords : [],
-      geo_score_estimate: typeof parsed.geo_score_estimate === 'number' ? parsed.geo_score_estimate : 78,
+      geo_score_estimate: typeof parsed.geo_score_estimate === 'number' ? parsed.geo_score_estimate : 75,
       geo_optimizations_applied: Array.isArray(parsed.geo_optimizations_applied) ? parsed.geo_optimizations_applied : [],
+      unique_angle: parsed.unique_angle ?? '',
     }
 
     return NextResponse.json(result)
   } catch (error) {
     console.error('Content generation error:', error)
-    return NextResponse.json(
-      { error: '콘텐츠 생성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: '콘텐츠 생성 중 오류가 발생했습니다.' }, { status: 500 })
   }
 }

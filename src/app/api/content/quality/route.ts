@@ -1,6 +1,6 @@
 import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
-import { buildContentPrompt } from '@/lib/content-strategy'
+import { buildContentPrompt, buildBriefPrompt } from '@/lib/content-strategy'
 import {
   buildEvaluationPrompt,
   buildImprovementPrompt,
@@ -11,8 +11,15 @@ import {
 import type { GeneratedContent } from '@/lib/content-strategy'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-const MAX_ITERATIONS = 3
-const PASS_SCORE = 88   // 88+ = 합격 (90은 평가 변동성 고려 시 비현실적)
+
+const MAX_ITERATIONS = 5
+const PASS_SCORE = 90
+
+const DEPTH_TOKENS: Record<string, { gen: number; improve: number }> = {
+  light:  { gen: 3000, improve: 3500 },
+  medium: { gen: 5000, improve: 6000 },
+  deep:   { gen: 8000, improve: 9000 },
+}
 
 export async function POST(req: NextRequest) {
   const body: QualityRequest = await req.json()
@@ -22,6 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   const encoder = new TextEncoder()
+  const depthTokens = DEPTH_TOKENS[body.depth] ?? DEPTH_TOKENS.medium
 
   const stream = new ReadableStream({
     async start(controller) {
@@ -30,16 +38,34 @@ export async function POST(req: NextRequest) {
       }
 
       let currentContent: GeneratedContent | null = null
-      let bestContent: GeneratedContent | null = null   // track best version
+      let bestContent: GeneratedContent | null = null
       let lastEvaluation: EvaluationResult | null = null
       let bestScore = 0
       let finalScore = 0
       const improvementSummary: string[] = []
 
       try {
+        // ── STEP 0: Content Brief (pre-planning for quality) ──────────────────
+        send({ type: 'briefing', message: '콘텐츠 브리프 생성 중 (퀄리티 계획)...' })
+
+        let contentBrief = ''
+        try {
+          const briefRes = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            max_tokens: 1200,
+            temperature: 0.6,
+            response_format: { type: 'json_object' },
+            messages: [{ role: 'user', content: buildBriefPrompt(body) }],
+          })
+          contentBrief = briefRes.choices[0]?.message?.content ?? ''
+        } catch {
+          // Brief generation is optional — proceed without it
+          contentBrief = ''
+        }
+
+        // ── MAIN LOOP ─────────────────────────────────────────────────────────
         for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
-          // ── STEP 1: Generate or Improve ──────────────────────────────────
-          send({ type: 'generating', iteration, message: iteration === 1 ? '초기 콘텐츠 생성 중...' : `${iteration}차 개선 콘텐츠 작성 중...` })
+          send({ type: 'generating', iteration, message: iteration === 1 ? '초기 콘텐츠 작성 중...' : `${iteration}차 개선 작성 중...` })
 
           if (iteration === 1) {
             const genPrompt = buildContentPrompt({
@@ -50,60 +76,65 @@ export async function POST(req: NextRequest) {
               tone: body.tone,
               targetAudience: body.targetAudience,
               serviceContext: body.serviceContext,
+              contentBrief,
             })
 
             const genRes = await openai.chat.completions.create({
               model: 'gpt-4o',
-              max_tokens: 4000,
-              temperature: 0.8,
+              max_tokens: depthTokens.gen,
+              temperature: 0.72,
               response_format: { type: 'json_object' },
               messages: [
                 { role: 'system', content: genPrompt },
-                { role: 'user', content: `"${body.topic}" 주제로 콘텐츠를 생성해주세요. 반드시 자연스러운 한국어로 작성하세요.` },
+                {
+                  role: 'user',
+                  content: `"${body.topic}" 주제로 즉시 업로드 가능한 퀄리티의 콘텐츠를 작성해주세요.
+
+필수 요건:
+- 구체적 수치/데이터 최소 2개
+- 실제 사례 (가상 사례 금지)
+- 바로 실행 가능한 팁 3개 이상
+- AI 패턴 문장 금지 ("이 글에서는...", "첫째 둘째...")
+- 자연스러운 한국어 (진짜 사람이 쓴 것처럼)
+
+JSON만 반환.`,
+                },
               ],
             })
             currentContent = JSON.parse(genRes.choices[0]?.message?.content ?? '{}')
+
           } else {
-            // Improve using best-scoring content so far (prevents regression)
             const contentToImprove = bestContent ?? currentContent!
-            const evalToUse = lastEvaluation!
-            const improvePrompt = buildImprovementPrompt(contentToImprove, evalToUse, body, iteration)
+            const improvePrompt = buildImprovementPrompt(contentToImprove, lastEvaluation!, body, iteration)
             const improveRes = await openai.chat.completions.create({
               model: 'gpt-4o',
-              max_tokens: 4500,
-              temperature: 0.7,
+              max_tokens: depthTokens.improve,
+              temperature: 0.65,
               response_format: { type: 'json_object' },
-              messages: [
-                { role: 'user', content: improvePrompt },
-              ],
+              messages: [{ role: 'user', content: improvePrompt }],
             })
-            const improved = JSON.parse(improveRes.choices[0]?.message?.content ?? '{}')
-            improvementSummary.push(`${iteration}차 개선: ${evalToUse.improvement_suggestions.slice(0, 2).join(', ')}`)
-            currentContent = improved
+            currentContent = JSON.parse(improveRes.choices[0]?.message?.content ?? '{}')
+            improvementSummary.push(`${iteration}차: ${(lastEvaluation?.improvement_suggestions ?? []).slice(0, 2).join(', ')}`)
           }
 
-          // ── STEP 2: Evaluate ─────────────────────────────────────────────
+          // ── Evaluate ───────────────────────────────────────────────────────
           send({ type: 'evaluating', iteration, message: `${iteration}차 품질 평가 중...` })
 
           const evalPrompt = buildEvaluationPrompt(currentContent!, body)
           const evalRes = await openai.chat.completions.create({
             model: 'gpt-4o',
-            max_tokens: 1200,
-            temperature: 0.25,  // slight variance allows improvement detection
+            max_tokens: 1500,
+            temperature: 0.2,
             response_format: { type: 'json_object' },
-            messages: [
-              { role: 'user', content: evalPrompt },
-            ],
+            messages: [{ role: 'user', content: evalPrompt }],
           })
 
           const evaluation: EvaluationResult = JSON.parse(evalRes.choices[0]?.message?.content ?? '{}')
 
-          // Recalculate total for accuracy
           const recalcTotal = Object.values(evaluation.score_breakdown ?? {}).reduce((s, v) => s + (v as number), 0)
           evaluation.total_score = typeof evaluation.total_score === 'number' ? evaluation.total_score : recalcTotal
           evaluation.pass = evaluation.total_score >= PASS_SCORE
 
-          // ── Keep best version (prevent regression) ───────────────────────
           if (evaluation.total_score >= bestScore) {
             bestScore = evaluation.total_score
             bestContent = currentContent
@@ -121,7 +152,6 @@ export async function POST(req: NextRequest) {
             suggestions: evaluation.improvement_suggestions ?? [],
           })
 
-          // ── STEP 3: Check pass condition ─────────────────────────────────
           if (evaluation.pass) break
 
           if (iteration < MAX_ITERATIONS) {
@@ -134,13 +164,12 @@ export async function POST(req: NextRequest) {
             send({
               type: 'improving',
               iteration: iteration + 1,
-              message: `${iteration + 1}차 개선 시작 (약점: ${lastEvaluation.fail_reasons?.slice(0, 2).join(', ')})`,
+              message: `${iteration + 1}차 개선 (약점: ${(lastEvaluation.fail_reasons ?? []).slice(0, 2).join(', ')})`,
               weakAreas,
             })
           }
         }
 
-        // ── FINAL — always return best-scoring version ────────────────────
         send({
           type: 'complete',
           content: bestContent ?? currentContent!,

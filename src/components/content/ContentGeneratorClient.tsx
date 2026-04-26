@@ -248,6 +248,17 @@ function ContentPreview({ content, platform }: { content: GeneratedContent; plat
         </div>
       )}
 
+      {/* Unique angle badge */}
+      {content.unique_angle && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-2">
+          <span className="text-amber-500 text-base flex-shrink-0">💡</span>
+          <div>
+            <p className="text-xs font-bold text-amber-700 mb-0.5">이 콘텐츠의 차별화 포인트</p>
+            <p className="text-sm text-amber-800 leading-relaxed">{content.unique_angle}</p>
+          </div>
+        </div>
+      )}
+
       {/* GEO Score */}
       <GeoScoreBadge score={content.geo_score_estimate} applied={content.geo_optimizations_applied} />
 
