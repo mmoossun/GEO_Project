@@ -250,15 +250,65 @@ function checkMention(text: string, name: string) {
   return { found: true, excerpt: '...' + text.slice(Math.max(0, idx - 60), idx + name.length + 100).trim() + '...' }
 }
 
-async function runCitationTest(serviceName: string, category: string): Promise<CitationTestResult> {
+// ── Service analysis helper (same logic as citation-test route) ───────────────
+async function analyzeServiceForCombined(serviceName: string, category: string, url?: string) {
+  const catInfo = getCategoryInfo(category)
+  let htmlContext = ''
+  let sourceType: 'url_crawl' | 'ai_inference' = 'ai_inference'
+
+  if (url?.startsWith('http')) {
+    try {
+      const r = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 GEOScoreBot/1.0' }, signal: AbortSignal.timeout(7000) })
+      if (r.ok) {
+        const html = await r.text()
+        const text = html.replace(/<script[\s\S]*?<\/script>/gi, '').replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 4000)
+        htmlContext = `웹사이트 내용: ${text}`
+        sourceType = 'url_crawl'
+      }
+    } catch { /* fallback */ }
+  }
+
+  const prompt = sourceType === 'url_crawl'
+    ? `다음 웹사이트 내용을 분석해서 "${serviceName}" 서비스 정보를 추출해주세요.\n${htmlContext}`
+    : `"${serviceName}"(${catInfo.label}) 서비스를 알고 있는 정보로 분석해주세요.`
+
+  const res = await openai.chat.completions.create({
+    model: 'gpt-4o-mini', max_tokens: 600, temperature: 0.2,
+    response_format: { type: 'json_object' },
+    messages: [{ role: 'user', content: `${prompt}\nJSON: {"features":["기능1","기능2","기능3"],"useCases":["케이스1","케이스2","케이스3"],"audience":"주요사용자","competitors":["경쟁1","경쟁2"]}` }],
+  })
+  const p = JSON.parse(res.choices[0]?.message?.content ?? '{}')
+  return { features: p.features ?? [], useCases: p.useCases ?? [], audience: p.audience ?? '', competitors: p.competitors ?? [], sourceType }
+}
+
+async function generateQuestionsForCombined(serviceName: string, catLabel: string, intel: { features: string[]; useCases: string[]; competitors: string[] }): Promise<string[]> {
+  const res = await openai.chat.completions.create({
+    model: 'gpt-4o-mini', max_tokens: 600, temperature: 0.4,
+    response_format: { type: 'json_object' },
+    messages: [{ role: 'user', content: `"${serviceName}"(${catLabel}) 서비스가 답이 될 가능성이 높은 한국어 질문 5개를 생성해주세요.
+핵심기능: ${intel.features.slice(0, 3).join(', ')}
+사용케이스: ${intel.useCases.slice(0, 3).join(', ')}
+경쟁사: ${intel.competitors.slice(0, 2).join(', ')}
+
+JSON: {"questions":["질문1","질문2","질문3","질문4","질문5"]}` }],
+  })
+  return JSON.parse(res.choices[0]?.message?.content ?? '{"questions":[]}').questions ?? []
+}
+
+async function runCitationTest(serviceName: string, category: string, url?: string): Promise<CitationTestResult> {
   const catInfo = getCategoryInfo(category)
   const hasOR = !!(process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== 'your_openrouter_key_here')
 
-  const prompts = [
-    `${catInfo.label} 분야에서 알아두면 좋은 서비스나 플랫폼을 추천해줘. 한국 서비스 위주로.`,
-    `한국의 ${catInfo.label} 서비스 중 많이 사용되거나 알려진 것들을 알려줘.`,
+  // Analyze service first, then generate targeted questions
+  const intel = await analyzeServiceForCombined(serviceName, category, url)
+  const generatedQuestions = await generateQuestionsForCombined(serviceName, catInfo.label, intel)
+
+  // Fallback to generic questions if generation failed
+  const prompts = generatedQuestions.length >= 3 ? generatedQuestions : [
+    `${catInfo.label} 분야에서 알아두면 좋은 서비스를 추천해줘. 한국 서비스 위주로.`,
     `"${serviceName}"이라는 서비스에 대해 알고 있어? 간단히 설명해줘.`,
     `${catInfo.label} 시장에서 ${serviceName} 같은 서비스들을 추천해줘.`,
+    `${intel.useCases[0] ? intel.useCases[0] + '하려면 어떤 서비스가 좋아?' : catInfo.label + ' 추천 앱 알려줘'}`,
   ]
 
   const platforms: PlatformTestResult[] = await Promise.all(
@@ -269,20 +319,23 @@ async function runCitationTest(serviceName: string, category: string): Promise<C
       try {
         const client = hasOR ? openrouter : openai
         const modelId = hasOR ? p.model : (p as { directModel?: string }).directModel ?? p.model
-        let mc = 0; const exs: string[] = []; const resps: string[] = []
+        let mc = 0
+        const exs: string[] = []
+        const resps: { question: string; response: string; mentioned: boolean }[] = []
         const results = await Promise.allSettled(prompts.map(prompt =>
-          client.chat.completions.create({ model: modelId, max_tokens: 500, temperature: 0.3, messages: [{ role: 'system', content: '당신은 도움이 되는 AI 어시스턴트입니다. 솔직하게 알고 있는 정보만 답변해주세요.' }, { role: 'user', content: prompt }] })
-            .then(r => r.choices[0]?.message?.content ?? '')
+          client.chat.completions.create({ model: modelId, max_tokens: 600, temperature: 0.3, messages: [{ role: 'system', content: '당신은 도움이 되는 AI 어시스턴트입니다. 솔직하게 알고 있는 정보만 답변해주세요. 한국어로 답변하세요.' }, { role: 'user', content: prompt }] })
+            .then(r => ({ prompt, text: r.choices[0]?.message?.content ?? '' }))
         ))
         for (const r of results) {
           if (r.status === 'fulfilled') {
-            resps.push(r.value.slice(0, 250))
-            const { found, excerpt } = checkMention(r.value, serviceName)
+            const { prompt, text } = r.value
+            const { found, excerpt } = checkMention(text, serviceName)
+            resps.push({ question: prompt, response: text.slice(0, 350), mentioned: found })
             if (found) { mc++; if (excerpt) exs.push(excerpt) }
           }
         }
         const mr = Math.round((mc / prompts.length) * 100)
-        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: mc > 0 ? 'mentioned' as const : 'not_mentioned' as const, statusKo: mc > 0 ? `${mc}/${prompts.length}회 언급` : '언급되지 않음', mentionCount: mc, totalQueries: prompts.length, mentionRate: mr, excerpts: exs, responses: resps }
+        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: mc > 0 ? 'mentioned' as const : 'not_mentioned' as const, statusKo: mc > 0 ? `${mc}/${prompts.length}개 질문에서 언급` : '어떤 질문에서도 미언급', mentionCount: mc, totalQueries: prompts.length, mentionRate: mr, excerpts: exs, responses: resps }
       } catch (e) {
         const msg = e instanceof Error ? e.message.slice(0, 80) : '오류'
         return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: 'error' as const, statusKo: `오류: ${msg}`, mentionCount: 0, totalQueries: prompts.length, mentionRate: 0, excerpts: [], responses: [], error: msg }
@@ -294,7 +347,26 @@ async function runCitationTest(serviceName: string, category: string): Promise<C
   const mentioned = platforms.filter(p => p.status === 'mentioned')
   const overallMentionRate = tested.length > 0 ? Math.round((mentioned.reduce((s, p) => s + p.mentionRate, 0) / tested.length)) : 0
 
-  return { serviceName, category: catInfo.label, testedAt: new Date().toISOString(), hasOpenRouter: hasOR, platforms, overallMentionRate, summary: '' }
+  return {
+    serviceName,
+    category: catInfo.label,
+    testedAt: new Date().toISOString(),
+    hasOpenRouter: hasOR,
+    platforms,
+    overallMentionRate,
+    summary: '',
+    // Provide minimal stubs so type is compatible with CitationTestResult
+    serviceIntelligence: {
+      name: serviceName, category: catInfo.label,
+      coreFeatures: intel.features, targetAudience: intel.audience,
+      keyValueProps: [], useCases: intel.useCases, competitors: intel.competitors,
+      sourceType: intel.sourceType, summary: '',
+    },
+    generatedQuestions: prompts.map((q, i) => ({
+      question: q, type: 'category' as const, typeKo: '맞춤질문',
+      rationale: `${serviceName} 관련 질문 ${i + 1}`,
+    })),
+  }
 }
 
 // ─── Route ────────────────────────────────────────────────────────────────────
@@ -309,7 +381,7 @@ export async function POST(req: NextRequest) {
     // ── Run both analyses in PARALLEL ────────────────────────────────────────
     const [geoAnalysis, citationTest] = await Promise.all([
       runGEOAnalysis(serviceName, category, url),
-      runCitationTest(serviceName, category),
+      runCitationTest(serviceName, category, url),
     ])
 
     // ── Compute combined metrics ──────────────────────────────────────────────

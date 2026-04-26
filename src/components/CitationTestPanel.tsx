@@ -1,108 +1,207 @@
 'use client'
 
 import { useState } from 'react'
-import { Loader2, CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Play, Info } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Play, Info, Lightbulb, MessageSquare } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { CitationTestResult, PlatformTestResult } from '@/app/api/analyze/citation-test/route'
+import type { CitationTestResult, PlatformTestResult, GeneratedQuestion, ServiceIntelligence } from '@/app/api/analyze/citation-test/route'
 
-// ─── Platform Result Card ─────────────────────────────────────────────────────
+// ─── Service Intelligence Card ────────────────────────────────────────────────
 
-function PlatformCard({ p }: { p: PlatformTestResult }) {
-  const [showDetail, setShowDetail] = useState(false)
-
-  const statusCfg = {
-    mentioned: { icon: <CheckCircle2 size={16} />, color: 'text-green-600', bg: 'bg-green-50 border-green-200', label: '✅ 언급됨' },
-    not_mentioned: { icon: <XCircle size={16} />, color: 'text-red-500', bg: 'bg-red-50 border-red-200', label: '❌ 미언급' },
-    error: { icon: <AlertCircle size={16} />, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200', label: '⚠️ 오류' },
-    skipped: { icon: <AlertCircle size={16} />, color: 'text-gray-400', bg: 'bg-gray-50 border-gray-200', label: '⚪ 키 미설정' },
-  }[p.status]
-
+function ServiceIntelCard({ intel }: { intel: ServiceIntelligence }) {
+  const [open, setOpen] = useState(false)
   return (
-    <div className={cn('rounded-xl border overflow-hidden', statusCfg.bg)}>
-      <div className="flex items-center gap-3 px-4 py-3">
-        <span className="text-xl flex-shrink-0">{p.emoji}</span>
-        <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm text-gray-800">{p.platformKo}</p>
-          <p className="text-xs text-gray-500">{p.model}</p>
-        </div>
-
-        {p.status !== 'skipped' && p.totalQueries > 0 && (
-          <div className="text-right flex-shrink-0 mr-2">
-            <p className="text-xs text-gray-500">{p.mentionCount}/{p.totalQueries} 질문에서 언급</p>
-            <div className="flex gap-1 mt-1 justify-end">
-              {Array.from({ length: p.totalQueries }).map((_, i) => (
-                <div key={i} className={cn('w-3 h-3 rounded-full border', i < p.mentionCount ? 'bg-green-500 border-green-600' : 'bg-white border-gray-300')} />
+    <div className="bg-indigo-50 border border-indigo-100 rounded-xl overflow-hidden">
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-indigo-100/50 transition-colors">
+        <Lightbulb size={14} className="text-indigo-500 flex-shrink-0" />
+        <span className="text-sm font-semibold text-indigo-800 flex-1">
+          서비스 분석 결과 ({intel.sourceType === 'url_crawl' ? '🔗 URL 크롤링' : '🤖 AI 추론'})
+        </span>
+        {open ? <ChevronUp size={13} className="text-indigo-400" /> : <ChevronDown size={13} className="text-indigo-400" />}
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-3 border-t border-indigo-100">
+          <p className="text-xs text-indigo-700 leading-relaxed mt-3">{intel.summary}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <p className="text-xs font-bold text-indigo-600 mb-1.5">🔧 핵심 기능</p>
+              {intel.coreFeatures.map((f, i) => (
+                <p key={i} className="text-xs text-indigo-700 flex items-center gap-1.5 mb-1">
+                  <span className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />{f}
+                </p>
+              ))}
+            </div>
+            <div>
+              <p className="text-xs font-bold text-indigo-600 mb-1.5">💡 핵심 가치</p>
+              {intel.keyValueProps.map((v, i) => (
+                <p key={i} className="text-xs text-indigo-700 flex items-center gap-1.5 mb-1">
+                  <span className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />{v}
+                </p>
               ))}
             </div>
           </div>
-        )}
-
-        <div className={cn('flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0', statusCfg.color, 'bg-white/70')}>
-          {statusCfg.icon}
-          {statusCfg.label}
-        </div>
-
-        {p.excerpts.length > 0 && (
-          <button onClick={() => setShowDetail(s => !s)} className="text-gray-400 hover:text-gray-600 flex-shrink-0">
-            {showDetail ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-        )}
-      </div>
-
-      {/* Excerpts */}
-      {showDetail && p.excerpts.length > 0 && (
-        <div className="px-4 pb-4 border-t border-white/50 pt-3 space-y-2">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">AI 응답 발췌</p>
-          {p.excerpts.map((ex, i) => (
-            <div key={i} className="bg-white rounded-lg p-3 text-xs text-gray-700 leading-relaxed border border-white">
-              <span className="text-green-600 font-bold">[언급됨] </span>{ex}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {p.status === 'error' && p.error && (
-        <div className="px-4 pb-3 text-xs text-amber-700 border-t border-white/50 pt-2">
-          오류: {p.error.slice(0, 100)}
-        </div>
-      )}
-
-      {p.status === 'skipped' && (
-        <div className="px-4 pb-3 text-xs text-gray-500 border-t border-white/50 pt-2">
-          .env.local에 OPENROUTER_API_KEY를 설정하면 실측 가능합니다.
+          {intel.competitors.length > 0 && (
+            <p className="text-xs text-indigo-600">
+              <span className="font-semibold">경쟁사:</span> {intel.competitors.join(', ')}
+            </p>
+          )}
         </div>
       )}
     </div>
   )
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+// ─── Generated Questions Panel ────────────────────────────────────────────────
 
-interface CitationTestPanelProps {
-  serviceName: string
-  category: string
+function QuestionsPanel({ questions }: { questions: GeneratedQuestion[] }) {
+  const [open, setOpen] = useState(true)
+  const typeColors: Record<string, string> = {
+    direct: 'bg-purple-50 text-purple-700 border-purple-200',
+    feature: 'bg-blue-50 text-blue-700 border-blue-200',
+    problem_solving: 'bg-green-50 text-green-700 border-green-200',
+    category: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    comparison: 'bg-orange-50 text-orange-700 border-orange-200',
+  }
+  return (
+    <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
+      <button onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-gray-100 transition-colors">
+        <MessageSquare size={14} className="text-gray-500 flex-shrink-0" />
+        <span className="text-sm font-semibold text-gray-700 flex-1">AI에 전송한 맞춤 질문 {questions.length}개</span>
+        {open ? <ChevronUp size={13} className="text-gray-400" /> : <ChevronDown size={13} className="text-gray-400" />}
+      </button>
+      {open && (
+        <div className="px-4 pb-4 space-y-2 border-t border-gray-200 pt-3">
+          {questions.map((q, i) => (
+            <div key={i} className="bg-white rounded-lg border border-gray-100 p-3">
+              <div className="flex items-start gap-2 mb-1.5">
+                <span className="text-xs font-bold text-gray-400 w-5 flex-shrink-0 mt-0.5">Q{i + 1}</span>
+                <p className="text-sm text-gray-800 flex-1 leading-relaxed">"{q.question}"</p>
+                <span className={cn('text-xs font-semibold px-2 py-0.5 rounded-full border flex-shrink-0 whitespace-nowrap', typeColors[q.type] ?? 'bg-gray-50 text-gray-600 border-gray-200')}>
+                  {q.typeKo}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 ml-7 italic">{q.rationale}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
-export function CitationTestPanel({ serviceName, category }: CitationTestPanelProps) {
+// ─── Platform Result Card ─────────────────────────────────────────────────────
+
+function PlatformCard({ p }: { p: PlatformTestResult }) {
+  const [showDetail, setShowDetail] = useState(false)
+  const cfg = {
+    mentioned:     { border: 'border-green-200 bg-green-50', badge: 'text-green-700 bg-green-100', icon: <CheckCircle2 size={15} className="text-green-600" /> },
+    not_mentioned: { border: 'border-red-200 bg-red-50',     badge: 'text-red-600 bg-red-100',     icon: <XCircle size={15} className="text-red-500" /> },
+    error:         { border: 'border-amber-200 bg-amber-50', badge: 'text-amber-700 bg-amber-100', icon: <AlertCircle size={15} className="text-amber-600" /> },
+    skipped:       { border: 'border-gray-200 bg-gray-50',   badge: 'text-gray-500 bg-gray-100',   icon: <AlertCircle size={15} className="text-gray-400" /> },
+  }[p.status]
+
+  const hasDetail = p.responses && p.responses.length > 0
+
+  return (
+    <div className={cn('rounded-xl border overflow-hidden', cfg.border)}>
+      <div className="flex items-center gap-3 px-4 py-3">
+        <span className="text-xl flex-shrink-0">{p.emoji}</span>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-sm text-gray-800">{p.platformKo}</p>
+          {p.status !== 'skipped' && p.totalQueries > 0 && (
+            <div className="flex gap-1 mt-1">
+              {Array.from({ length: p.totalQueries }).map((_, i) => (
+                <div key={i} className={cn('w-4 h-1.5 rounded-full', i < p.mentionCount ? 'bg-green-500' : 'bg-gray-200')} />
+              ))}
+              <span className="text-xs text-gray-500 ml-1">{p.mentionCount}/{p.totalQueries}</span>
+            </div>
+          )}
+        </div>
+        <span className={cn('text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 flex items-center gap-1', cfg.badge)}>
+          {cfg.icon}
+          {p.statusKo}
+        </span>
+        {hasDetail && (
+          <button onClick={() => setShowDetail(s => !s)} className="text-gray-400 hover:text-gray-600 flex-shrink-0">
+            {showDetail ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+          </button>
+        )}
+      </div>
+
+      {/* Per-question breakdown */}
+      {showDetail && p.responses.length > 0 && (
+        <div className="border-t border-white/60 bg-white/50 px-4 py-3 space-y-2">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">질문별 응답</p>
+          {p.responses.map((r, i) => (
+            <div key={i} className={cn('rounded-lg p-3 border text-xs', r.mentioned ? 'bg-green-50 border-green-200' : 'bg-white border-gray-100')}>
+              <div className="flex items-start gap-2 mb-1.5">
+                <span className={cn('font-bold flex-shrink-0 w-4', r.mentioned ? 'text-green-600' : 'text-gray-400')}>
+                  {r.mentioned ? '✓' : '✗'}
+                </span>
+                <p className="text-gray-600 italic flex-1">"{r.question}"</p>
+              </div>
+              <p className="text-gray-700 leading-relaxed ml-6 line-clamp-3">{r.response}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {p.status === 'error' && p.error && (
+        <div className="px-4 pb-2 text-xs text-amber-700 border-t border-white/50 pt-2">오류: {p.error}</div>
+      )}
+      {p.status === 'skipped' && (
+        <div className="px-4 pb-2 text-xs text-gray-500 border-t border-white/50 pt-2">
+          .env.local에 OPENROUTER_API_KEY를 설정하면 실측할 수 있습니다.
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ─── Progress Steps ───────────────────────────────────────────────────────────
+
+interface Step { step: number; message: string; done: boolean }
+
+function StepList({ steps, running }: { steps: Step[]; running: boolean }) {
+  return (
+    <div className="space-y-2">
+      {steps.map((s, i) => (
+        <div key={i} className={cn('flex items-center gap-2 text-sm', s.done ? 'text-green-600' : i === steps.length - 1 && running ? 'text-indigo-600 font-semibold' : 'text-gray-400')}>
+          {s.done
+            ? <CheckCircle2 size={15} className="text-green-500 flex-shrink-0" />
+            : i === steps.length - 1 && running
+              ? <Loader2 size={15} className="animate-spin text-indigo-500 flex-shrink-0" />
+              : <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0" />
+          }
+          <span>{s.message}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
+
+interface Props { serviceName: string; category: string; url?: string }
+
+export function CitationTestPanel({ serviceName, category, url }: Props) {
   const [running, setRunning] = useState(false)
   const [result, setResult] = useState<CitationTestResult | null>(null)
-  const [events, setEvents] = useState<string[]>([])
+  const [steps, setSteps] = useState<Step[]>([])
+  const [intel, setIntel] = useState<ServiceIntelligence | null>(null)
+  const [questions, setQuestions] = useState<GeneratedQuestion[]>([])
   const [error, setError] = useState('')
-  const [hasOpenRouter, setHasOpenRouter] = useState<boolean | null>(null)
 
   async function runTest() {
-    setRunning(true)
-    setResult(null)
-    setEvents([])
-    setError('')
+    setRunning(true); setResult(null); setSteps([]); setIntel(null); setQuestions([]); setError('')
 
     try {
       const res = await fetch('/api/analyze/citation-test', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ serviceName, category }),
+        body: JSON.stringify({ serviceName, category, url }),
       })
-
       if (!res.ok || !res.body) throw new Error('서버 오류')
 
       const reader = res.body.getReader()
@@ -113,33 +212,31 @@ export function CitationTestPanel({ serviceName, category }: CitationTestPanelPr
         const { value, done } = await reader.read()
         if (done) break
         buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() ?? ''
+        const lines = buffer.split('\n'); buffer = lines.pop() ?? ''
 
         for (const line of lines) {
           if (!line.trim()) continue
           try {
-            const event = JSON.parse(line)
-            if (event.type === 'start') {
-              setHasOpenRouter(event.hasOpenRouter)
-              setEvents(prev => [...prev, event.message])
-            } else if (event.type === 'testing') {
-              setEvents(prev => [...prev, `${event.emoji ?? '🔄'} ${event.platformKo} 테스트 중...`])
-            } else if (event.type === 'result') {
-              setEvents(prev => {
-                const last = [...prev]
-                last[last.length - 1] = `${event.result.emoji} ${event.result.platformKo}: ${event.result.statusKo}`
-                return last
+            const ev = JSON.parse(line)
+            if (ev.type === 'step') {
+              setSteps(prev => {
+                const updated = prev.map((s, i) => i === prev.length - 1 ? { ...s, done: true } : s)
+                return [...updated, { step: ev.step, message: ev.message, done: false }]
               })
-            } else if (event.type === 'complete') {
-              setResult(event.result)
-            } else if (event.type === 'error') {
-              throw new Error(event.message)
             }
-          } catch (parseErr) {
-            if (parseErr instanceof SyntaxError) continue
-            throw parseErr
-          }
+            if (ev.type === 'service_analyzed') {
+              setSteps(prev => prev.map((s, i) => i === prev.length - 1 ? { ...s, done: true } : s))
+              setIntel(ev.intelligence)
+            }
+            if (ev.type === 'questions_generated') {
+              setQuestions(ev.questions)
+            }
+            if (ev.type === 'complete') {
+              setResult(ev.result)
+              setSteps(prev => prev.map(s => ({ ...s, done: true })))
+            }
+            if (ev.type === 'error') throw new Error(ev.message)
+          } catch (parseErr) { if (parseErr instanceof SyntaxError) continue; throw parseErr }
         }
       }
     } catch (e) {
@@ -149,134 +246,104 @@ export function CitationTestPanel({ serviceName, category }: CitationTestPanelPr
     }
   }
 
-  const mentionedPlatforms = result?.platforms.filter(p => p.status === 'mentioned') ?? []
-  const testedPlatforms = result?.platforms.filter(p => p.status !== 'skipped') ?? []
+  const mentioned = result?.platforms.filter(p => p.status === 'mentioned') ?? []
+  const tested = result?.platforms.filter(p => p.status !== 'skipped') ?? []
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      {/* Header */}
       <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 flex items-center gap-2">
             🔬 AI 실측 인용 테스트
-            <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full font-semibold">
-              실제 AI에 질문
-            </span>
+            <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full">서비스 분석 → 맞춤 질문</span>
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
-            ChatGPT, Claude, Gemini, Perplexity에 실제로 질문을 던져 "{serviceName}"이 언급되는지 측정합니다
+            서비스를 먼저 분석한 뒤 관련 질문 5개를 생성해 4개 AI 플랫폼에 실제로 전송합니다
           </p>
         </div>
-
-        {!running && !result && (
-          <button
-            onClick={runTest}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-sm"
-          >
-            <Play size={14} />
-            실측 시작
-          </button>
-        )}
-        {result && !running && (
-          <button onClick={runTest} className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
-            <Play size={12} />
-            재테스트
+        {!running && (
+          <button onClick={runTest}
+            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-sm transition-all">
+            <Play size={14} />{result ? '재테스트' : '실측 시작'}
           </button>
         )}
       </div>
 
-      {/* Body */}
       <div className="p-5 space-y-4">
         {/* Not started */}
         {!running && !result && !error && (
           <div className="text-center py-6 space-y-3">
-            <div className="text-4xl">🤖</div>
-            <p className="text-sm text-gray-600 leading-relaxed max-w-sm mx-auto">
-              AI 검색엔진들이 실제로 <strong>"{serviceName}"</strong>을 알고 있는지,<br />
-              관련 질문에서 언급하는지 직접 테스트합니다.
+            <div className="text-4xl">🔬</div>
+            <p className="text-sm text-gray-600 max-w-sm mx-auto leading-relaxed">
+              <strong>"{serviceName}"</strong>을 먼저 분석하고, 이 서비스가 답이 될 만한 질문 5개를 생성한 뒤 ChatGPT·Claude·Gemini·Perplexity에 실제로 전송합니다.
             </p>
-            <div className="flex flex-wrap justify-center gap-2 text-xs text-gray-500">
-              {['🤖 ChatGPT', '🧠 Claude', '✨ Gemini', '🔍 Perplexity'].map(p => (
-                <span key={p} className="bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">{p}</span>
-              ))}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-xs text-blue-700 text-left max-w-sm mx-auto space-y-1.5">
+              <p className="font-bold">진행 순서:</p>
+              <p>① 서비스 분석 (URL 크롤링 or AI 추론)</p>
+              <p>② 맞춤 질문 5개 자동 생성</p>
+              <p>③ 4개 AI 플랫폼에 동시 전송</p>
+              <p>④ 언급 여부 + 응답 내용 확인</p>
             </div>
-            {hasOpenRouter === false && (
-              <div className="flex items-start gap-2 bg-amber-50 border border-amber-100 rounded-xl p-3 text-xs text-amber-700 text-left max-w-sm mx-auto">
-                <Info size={13} className="flex-shrink-0 mt-0.5" />
-                <span>OpenRouter 키가 없어 ChatGPT만 실측됩니다. .env.local에 OPENROUTER_API_KEY를 추가하면 모든 플랫폼을 테스트할 수 있습니다.</span>
-              </div>
-            )}
           </div>
         )}
 
         {/* Running */}
         {running && (
-          <div className="space-y-3">
-            <div className="flex items-center gap-2 text-sm text-indigo-600 font-semibold">
-              <Loader2 size={16} className="animate-spin" />
-              AI 플랫폼에 실제 질문 전송 중...
-            </div>
-            <div className="space-y-1.5">
-              {events.map((msg, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                  {i === events.length - 1 && running
-                    ? <Loader2 size={12} className="animate-spin text-indigo-500 flex-shrink-0" />
-                    : <span className="w-3 h-3 rounded-full bg-green-400 flex-shrink-0" />
-                  }
-                  {msg}
-                </div>
-              ))}
-            </div>
+          <div className="space-y-4">
+            <StepList steps={steps} running={running} />
+            {intel && <ServiceIntelCard intel={intel} />}
+            {questions.length > 0 && <QuestionsPanel questions={questions} />}
           </div>
         )}
 
         {/* Error */}
         {error && (
           <div className="flex items-start gap-2 bg-red-50 border border-red-100 rounded-xl p-3 text-sm text-red-700">
-            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" />
-            <span>{error}</span>
+            <AlertCircle size={16} className="flex-shrink-0 mt-0.5" /><span>{error}</span>
           </div>
         )}
 
         {/* Results */}
         {result && (
           <div className="space-y-4">
-            {/* Summary */}
-            <div className={cn(
-              'rounded-xl p-4 border',
-              mentionedPlatforms.length > 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'
-            )}>
+            {/* Summary badge */}
+            <div className={cn('rounded-xl border p-4', mentioned.length > 0 ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200')}>
               <div className="flex items-center gap-3 mb-2">
-                <div className="text-2xl font-extrabold" style={{ color: mentionedPlatforms.length > 0 ? '#059669' : '#DC2626' }}>
-                  {mentionedPlatforms.length}/{testedPlatforms.length}
-                </div>
+                <span className={cn('text-3xl font-extrabold', mentioned.length > 0 ? 'text-green-600' : 'text-red-600')}>
+                  {mentioned.length}/{tested.length}
+                </span>
                 <div>
-                  <p className="font-bold text-sm text-gray-800">플랫폼에서 언급됨</p>
-                  <p className="text-xs text-gray-500">테스트한 AI 플랫폼 기준</p>
+                  <p className="font-bold text-sm text-gray-800">플랫폼 언급</p>
+                  <p className="text-xs text-gray-500">맞춤 질문 {result.generatedQuestions.length}개 기준</p>
+                </div>
+                <div className="ml-auto text-right">
+                  <p className="text-lg font-extrabold text-gray-900">{result.overallMentionRate}%</p>
+                  <p className="text-xs text-gray-500">평균 인용율</p>
                 </div>
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">{result.summary}</p>
             </div>
 
+            {/* Service analysis */}
+            <ServiceIntelCard intel={result.serviceIntelligence} />
+
+            {/* Questions used */}
+            <QuestionsPanel questions={result.generatedQuestions} />
+
             {/* Platform results */}
-            <div className="space-y-2">
-              {result.platforms.map(p => (
-                <PlatformCard key={p.platform} p={p} />
-              ))}
+            <div>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">플랫폼별 실측 결과</p>
+              <div className="space-y-2">
+                {result.platforms.map(p => <PlatformCard key={p.platform} p={p} />)}
+              </div>
             </div>
 
-            {/* What this means */}
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-              <p className="text-xs font-bold text-blue-700 mb-2 flex items-center gap-1.5">
-                <Info size={12} />
-                이 결과가 의미하는 것
-              </p>
-              <div className="space-y-1 text-xs text-blue-700 leading-relaxed">
-                <p>• AI 플랫폼들이 학습 데이터나 실시간 검색에서 "{serviceName}"을 얼마나 알고 있는지 측정했습니다</p>
-                <p>• 언급이 없다고 서비스가 나쁜 것은 아닙니다 — GEO 최적화로 인지도를 높일 수 있습니다</p>
-                <p>• 테스트 시점의 AI 모델 버전에 따라 결과가 달라질 수 있습니다</p>
-                {!result.hasOpenRouter && <p>• <strong>OpenRouter 키 설정 시</strong> Claude, Gemini, Perplexity도 실측됩니다</p>}
-              </div>
+            {/* Info note */}
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700 space-y-1.5">
+              <p className="font-bold flex items-center gap-1.5"><Info size={12} /> 결과 해석 방법</p>
+              <p>• 맞춤 질문은 이 서비스가 정답이 될 가능성이 높도록 설계되었습니다</p>
+              <p>• 언급이 없다면 AI 학습 데이터에서 인지도가 낮거나, GEO 최적화가 부족한 것입니다</p>
+              <p>• 테스트 결과는 AI 모델 버전 업데이트에 따라 달라질 수 있습니다</p>
             </div>
           </div>
         )}
