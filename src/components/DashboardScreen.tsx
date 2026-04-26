@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe, BarChart3 } from 'lucide-react'
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe, BarChart3, FlaskConical, Info } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
 import { getGradeConfig, getScoreColor, getScoreLabel, getPriorityConfig, getEffortLabel, VISIBILITY_LABELS, formatDate, cn } from '@/lib/utils'
 import { DIMENSION_META } from '@/lib/constants'
+import { CitationTestPanel } from './CitationTestPanel'
 import type { GEOAnalysisResult, GEODimension } from '@/lib/types'
 
 function ScoreArc({ score }: { score: number }) {
@@ -212,6 +213,25 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6 space-y-4 pb-24">
+        {/* Analysis mode transparency banner */}
+        {(analysis as GEOAnalysisResult & { analysisMode?: string }).analysisMode === 'estimation' && (
+          <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+            <Info size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
+            <div className="text-xs text-amber-800 leading-relaxed">
+              <span className="font-bold">AI 추정 점수</span> — URL을 입력하지 않아 GPT-4o가 서비스 특성을 추론해 점수를 산출했습니다.
+              <Link href="/" className="ml-1 font-semibold underline">URL을 추가하면 실제 페이지를 분석</Link>해 더 정확한 점수를 얻을 수 있습니다.
+            </div>
+          </div>
+        )}
+        {(analysis as GEOAnalysisResult & { analysisMode?: string }).analysisMode === 'real_url' && (
+          <div className="flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+            <FlaskConical size={15} className="text-green-600 flex-shrink-0" />
+            <p className="text-xs text-green-800">
+              <span className="font-bold">실제 페이지 분석</span> — {analysis.url} 를 직접 방문해 HTML을 파싱한 실측 점수입니다.
+            </p>
+          </div>
+        )}
+
         {/* Score Hero */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <div className="flex flex-col sm:flex-row gap-6 items-center">
@@ -377,6 +397,9 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
             <span className="text-white/40 group-hover:text-white transition-all text-xl">→</span>
           </div>
         </Link>
+
+        {/* Real AI Citation Test */}
+        <CitationTestPanel serviceName={analysis.serviceName} category={analysis.category} />
 
         {/* CTA Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
