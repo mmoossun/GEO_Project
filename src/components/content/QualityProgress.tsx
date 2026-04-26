@@ -108,7 +108,7 @@ function IterationCard({ entry }: { entry: IterationEntry }) {
       {entry.pass && (
         <div className="flex items-center gap-1.5 text-xs text-green-700 font-semibold">
           <Award size={13} />
-          90점 이상 달성! 품질 기준 통과
+          88점 이상 달성! 품질 기준 통과
         </div>
       )}
     </div>

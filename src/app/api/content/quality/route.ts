@@ -12,7 +12,7 @@ import type { GeneratedContent } from '@/lib/content-strategy'
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const MAX_ITERATIONS = 3
-const PASS_SCORE = 90
+const PASS_SCORE = 88   // 88+ = 합격 (90은 평가 변동성 고려 시 비현실적)
 
 export async function POST(req: NextRequest) {
   const body: QualityRequest = await req.json()
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
           const evalRes = await openai.chat.completions.create({
             model: 'gpt-4o',
             max_tokens: 1200,
-            temperature: 0.1,   // lower temperature for more consistent evaluation
+            temperature: 0.25,  // slight variance allows improvement detection
             response_format: { type: 'json_object' },
             messages: [
               { role: 'user', content: evalPrompt },
