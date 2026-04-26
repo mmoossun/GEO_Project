@@ -52,13 +52,27 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           </div>
           <span className="font-bold text-gray-900 text-base">GEO Score</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <Link
+            href="/url-analyzer"
+            className="flex items-center gap-1.5 text-xs font-semibold text-teal-600 hover:text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-100 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <span className="text-sm leading-none">🔍</span>
+            <span className="hidden sm:inline">URL 분석</span>
+          </Link>
+          <Link
+            href="/studio"
+            className="flex items-center gap-1.5 text-xs font-semibold text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100 border border-violet-100 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            <span className="text-sm leading-none">🎨</span>
+            <span className="hidden sm:inline">스튜디오</span>
+          </Link>
           <Link
             href="/generate"
             className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-3 py-1.5 rounded-lg transition-colors"
           >
             <Sparkles size={13} />
-            콘텐츠 생성기
+            <span className="hidden sm:inline">생성기</span>
           </Link>
           <a
             href="https://arxiv.org/abs/2311.09735"

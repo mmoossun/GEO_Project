@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText } from 'lucide-react'
+import { ArrowLeft, RefreshCw, ChevronDown, ChevronUp, MessageCircle, TrendingUp, TrendingDown, Minus, Share2, Check, Sparkles, FileText, Globe } from 'lucide-react'
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, ResponsiveContainer } from 'recharts'
 import { getGradeConfig, getScoreColor, getScoreLabel, getPriorityConfig, getEffortLabel, VISIBILITY_LABELS, formatDate, cn } from '@/lib/utils'
 import { DIMENSION_META } from '@/lib/constants'
@@ -184,6 +184,15 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
               <RefreshCw size={13} />
               <span className="hidden sm:inline">재분석</span>
             </button>
+            {analysis.url && (
+              <Link
+                href={`/url-analyzer?url=${encodeURIComponent(analysis.url)}`}
+                className="flex items-center gap-1 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2.5 py-1.5 rounded-lg transition-colors"
+              >
+                <Globe size={13} />
+                <span className="hidden sm:inline">UI/UX 분석</span>
+              </Link>
+            )}
             <Link
               href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
               className="flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
@@ -344,36 +353,53 @@ export function DashboardScreen({ analysis, previousScore, onBack, onReanalyze, 
         )}
 
         {/* CTA Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* AI Agent CTA */}
           <button
             onClick={() => onOpenChat()}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl p-5 text-left transition-all hover:shadow-lg group"
+            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-xl">🤖</span>
+              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-lg">🤖</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">GEO AI 전문가</p>
-                <p className="text-indigo-200 text-xs mt-0.5">대화형으로 전략·콘텐츠 즉시 해결</p>
+                <p className="text-indigo-200 text-xs mt-0.5">대화형 전략 컨설팅</p>
               </div>
               <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
             </div>
           </button>
 
+          {/* Content Studio CTA */}
+          <Link
+            href="/studio"
+            className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group block"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-lg">🎨</span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-sm">콘텐츠 스튜디오</p>
+                <p className="text-purple-200 text-xs mt-0.5">이미지·참고자료 기반 생성</p>
+              </div>
+              <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
+            </div>
+          </Link>
+
           {/* Content Generator CTA */}
           <Link
             href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl p-5 text-left transition-all hover:shadow-lg group block"
+            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group block"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <FileText size={20} className="text-white" />
+              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                <FileText size={18} className="text-white" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">콘텐츠 생성기</p>
-                <p className="text-emerald-100 text-xs mt-0.5">네이버·티스토리·벨로그 맞춤 생성</p>
+                <p className="text-emerald-100 text-xs mt-0.5">플랫폼별 맞춤 생성</p>
               </div>
               <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
             </div>

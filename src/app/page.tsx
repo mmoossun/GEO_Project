@@ -14,6 +14,7 @@ export default function Home() {
   const [pendingInput, setPendingInput] = useState<{ name: string; category: string; url?: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [chatMessage, setChatMessage] = useState<string | undefined>(undefined)
+  const [chatForceOpen, setChatForceOpen] = useState(false)
   const [previousScore, setPreviousScore] = useState<number | null>(null)
 
   // Resume last session on mount
@@ -78,6 +79,7 @@ export default function Home() {
   }
 
   function handleOpenChat(message?: string) {
+    setChatForceOpen(true)
     setChatMessage(message)
   }
 
@@ -105,6 +107,8 @@ export default function Home() {
           />
           <AIAgentChat
             analysis={analysis}
+            forceOpen={chatForceOpen}
+            onForceOpenHandled={() => setChatForceOpen(false)}
             initialMessage={chatMessage}
             onClearInitialMessage={() => setChatMessage(undefined)}
           />

@@ -22,11 +22,13 @@ function parseMarkdown(text: string): string {
 
 interface AIAgentChatProps {
   analysis: GEOAnalysisResult
+  forceOpen?: boolean
+  onForceOpenHandled?: () => void
   initialMessage?: string
   onClearInitialMessage: () => void
 }
 
-export function AIAgentChat({ analysis, initialMessage, onClearInitialMessage }: AIAgentChatProps) {
+export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMessage, onClearInitialMessage }: AIAgentChatProps) {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [input, setInput] = useState('')
@@ -53,7 +55,15 @@ export function AIAgentChat({ analysis, initialMessage, onClearInitialMessage }:
 아래 빠른 메뉴를 선택하거나 직접 질문해주세요 ✨`
   }, [analysis])
 
-  // Open and initialize
+  // forceOpen: dashboard CTA 버튼 클릭 시 채팅창 즉시 열기
+  useEffect(() => {
+    if (forceOpen && !open) {
+      setOpen(true)
+      onForceOpenHandled?.()
+    }
+  }, [forceOpen, open, onForceOpenHandled])
+
+  // Open via initialMessage (dimension 개선 버튼)
   useEffect(() => {
     if (initialMessage && !open) {
       setOpen(true)
