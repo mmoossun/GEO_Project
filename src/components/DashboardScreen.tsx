@@ -328,27 +328,78 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
                 </div>
               </div>
 
-              {/* Platform results mini */}
-              <div>
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">AI 플랫폼 실측 결과</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {combined.citationTest.platforms.map(p => (
-                    <div key={p.platform} className={cn(
-                      'flex flex-col items-center gap-1 p-2.5 rounded-xl border text-center',
-                      p.status === 'mentioned' ? 'bg-green-50 border-green-200' :
-                      p.status === 'not_mentioned' ? 'bg-red-50 border-red-200' :
-                      p.status === 'error' ? 'bg-amber-50 border-amber-200' :
-                      'bg-gray-50 border-gray-200'
-                    )}>
-                      <span className="text-lg">{p.emoji}</span>
-                      <span className="text-xs font-semibold text-gray-700">{p.platformKo}</span>
-                      <span className={cn('text-xs font-bold', p.status === 'mentioned' ? 'text-green-600' : p.status === 'not_mentioned' ? 'text-red-500' : 'text-gray-400')}>
-                        {p.status === 'mentioned' ? `${p.mentionCount}/${p.totalQueries}회` : p.status === 'not_mentioned' ? '미언급' : p.status === 'error' ? '오류' : '미설정'}
-                      </span>
+              {/* AI 응답 점유율 */}
+              {combined.responseShare && (
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">AI 응답 점유율</p>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ color: combined.responseShare.benchmarkColor, backgroundColor: `${combined.responseShare.benchmarkColor}18` }}>
+                      {combined.responseShare.benchmarkLabel}
+                    </span>
+                  </div>
+
+                  {/* Overall weighted share */}
+                  <div className="bg-gray-50 rounded-xl p-3 mb-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div>
+                        <span className="text-xs text-gray-500">가중 점유율</span>
+                        <span className="text-xs text-gray-400 ml-1">(질문 유형 중요도 반영)</span>
+                      </div>
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-2xl font-extrabold" style={{ color: combined.responseShare.benchmarkColor }}>{combined.responseShare.weightedShareRate}%</span>
+                        <span className="text-xs text-gray-400">{combined.responseShare.totalMentions}/{combined.responseShare.totalResponses} 응답</span>
+                      </div>
                     </div>
-                  ))}
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div className="h-2 rounded-full transition-all duration-700" style={{ width: `${combined.responseShare.weightedShareRate}%`, backgroundColor: combined.responseShare.benchmarkColor }} />
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">{combined.responseShare.insight}</p>
+                  </div>
+
+                  {/* Per-platform bars */}
+                  <div className="space-y-2 mb-3">
+                    {combined.responseShare.byPlatform.map(p => {
+                      const barColor = p.status === 'skipped' ? '#D1D5DB'
+                        : p.shareRate >= 60 ? '#059669' : p.shareRate >= 30 ? '#2563EB'
+                        : p.shareRate >= 10 ? '#D97706' : '#EF4444'
+                      return (
+                        <div key={p.platform} className="flex items-center gap-2">
+                          <span className="text-sm w-5 flex-shrink-0">{p.emoji}</span>
+                          <span className="text-xs text-gray-600 w-20 flex-shrink-0">{p.platformKo}</span>
+                          <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            {p.status !== 'skipped' && p.status !== 'error' && (
+                              <div className="h-1.5 rounded-full transition-all duration-700" style={{ width: `${p.shareRate}%`, backgroundColor: barColor }} />
+                            )}
+                          </div>
+                          <span className="text-xs font-bold w-20 text-right flex-shrink-0" style={{ color: barColor }}>
+                            {p.status === 'skipped' ? '미설정' : p.status === 'error' ? '오류' : `${p.shareRate}% (${p.mentionCount}/${p.totalQueries})`}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+
+                  {/* Per question type */}
+                  {combined.responseShare.byQuestionType.length > 0 && (
+                    <div className="border-t border-gray-100 pt-3">
+                      <p className="text-xs font-bold text-gray-500 mb-2">질문 유형별 점유율</p>
+                      <div className="space-y-1.5">
+                        {combined.responseShare.byQuestionType.map(t => (
+                          <div key={t.type} className="flex items-center gap-2">
+                            <span className="text-xs text-gray-500 w-24 flex-shrink-0">{t.typeKo}</span>
+                            <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                              <div className="h-1.5 rounded-full"
+                                style={{ width: `${t.shareRate}%`, backgroundColor: t.shareRate >= 60 ? '#059669' : t.shareRate >= 30 ? '#2563EB' : t.shareRate > 0 ? '#D97706' : '#E5E7EB' }} />
+                            </div>
+                            <span className="text-xs font-bold w-12 text-right flex-shrink-0 text-gray-600">{t.shareRate}%</span>
+                            <span className="text-xs text-gray-300 w-4 text-center flex-shrink-0" title={`가중치 ${t.weight}×`}>×{t.weight}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
+              )}
 
               {/* Unified recommendations */}
               {combined.combined.unifiedRecommendations.length > 0 && (

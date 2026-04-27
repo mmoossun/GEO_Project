@@ -50,6 +50,53 @@ export interface CombinedMetrics {
   }>
 }
 
+// ─── Response Share Types ─────────────────────────────────────────────────────
+
+/**
+ * 질문 유형별 가중치 (GEO 연구 기반)
+ * category > problem_solving > comparison > feature > direct
+ *
+ * 근거:
+ * - category (카테고리 추천): AI가 경쟁사 중 선택 → 가장 경쟁적, 희소성 높음
+ * - problem_solving (문제 해결): 자연스러운 언급, 높은 구매 의향 신호
+ * - comparison (비교): 브랜드 인지도 확인, 경쟁 인식 신호
+ * - feature (기능 질문): 제품 이해도, 상대적으로 예측 가능
+ * - direct (직접 질문): 당연히 나와야 함, 경쟁 가치 낮음
+ */
+export const QUESTION_TYPE_WEIGHTS: Record<string, { weight: number; typeKo: string; interpretation: string }> = {
+  category:        { weight: 2.5, typeKo: '카테고리 추천',   interpretation: 'AI가 경쟁 서비스 중 선택 — 가장 가치 높은 언급' },
+  problem_solving: { weight: 2.0, typeKo: '문제 해결',       interpretation: '실제 사용자 문제에서 자연스럽게 언급 — 높은 의도 신호' },
+  comparison:      { weight: 1.5, typeKo: '비교/경쟁',       interpretation: '경쟁사와 함께 인식됨 — 브랜드 포지셔닝 확인' },
+  feature:         { weight: 1.0, typeKo: '기능 특화',       interpretation: 'AI가 제품 기능을 인지하고 있음' },
+  direct:          { weight: 0.5, typeKo: '직접 브랜드 질문', interpretation: '직접 질문에서 언급 — 기본 인지도 수준' },
+}
+
+export interface ResponseShareByType {
+  type: string
+  typeKo: string
+  weight: number
+  shareRate: number      // 0-100
+  mentionCount: number
+  total: number
+  interpretation: string
+}
+
+export interface ResponseShare {
+  rawShareRate: number           // 단순 언급수/총응답수 × 100
+  weightedShareRate: number      // 가중 점유율 (질문 유형 중요도 반영)
+  totalResponses: number         // 전체 테스트 응답 수
+  totalMentions: number          // 전체 언급 횟수
+  byPlatform: Array<{
+    platform: string; platformKo: string; emoji: string; color: string
+    shareRate: number; mentionCount: number; totalQueries: number; status: string
+  }>
+  byQuestionType: ResponseShareByType[]
+  benchmarkLevel: 'top_tier' | 'strong' | 'moderate' | 'weak' | 'absent'
+  benchmarkLabel: string
+  benchmarkColor: string
+  insight: string
+}
+
 export interface CombinedAnalysisResult {
   serviceName: string
   category: string
@@ -57,6 +104,7 @@ export interface CombinedAnalysisResult {
   geoAnalysis: GEOAnalysisResult & { analysisMode: 'real_url' | 'estimation' }
   citationTest: CitationTestResult
   combined: CombinedMetrics
+  responseShare: ResponseShare
 }
 
 // ─── Gap analysis logic ───────────────────────────────────────────────────────
@@ -281,34 +329,44 @@ async function analyzeServiceForCombined(serviceName: string, category: string, 
   return { features: p.features ?? [], useCases: p.useCases ?? [], audience: p.audience ?? '', competitors: p.competitors ?? [], sourceType }
 }
 
-async function generateQuestionsForCombined(serviceName: string, catLabel: string, intel: { features: string[]; useCases: string[]; competitors: string[] }): Promise<string[]> {
+interface TypedQuestion { question: string; type: string; typeKo: string }
+
+async function generateQuestionsForCombined(serviceName: string, catLabel: string, intel: { features: string[]; useCases: string[]; competitors: string[] }): Promise<TypedQuestion[]> {
   const res = await openai.chat.completions.create({
-    model: 'gpt-4o-mini', max_tokens: 600, temperature: 0.4,
+    model: 'gpt-4o-mini', max_tokens: 800, temperature: 0.4,
     response_format: { type: 'json_object' },
-    messages: [{ role: 'user', content: `"${serviceName}"(${catLabel}) 서비스가 답이 될 가능성이 높은 한국어 질문 5개를 생성해주세요.
+    messages: [{ role: 'user', content: `"${serviceName}"(${catLabel}) 서비스가 답이 될 가능성이 높은 한국어 질문 5개를 유형별로 생성해주세요.
 핵심기능: ${intel.features.slice(0, 3).join(', ')}
 사용케이스: ${intel.useCases.slice(0, 3).join(', ')}
 경쟁사: ${intel.competitors.slice(0, 2).join(', ')}
 
-JSON: {"questions":["질문1","질문2","질문3","질문4","질문5"]}` }],
+질문 유형 (반드시 각 1개씩):
+- direct: "${serviceName}이 뭐야?" 형태 직접 브랜드 질문
+- feature: 특정 기능 관련 질문
+- problem_solving: 사용자 문제 해결 질문 (서비스명 언급 없이)
+- category: "${catLabel} 추천 서비스" 카테고리 추천 질문
+- comparison: "${serviceName}과 경쟁사 비교" 질문
+
+JSON: {"questions":[{"question":"질문1","type":"direct","typeKo":"직접 브랜드 질문"},{"question":"질문2","type":"feature","typeKo":"기능 특화"},{"question":"질문3","type":"problem_solving","typeKo":"문제 해결"},{"question":"질문4","type":"category","typeKo":"카테고리 추천"},{"question":"질문5","type":"comparison","typeKo":"비교/경쟁"}]}` }],
   })
-  return JSON.parse(res.choices[0]?.message?.content ?? '{"questions":[]}').questions ?? []
+  const parsed = JSON.parse(res.choices[0]?.message?.content ?? '{"questions":[]}')
+  return (parsed.questions ?? []).filter((q: TypedQuestion) => q.question && q.type)
 }
 
 async function runCitationTest(serviceName: string, category: string, url?: string): Promise<CitationTestResult> {
   const catInfo = getCategoryInfo(category)
   const hasOR = !!(process.env.OPENROUTER_API_KEY && process.env.OPENROUTER_API_KEY !== 'your_openrouter_key_here')
 
-  // Analyze service first, then generate targeted questions
+  // Analyze service first, then generate typed questions
   const intel = await analyzeServiceForCombined(serviceName, category, url)
-  const generatedQuestions = await generateQuestionsForCombined(serviceName, catInfo.label, intel)
+  const typedQuestions = await generateQuestionsForCombined(serviceName, catInfo.label, intel)
 
-  // Fallback to generic questions if generation failed
-  const prompts = generatedQuestions.length >= 3 ? generatedQuestions : [
-    `${catInfo.label} 분야에서 알아두면 좋은 서비스를 추천해줘. 한국 서비스 위주로.`,
-    `"${serviceName}"이라는 서비스에 대해 알고 있어? 간단히 설명해줘.`,
-    `${catInfo.label} 시장에서 ${serviceName} 같은 서비스들을 추천해줘.`,
-    `${intel.useCases[0] ? intel.useCases[0] + '하려면 어떤 서비스가 좋아?' : catInfo.label + ' 추천 앱 알려줘'}`,
+  // Fallback typed questions if generation failed
+  const questions: TypedQuestion[] = typedQuestions.length >= 3 ? typedQuestions : [
+    { question: `${catInfo.label} 분야 추천 서비스 알려줘. 한국 서비스 위주로.`, type: 'category', typeKo: '카테고리 추천' },
+    { question: `"${serviceName}"이라는 서비스 알아? 설명해줘.`, type: 'direct', typeKo: '직접 브랜드 질문' },
+    { question: `${intel.useCases[0] ? intel.useCases[0] + '하려면 어떤 서비스가 좋아?' : catInfo.label + ' 추천 앱 알려줘'}`, type: 'problem_solving', typeKo: '문제 해결' },
+    { question: `${catInfo.label} 시장에서 ${serviceName} 같은 서비스들 추천해줘.`, type: 'comparison', typeKo: '비교/경쟁' },
   ]
 
   const platforms: PlatformTestResult[] = await Promise.all(
@@ -321,31 +379,31 @@ async function runCitationTest(serviceName: string, category: string, url?: stri
         const modelId = hasOR ? p.model : (p as { directModel?: string }).directModel ?? p.model
         let mc = 0
         const exs: string[] = []
-        const resps: { question: string; response: string; mentioned: boolean }[] = []
-        const results = await Promise.allSettled(prompts.map(prompt =>
-          client.chat.completions.create({ model: modelId, max_tokens: 600, temperature: 0.3, messages: [{ role: 'system', content: '당신은 도움이 되는 AI 어시스턴트입니다. 솔직하게 알고 있는 정보만 답변해주세요. 한국어로 답변하세요.' }, { role: 'user', content: prompt }] })
-            .then(r => ({ prompt, text: r.choices[0]?.message?.content ?? '' }))
+        const resps: { question: string; type: string; typeKo: string; response: string; mentioned: boolean }[] = []
+        const results = await Promise.allSettled(questions.map(q =>
+          client.chat.completions.create({ model: modelId, max_tokens: 600, temperature: 0.3, messages: [{ role: 'system', content: '당신은 도움이 되는 AI 어시스턴트입니다. 솔직하게 알고 있는 정보만 답변해주세요. 한국어로 답변하세요.' }, { role: 'user', content: q.question }] })
+            .then(r => ({ q, text: r.choices[0]?.message?.content ?? '' }))
         ))
         for (const r of results) {
           if (r.status === 'fulfilled') {
-            const { prompt, text } = r.value
+            const { q, text } = r.value
             const { found, excerpt } = checkMention(text, serviceName)
-            resps.push({ question: prompt, response: text.slice(0, 350), mentioned: found })
+            resps.push({ question: q.question, type: q.type, typeKo: q.typeKo, response: text.slice(0, 400), mentioned: found })
             if (found) { mc++; if (excerpt) exs.push(excerpt) }
           }
         }
-        const mr = Math.round((mc / prompts.length) * 100)
-        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: mc > 0 ? 'mentioned' as const : 'not_mentioned' as const, statusKo: mc > 0 ? `${mc}/${prompts.length}개 질문에서 언급` : '어떤 질문에서도 미언급', mentionCount: mc, totalQueries: prompts.length, mentionRate: mr, excerpts: exs, responses: resps }
+        const mr = Math.round((mc / questions.length) * 100)
+        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: mc > 0 ? 'mentioned' as const : 'not_mentioned' as const, statusKo: mc > 0 ? `${mc}/${questions.length}개 질문에서 언급` : '어떤 질문에서도 미언급', mentionCount: mc, totalQueries: questions.length, mentionRate: mr, excerpts: exs, responses: resps }
       } catch (e) {
         const msg = e instanceof Error ? e.message.slice(0, 80) : '오류'
-        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: 'error' as const, statusKo: `오류: ${msg}`, mentionCount: 0, totalQueries: prompts.length, mentionRate: 0, excerpts: [], responses: [], error: msg }
+        return { platform: p.id, platformKo: p.platformKo, model: p.model, emoji: p.emoji, color: p.color, status: 'error' as const, statusKo: `오류: ${msg}`, mentionCount: 0, totalQueries: questions.length, mentionRate: 0, excerpts: [], responses: [], error: msg }
       }
     })
   )
 
   const tested = platforms.filter(p => p.status !== 'skipped')
-  const mentioned = platforms.filter(p => p.status === 'mentioned')
-  const overallMentionRate = tested.length > 0 ? Math.round((mentioned.reduce((s, p) => s + p.mentionRate, 0) / tested.length)) : 0
+  const mentionedP = platforms.filter(p => p.status === 'mentioned')
+  const overallMentionRate = tested.length > 0 ? Math.round((mentionedP.reduce((s, p) => s + p.mentionRate, 0) / tested.length)) : 0
 
   return {
     serviceName,
@@ -355,17 +413,115 @@ async function runCitationTest(serviceName: string, category: string, url?: stri
     platforms,
     overallMentionRate,
     summary: '',
-    // Provide minimal stubs so type is compatible with CitationTestResult
     serviceIntelligence: {
       name: serviceName, category: catInfo.label,
       coreFeatures: intel.features, targetAudience: intel.audience,
       keyValueProps: [], useCases: intel.useCases, competitors: intel.competitors,
       sourceType: intel.sourceType, summary: '',
     },
-    generatedQuestions: prompts.map((q, i) => ({
-      question: q, type: 'category' as const, typeKo: '맞춤질문',
-      rationale: `${serviceName} 관련 질문 ${i + 1}`,
+    generatedQuestions: questions.map(q => ({
+      question: q.question, type: q.type as 'direct' | 'feature' | 'problem_solving' | 'comparison' | 'category',
+      typeKo: q.typeKo, rationale: `${serviceName} 관련 질문`,
     })),
+  }
+}
+
+// ─── Response Share Calculator ───────────────────────────────────────────────
+
+function calculateResponseShare(platforms: PlatformTestResult[]): ResponseShare {
+  const tested = platforms.filter(p => p.status !== 'skipped' && p.status !== 'error')
+
+  // Flatten all responses with type info
+  const allResponses = tested.flatMap(p =>
+    (p.responses as Array<{ question: string; type?: string; typeKo?: string; response: string; mentioned: boolean }>)
+  )
+
+  const totalResponses = allResponses.length
+  const totalMentions = allResponses.filter(r => r.mentioned).length
+  const rawShareRate = totalResponses > 0 ? Math.round((totalMentions / totalResponses) * 100) : 0
+
+  // Weighted share rate by question type
+  let weightedNumerator = 0
+  let weightedDenominator = 0
+
+  const typeMap: Record<string, { mentioned: number; total: number }> = {}
+  for (const r of allResponses) {
+    const type = r.type ?? 'category'
+    if (!typeMap[type]) typeMap[type] = { mentioned: 0, total: 0 }
+    typeMap[type].total++
+    if (r.mentioned) typeMap[type].mentioned++
+    const w = QUESTION_TYPE_WEIGHTS[type]?.weight ?? 1.0
+    weightedDenominator += w
+    if (r.mentioned) weightedNumerator += w
+  }
+
+  const weightedShareRate = weightedDenominator > 0
+    ? Math.round((weightedNumerator / weightedDenominator) * 100)
+    : 0
+
+  // By question type breakdown
+  const byQuestionType: ResponseShareByType[] = Object.entries(typeMap).map(([type, stat]) => {
+    const meta = QUESTION_TYPE_WEIGHTS[type] ?? { weight: 1.0, typeKo: type, interpretation: '' }
+    return {
+      type,
+      typeKo: meta.typeKo,
+      weight: meta.weight,
+      shareRate: stat.total > 0 ? Math.round((stat.mentioned / stat.total) * 100) : 0,
+      mentionCount: stat.mentioned,
+      total: stat.total,
+      interpretation: meta.interpretation,
+    }
+  }).sort((a, b) => b.weight - a.weight)
+
+  // By platform
+  const byPlatform = platforms.map(p => ({
+    platform: p.platform,
+    platformKo: p.platformKo,
+    emoji: p.emoji,
+    color: p.color,
+    shareRate: p.totalQueries > 0 ? Math.round((p.mentionCount / p.totalQueries) * 100) : 0,
+    mentionCount: p.mentionCount,
+    totalQueries: p.totalQueries,
+    status: p.status,
+  }))
+
+  // Benchmark
+  const score = weightedShareRate
+  const benchmarkLevel: ResponseShare['benchmarkLevel'] =
+    score >= 70 ? 'top_tier' : score >= 50 ? 'strong' : score >= 30 ? 'moderate' : score >= 10 ? 'weak' : 'absent'
+  const benchmarkMap = {
+    top_tier: { label: 'AI 가시성 최상위', color: '#059669' },
+    strong:   { label: 'AI 가시성 우수',  color: '#2563EB' },
+    moderate: { label: 'AI 가시성 보통',  color: '#D97706' },
+    weak:     { label: 'AI 가시성 미흡',  color: '#DC2626' },
+    absent:   { label: 'AI 가시성 없음',  color: '#6B7280' },
+  }
+
+  // Category mention rate (highest value signal)
+  const catType = byQuestionType.find(t => t.type === 'category')
+  const categoryInsight = catType
+    ? catType.shareRate >= 50
+      ? `카테고리 추천에서 ${catType.shareRate}% 언급 — AI가 이 서비스를 해당 분야 대표로 인식`
+      : catType.shareRate > 0
+        ? `카테고리 추천에서 ${catType.shareRate}% 언급 — 경쟁사 대비 존재감 강화 필요`
+        : '카테고리 추천 질문에서 미언급 — 가장 시급한 GEO 개선 포인트'
+    : ''
+
+  const insight = totalResponses === 0
+    ? '실측 데이터 없음 (OpenRouter 키 미설정)'
+    : `${totalResponses}개 AI 응답 중 ${totalMentions}개에서 언급 (가중 점유율 ${weightedShareRate}%). ${categoryInsight}`
+
+  return {
+    rawShareRate,
+    weightedShareRate,
+    totalResponses,
+    totalMentions,
+    byPlatform,
+    byQuestionType,
+    benchmarkLevel,
+    benchmarkLabel: benchmarkMap[benchmarkLevel].label,
+    benchmarkColor: benchmarkMap[benchmarkLevel].color,
+    insight,
   }
 }
 
@@ -373,7 +529,7 @@ async function runCitationTest(serviceName: string, category: string, url?: stri
 
 export async function POST(req: NextRequest) {
   try {
-    const { serviceName, category, url, previousScore } = await req.json()
+    const { serviceName, category, url } = await req.json()
     if (!serviceName?.trim() || !category?.trim()) {
       return NextResponse.json({ error: '서비스 이름과 카테고리를 입력해주세요.' }, { status: 400 })
     }
@@ -437,6 +593,7 @@ export async function POST(req: NextRequest) {
       geoAnalysis,
       citationTest,
       combined,
+      responseShare: calculateResponseShare(citationTest.platforms),
     }
 
     // Save for session compatibility
