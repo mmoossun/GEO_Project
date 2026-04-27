@@ -16,9 +16,10 @@ const MAX_ITERATIONS = 5
 const PASS_SCORE = 90
 
 const DEPTH_TOKENS: Record<string, { gen: number; improve: number }> = {
-  light:  { gen: 3000, improve: 3500 },
-  medium: { gen: 5000, improve: 6000 },
-  deep:   { gen: 8000, improve: 9000 },
+  light:  { gen: 3000,  improve: 3500  },
+  medium: { gen: 5000,  improve: 6000  },
+  deep:   { gen: 8000,  improve: 9000  },
+  ultra:  { gen: 16000, improve: 18000 },
 }
 
 export async function POST(req: NextRequest) {
@@ -41,7 +42,6 @@ export async function POST(req: NextRequest) {
       let bestContent: GeneratedContent | null = null
       let lastEvaluation: EvaluationResult | null = null
       let bestScore = 0
-      let finalScore = 0
       const improvementSummary: string[] = []
 
       try {
@@ -139,7 +139,6 @@ JSON만 반환.`,
             bestScore = evaluation.total_score
             bestContent = currentContent
           }
-          finalScore = bestScore
           lastEvaluation = evaluation
 
           send({

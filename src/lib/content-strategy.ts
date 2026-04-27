@@ -12,7 +12,7 @@
  */
 
 export type PlatformType = 'naver_blog' | 'tistory' | 'velog' | 'company' | 'community'
-export type ContentDepth = 'light' | 'medium' | 'deep'
+export type ContentDepth = 'light' | 'medium' | 'deep' | 'ultra'
 export type ContentTone = 'friendly' | 'professional' | 'neutral' | 'technical'
 
 export interface PlatformConfig {
@@ -63,6 +63,7 @@ export const DEPTH_CONFIG: Record<ContentDepth, { label: string; icon: string; d
   light:  { label: '라이트', icon: '⚡', desc: '핵심만 빠르게', charRange: '700-1000자', sections: '3-4 섹션', readTime: '1-2분' },
   medium: { label: '보통', icon: '📝', desc: '구조화 + 사례 포함', charRange: '1500-2000자', sections: '5-7 섹션', readTime: '3-5분' },
   deep:   { label: '심화', icon: '🔬', desc: '분석형 인사이트', charRange: '2800-3500자', sections: '7-10 섹션', readTime: '7-12분' },
+  ultra:  { label: '롱폼', icon: '📚', desc: '전문 기고문 수준', charRange: '5000-7000자', sections: '10-15 섹션', readTime: '15-20분' },
 }
 
 // ─── Prompt Layers ───────────────────────────────────────────────────────────
@@ -268,6 +269,19 @@ const KOREAN_SEO_LAYER = `
 `.trim()
 
 const DEPTH_MODIFIERS: Record<ContentDepth, string> = {
+  ultra: `
+### 깊이: 롱폼 📚 (5000-7000자 — 전문 기고문·매거진 수준)
+- 분량: 최소 5000자 한국어 본문 (절대 미달 불가 — 미달 시 섹션 계속 추가)
+- 섹션: 10-15개, 각 섹션 400-600자 이상
+- 논리 구조: 개요 → 배경/맥락 → 핵심 개념 정의 → 심층 분석 1 → 심층 분석 2 → 심층 분석 3 → 사례 연구 → 실행 가이드 → 도구/리소스 → FAQ → 전망/결론
+- 수치/통계 최소 8개 이상 (150자마다 1개 — 구체적으로)
+- 실제 사례 연구 최소 2개 (명명된 브랜드/서비스/인물 포함)
+- FAQ 섹션 필수 (Q 5-7개, 각 60-100자 상세 답변)
+- 비교표 or 체크리스트 최소 1개
+- 전문가 인용 or 연구 결과 최소 2회
+- 각 H2 섹션이 독립적 미니 아티클 수준으로 완결
+- "읽고 나면 이 주제 전문가가 된 것 같다"는 느낌을 줘야 함
+`.trim(),
   light: `
 ### 깊이: 라이트 ⚡ (700-1000자 — 핵심 압축)
 - 분량: 700-1000자 한국어 본문 (엄수)

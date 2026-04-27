@@ -8,7 +8,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 const DEPTH_CONFIG: Record<string, { maxTokens: number; minChars: number; maxChars: number; targetChars: string }> = {
   light:  { maxTokens: 3000, minChars:  600, maxChars: 1200, targetChars: '700-1000자' },
   medium: { maxTokens: 5000, minChars: 1400, maxChars: 2500, targetChars: '1500-2000자' },
-  deep:   { maxTokens: 8000, minChars: 2600, maxChars: 4000, targetChars: '2800-3500자' },
+  deep:   { maxTokens: 8000,  minChars: 2600, maxChars: 4000,  targetChars: '2800-3500자' },
+  ultra:  { maxTokens: 16000, minChars: 4800, maxChars: 8000,  targetChars: '5000-7000자' },
 }
 
 function extractHashtagsFromContent(content: string): string[] {
@@ -67,7 +68,7 @@ JSON만 반환.`,
     if (hashtags.length === 0 && body.platform !== 'company') {
       hashtags = extractHashtagsFromContent(parsed.content ?? '')
     }
-    const [minTags, maxTags] = platformCfg.hashtagRange
+    const [, maxTags] = platformCfg.hashtagRange
     if (body.platform === 'naver_blog' && hashtags.length < 10) {
       const genericTags = [
         body.topic.replace(/\s+/g, ''),
