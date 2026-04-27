@@ -261,50 +261,80 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           )}
         </div>{/* end left */}
 
-        {/* RIGHT: Feature panel — desktop only */}
-        <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-4 lg:py-16">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">GEO 분석 결과 미리보기</p>
-            <div className="grid grid-cols-2 gap-3 mb-4">
-              {[
-                { label: 'GEO 점수', value: '78', sub: 'B등급', color: '#2563EB' },
-                { label: 'AI 인용 확률', value: '64%', sub: '상위 30%', color: '#059669' },
-                { label: '업계 평균 대비', value: '+12pt', sub: '양호', color: '#059669' },
-                { label: '개선 포인트', value: '3개', sub: '즉시 적용 가능', color: '#D97706' },
-              ].map((s, i) => (
-                <div key={i} className="bg-gray-50 rounded-lg p-3">
-                  <p className="text-xs text-gray-500 mb-1">{s.label}</p>
-                  <p className="text-xl font-extrabold" style={{ color: s.color }}>{s.value}</p>
-                  <p className="text-xs text-gray-400">{s.sub}</p>
-                </div>
-              ))}
-            </div>
-            <div className="space-y-2">
-              {['콘텐츠 구조 최적화', 'FAQ 섹션 추가로 AI 인용율 +28%', 'Schema 마크업 즉시 적용 가능'].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
-                  {item}
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-3">
-            {[
-              { emoji: '🤖', label: 'ChatGPT', rate: '62%', color: '#10A37F' },
-              { emoji: '🔍', label: 'Perplexity', rate: '45%', color: '#20808D' },
-              { emoji: '✨', label: 'Gemini', rate: '38%', color: '#4285F4' },
-            ].map((p, i) => (
-              <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 text-center">
-                <p className="text-xl mb-1">{p.emoji}</p>
-                <p className="text-xs font-semibold text-gray-700">{p.label}</p>
-                <p className="text-sm font-extrabold mt-1" style={{ color: p.color }}>{p.rate}</p>
-                <p className="text-xs text-gray-400">인용율</p>
+        {/* RIGHT: Dashboard preview — desktop only */}
+        <div className="hidden lg:block lg:flex-1 lg:py-12">
+          {/* Mock dashboard card */}
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            {/* Header bar */}
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <span className="text-sm font-bold text-gray-800">토스</span>
+                <span className="text-xs text-gray-400">핀테크</span>
               </div>
-            ))}
+              <span className="text-xs text-gray-400">방금 분석됨</span>
+            </div>
+
+            {/* Score + metrics row */}
+            <div className="grid grid-cols-4 divide-x divide-gray-100 border-b border-gray-100">
+              {[
+                { label: 'GEO 점수', value: '84', color: '#2563EB', sub: 'A등급' },
+                { label: 'AI 인용 확률', value: '71%', color: '#059669', sub: '높음' },
+                { label: '응답 점유율', value: '58%', color: '#059669', sub: '가중 기준' },
+                { label: '업계 대비', value: '+19pt', color: '#059669', sub: '상위권' },
+              ].map((m, i) => (
+                <div key={i} className="p-4">
+                  <p className="text-xs text-gray-400 mb-1">{m.label}</p>
+                  <p className="text-xl font-extrabold" style={{ color: m.color }}>{m.value}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{m.sub}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Dimension bars */}
+            <div className="px-5 py-4 border-b border-gray-100 space-y-2.5">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">5가지 차원 분석</p>
+              {[
+                { name: '콘텐츠 구조', score: 17, max: 20, color: '#2563EB' },
+                { name: 'E-E-A-T', score: 22, max: 25, color: '#059669' },
+                { name: '기술 신호', score: 14, max: 20, color: '#D97706' },
+                { name: '최신성', score: 12, max: 15, color: '#059669' },
+                { name: '가독성', score: 19, max: 20, color: '#2563EB' },
+              ].map((d, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <span className="text-xs text-gray-500 w-24 flex-shrink-0">{d.name}</span>
+                  <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full" style={{ width: `${(d.score / d.max) * 100}%`, backgroundColor: d.color }} />
+                  </div>
+                  <span className="text-xs font-bold text-gray-600 w-12 text-right">{d.score}/{d.max}</span>
+                </div>
+              ))}
+            </div>
+
+            {/* AI Platform coverage */}
+            <div className="px-5 py-4">
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">AI 플랫폼 실측 결과</p>
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { emoji: '🤖', name: 'ChatGPT', rate: '80%', color: '#10A37F', mentioned: true },
+                  { emoji: '🔍', name: 'Perplexity', rate: '60%', color: '#20808D', mentioned: true },
+                  { emoji: '✨', name: 'Gemini', rate: '40%', color: '#4285F4', mentioned: true },
+                  { emoji: '🧠', name: 'Claude', rate: '0%', color: '#EF4444', mentioned: false },
+                ].map((p, i) => (
+                  <div key={i} className={`rounded-lg p-2.5 text-center ${p.mentioned ? 'bg-green-50' : 'bg-red-50'}`}>
+                    <p className="text-base">{p.emoji}</p>
+                    <p className="text-xs font-semibold text-gray-700 mt-1">{p.name}</p>
+                    <p className="text-sm font-extrabold mt-0.5" style={{ color: p.mentioned ? p.color : '#EF4444' }}>{p.rate}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="bg-gray-900 rounded-xl p-4 text-white">
-            <p className="text-xs font-bold text-gray-300 mb-2">Princeton KDD 2024 연구 기반</p>
-            <p className="text-sm text-gray-200 leading-relaxed">GEO(Generative Engine Optimization)는 ChatGPT, Perplexity 등 AI 검색 엔진에서의 노출을 최적화하는 새로운 SEO 패러다임입니다.</p>
+
+          {/* Bottom note */}
+          <div className="mt-4 flex items-center gap-3 px-1">
+            <div className="w-1.5 h-1.5 rounded-full bg-gray-800 animate-pulse flex-shrink-0" />
+            <p className="text-xs text-gray-400">Princeton KDD 2024 GEO 연구 기반 · ChatGPT · Perplexity · Gemini · Claude 실측 테스트</p>
           </div>
         </div>
 

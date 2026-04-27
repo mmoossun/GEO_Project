@@ -164,151 +164,144 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
   return (
     <div className="min-h-screen bg-[#F5F5F0]">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
-          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+      {/* ── HEADER ── */}
+      <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
+          <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors flex-shrink-0">
             <ArrowLeft size={16} />
-            <span className="hidden sm:inline">새 분석</span>
+            <span className="hidden sm:inline">홈</span>
           </button>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-gray-900 truncate">{analysis.serviceName}</span>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full flex-shrink-0">{analysis.categoryLabel}</span>
-            </div>
+          <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            <span className="font-bold text-gray-900 truncate">{analysis.serviceName}</span>
+            <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full flex-shrink-0 hidden sm:inline">{analysis.categoryLabel}</span>
+            {/* Score badge — desktop header */}
+            <span className="hidden lg:inline-flex items-center gap-1.5 ml-2 text-xs font-bold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 flex-shrink-0">
+              <span style={{ color: gradeConfig.color }}>{analysis.totalScore}점</span>
+              <span className="text-gray-400">·</span>
+              <span style={{ color: gradeConfig.color }}>{analysis.grade}등급</span>
+            </span>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={copyReport} className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg transition-colors">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
+            <button onClick={copyReport} className="hidden sm:flex items-center gap-1 text-xs text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-lg transition-colors">
               {copied ? <Check size={13} className="text-green-600" /> : <Share2 size={13} />}
-              <span className="hidden sm:inline">{copied ? '복사됨' : '공유'}</span>
+              <span>{copied ? '복사됨' : '공유'}</span>
             </button>
-            <button onClick={onReanalyze} className="flex items-center gap-1 text-xs text-gray-900 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg transition-colors">
+            <button onClick={onReanalyze} className="flex items-center gap-1 text-xs text-gray-600 hover:text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-lg transition-colors">
               <RefreshCw size={13} />
               <span className="hidden sm:inline">재분석</span>
             </button>
             {analysis.url && (
-              <Link
-                href={`/url-analyzer?url=${encodeURIComponent(analysis.url)}`}
-                className="flex items-center gap-1 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2.5 py-1.5 rounded-lg transition-colors"
-              >
-                <Globe size={13} />
-                <span className="hidden sm:inline">UI/UX 분석</span>
+              <Link href={`/url-analyzer?url=${encodeURIComponent(analysis.url)}`}
+                className="hidden md:flex items-center gap-1 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 px-2.5 py-1.5 rounded-lg transition-colors">
+                <Globe size={13} /><span>UI/UX 분석</span>
               </Link>
             )}
-            <Link
-              href="/detail"
-              className="flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-all"
-            >
-              <BarChart3 size={13} />
-              <span className="hidden sm:inline">상세 분석</span>
+            <Link href="/detail"
+              className="flex items-center gap-1 text-xs font-semibold text-white bg-gray-900 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-colors">
+              <BarChart3 size={13} /><span className="hidden sm:inline">상세 분석</span>
             </Link>
-            <Link
-              href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
-              className="flex items-center gap-1 text-xs font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-lg transition-colors"
-            >
-              <Sparkles size={13} />
-              <span className="hidden sm:inline">콘텐츠 생성</span>
+            <Link href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
+              className="hidden sm:flex items-center gap-1 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-lg transition-colors">
+              <Sparkles size={13} /><span>콘텐츠 생성</span>
             </Link>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6 pb-24 lg:flex lg:gap-6 lg:items-start">
-        {/* ── LEFT SIDEBAR (desktop sticky) ── */}
-        <div className="lg:w-[320px] xl:w-[360px] lg:flex-shrink-0 lg:sticky lg:top-[57px] lg:max-h-[calc(100vh-72px)] lg:overflow-y-auto lg:space-y-4 space-y-4 pb-4 lg:pb-0">
-
-        {/* Score Hero */}
-        <div className="bg-white rounded-lg border border-gray-100 p-6">
-          <div className="flex flex-col sm:flex-row lg:flex-col gap-6 items-center">
-            <div className="flex flex-col items-center flex-shrink-0">
-              <div className="relative">
-                <ScoreArc score={analysis.totalScore} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
-                  <span className="text-3xl font-extrabold text-gray-900">{analysis.totalScore}</span>
-                  <span className="text-xs text-gray-400">/ 100</span>
-                  <span className="text-lg font-bold mt-0.5" style={{ color: gradeConfig.color }}>{analysis.grade}</span>
-                </div>
-              </div>
-              <div className="text-center -mt-1">
-                <span className="text-sm font-semibold" style={{ color: gradeConfig.color }}>{analysis.gradeLabel}</span>
-                {scoreDiff != null && (
-                  <div className={cn('flex items-center justify-center gap-1 mt-1 text-xs font-medium', scoreDiff > 0 ? 'text-green-600' : scoreDiff < 0 ? 'text-red-600' : 'text-gray-500')}>
-                    {scoreDiff > 0 ? <TrendingUp size={12} /> : scoreDiff < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
-                    {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff}점
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="flex-1 space-y-3 w-full">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-blue-50 rounded-xl p-3">
-                  <p className="text-xs text-blue-600 font-semibold mb-0.5">AI 가시성</p>
-                  <p className="font-bold text-blue-800 text-sm">{VISIBILITY_LABELS[analysis.aiVisibilityLevel]}</p>
-                </div>
-                <div className="bg-green-50 rounded-xl p-3">
-                  <p className="text-xs text-green-600 font-semibold mb-0.5">인용 확률</p>
-                  <p className="font-bold text-green-800 text-sm">{analysis.citationProbability}%</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 leading-relaxed">{analysis.summary}</p>
-              <p className="text-xs text-gray-500 italic">{analysis.competitiveInsight}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Radar — desktop sidebar */}
-        <div className="bg-white rounded-lg border border-gray-100 p-4">
-          <p className="text-sm font-bold text-gray-700 mb-2">차원별 균형 분석</p>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="#E5E7EB" />
-                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
-                <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
-              </RadarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Benchmark — desktop sidebar */}
-        <div className="bg-white rounded-lg border border-gray-100 p-4">
-          <p className="text-sm font-bold text-gray-700 mb-4">업계 비교</p>
-          <div className="space-y-3">
-            <BenchmarkBar label="상위 10%" score={analysis.topPerformerScore} color="#7C3AED" />
-            <BenchmarkBar label="내 서비스" score={analysis.totalScore} isMe color={getScoreColor(analysis.totalScore)} />
-            <BenchmarkBar label="업계 평균" score={analysis.industryAverage} color="#94A3B8" />
-          </div>
-          <div className="mt-4 pt-3 border-t border-gray-100">
-            {analysis.totalScore > analysis.industryAverage ? (
-              <p className="text-xs text-green-600 font-medium">업계 평균보다 <span className="font-bold">{analysis.totalScore - analysis.industryAverage}점</span> 높아요 🎉</p>
-            ) : (
-              <p className="text-xs text-orange-600 font-medium">업계 평균까지 <span className="font-bold">{analysis.industryAverage - analysis.totalScore}점</span> 부족해요</p>
-            )}
-          </div>
-        </div>
-
-        </div>{/* end left sidebar */}
-
-        {/* ── RIGHT MAIN CONTENT ── */}
-        <div className="flex-1 min-w-0 space-y-4">
-
-        {/* Analysis mode transparency banner */}
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        {/* ── Analysis mode banners — always full-width at top ── */}
         {(analysis as GEOAnalysisResult & { analysisMode?: string }).analysisMode === 'estimation' && (
-          <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-            <Info size={15} className="text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mt-4">
+            <Info size={14} className="text-amber-600 flex-shrink-0 mt-0.5" />
             <div className="text-xs text-amber-800 leading-relaxed">
-              <span className="font-bold">AI 추정 점수</span> — URL을 입력하지 않아 GPT-4o가 서비스 특성을 추론해 점수를 산출했습니다.
-              <Link href="/" className="ml-1 font-semibold underline">URL을 추가하면 실제 페이지를 분석</Link>해 더 정확한 점수를 얻을 수 있습니다.
+              <span className="font-bold">AI 추정 점수</span> — URL 없이 GPT-4o가 서비스 특성을 추론했습니다.
+              <Link href="/" className="ml-1 font-semibold underline">URL 추가 시 실측 점수</Link>로 전환됩니다.
             </div>
           </div>
         )}
         {(analysis as GEOAnalysisResult & { analysisMode?: string }).analysisMode === 'real_url' && (
-          <div className="flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
-            <FlaskConical size={15} className="text-green-600 flex-shrink-0" />
-            <p className="text-xs text-green-800">
-              <span className="font-bold">실제 페이지 분석</span> — {analysis.url} 를 직접 방문해 HTML을 파싱한 실측 점수입니다.
-            </p>
+          <div className="flex items-center gap-2.5 bg-green-50 border border-green-200 rounded-lg px-4 py-3 mt-4">
+            <FlaskConical size={14} className="text-green-600 flex-shrink-0" />
+            <p className="text-xs text-green-800"><span className="font-bold">실제 페이지 분석</span> — {analysis.url}의 HTML을 직접 파싱한 실측 점수입니다.</p>
           </div>
         )}
+      </div>
+
+      {/* ── MAIN LAYOUT ── */}
+      <main className="max-w-7xl mx-auto px-4 lg:px-8 py-5 pb-24 lg:flex lg:gap-6 lg:items-start">
+
+        {/* ─── LEFT SIDEBAR ─── */}
+        <aside className="lg:w-72 xl:w-80 lg:flex-shrink-0 lg:sticky lg:top-16 lg:self-start space-y-3 mb-4 lg:mb-0">
+
+          {/* Score card */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            {/* Arc + Score */}
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <ScoreArc score={analysis.totalScore} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
+                  <span className="text-4xl font-extrabold text-gray-900">{analysis.totalScore}</span>
+                  <span className="text-xs text-gray-400">/ 100</span>
+                </div>
+              </div>
+              <div className="text-center mt-1">
+                <span className="text-base font-bold" style={{ color: gradeConfig.color }}>{analysis.grade}등급 · {analysis.gradeLabel}</span>
+                {scoreDiff != null && (
+                  <div className={cn('flex items-center justify-center gap-1 mt-1 text-xs font-medium', scoreDiff > 0 ? 'text-green-600' : scoreDiff < 0 ? 'text-red-500' : 'text-gray-400')}>
+                    {scoreDiff > 0 ? <TrendingUp size={11} /> : scoreDiff < 0 ? <TrendingDown size={11} /> : <Minus size={11} />}
+                    {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff}점 (이전 대비)
+                  </div>
+                )}
+              </div>
+            </div>
+            {/* Key metrics */}
+            <div className="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-gray-100">
+              <div className="text-center p-2.5 bg-blue-50 rounded-lg">
+                <p className="text-lg font-extrabold text-blue-700">{analysis.citationProbability}%</p>
+                <p className="text-xs text-blue-500 mt-0.5">AI 인용 확률</p>
+              </div>
+              <div className="text-center p-2.5 bg-gray-50 rounded-lg">
+                <p className="text-lg font-extrabold text-gray-800">{VISIBILITY_LABELS[analysis.aiVisibilityLevel]}</p>
+                <p className="text-xs text-gray-400 mt-0.5">AI 가시성</p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 leading-relaxed mt-3 italic">{analysis.competitiveInsight}</p>
+          </div>
+
+          {/* Radar chart */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">차원별 균형</p>
+            <div className="h-52">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart data={radarData}>
+                  <PolarGrid stroke="#E5E7EB" />
+                  <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
+                  <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.12} strokeWidth={2} />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Benchmark */}
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">업계 비교</p>
+            <div className="space-y-3">
+              <BenchmarkBar label="상위 10%" score={analysis.topPerformerScore} color="#374151" />
+              <BenchmarkBar label="내 서비스" score={analysis.totalScore} isMe color={getScoreColor(analysis.totalScore)} />
+              <BenchmarkBar label="업계 평균" score={analysis.industryAverage} color="#D1D5DB" />
+            </div>
+            <p className={cn('text-xs font-medium mt-4 pt-3 border-t border-gray-100', analysis.totalScore > analysis.industryAverage ? 'text-green-600' : 'text-orange-500')}>
+              {analysis.totalScore > analysis.industryAverage
+                ? `업계 평균보다 ${analysis.totalScore - analysis.industryAverage}점 높음`
+                : `업계 평균까지 ${analysis.industryAverage - analysis.totalScore}점 부족`}
+            </p>
+          </div>
+
+        </aside>
+
+        {/* ─── RIGHT CONTENT ─── */}
+        <div className="flex-1 min-w-0 space-y-4">
 
         {/* ── Combined Analysis Panel ── */}
         {combined && (
@@ -469,12 +462,12 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         )}
 
         {/* Dimension Breakdown */}
-        <div className="bg-white rounded-lg border border-gray-100 p-5">
-          <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <span>📊</span> 5가지 차원 상세 분석
-            <span className="text-xs text-gray-400 font-normal ml-1">각 항목을 클릭해 상세 내용을 확인하세요</span>
-          </h2>
-          <div className="space-y-2">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-gray-900">5가지 차원 분석</h2>
+            <span className="text-xs text-gray-400">항목 클릭 시 상세 내용</span>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
             {analysis.dimensions.map(dim => (
               <DimensionRow key={dim.id} dim={dim} onImprove={(msg) => onOpenChat(msg)} />
             ))}
@@ -483,30 +476,23 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* Recommendations */}
         {analysis.recommendations.length > 0 && (
-          <div className="bg-white rounded-lg border border-gray-100 p-5">
-            <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span>🎯</span> 핵심 개선 권고사항
-            </h2>
-            <div className="space-y-3">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <h2 className="font-bold text-gray-900 mb-4">핵심 개선 권고사항</h2>
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-3">
               {analysis.recommendations.map((rec, i) => {
                 const pc = getPriorityConfig(rec.priority)
                 return (
-                  <div key={i} className="rounded-xl border p-4" style={{ borderColor: `${pc.color}30`, backgroundColor: `${pc.color}06` }}>
-                    <div className="flex items-start gap-3">
-                      <span
-                        className="text-xs font-bold px-2 py-1 rounded-full flex-shrink-0 mt-0.5"
-                        style={{ color: pc.color, backgroundColor: pc.bg }}
-                      >
-                        {pc.label}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <p className="font-semibold text-sm text-gray-800">{rec.title}</p>
-                          <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex-shrink-0">{rec.expectedImpact}</span>
-                        </div>
-                        <p className="text-sm text-gray-600 leading-relaxed">{rec.description}</p>
-                        <p className="text-xs text-gray-400 mt-1.5">난이도: {getEffortLabel(rec.effort)}</p>
+                  <div key={i} className="rounded-xl border p-4 flex items-start gap-3" style={{ borderColor: `${pc.color}25`, backgroundColor: `${pc.color}05` }}>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5" style={{ color: pc.color, backgroundColor: pc.bg }}>
+                      {pc.label}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-semibold text-sm text-gray-800 leading-snug">{rec.title}</p>
+                        <span className="text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full flex-shrink-0">{rec.expectedImpact}</span>
                       </div>
+                      <p className="text-sm text-gray-600 leading-relaxed">{rec.description}</p>
+                      <p className="text-xs text-gray-400 mt-1.5">난이도: {getEffortLabel(rec.effort)}</p>
                     </div>
                   </div>
                 )
@@ -517,13 +503,11 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* Quick Wins */}
         {analysis.quickWins.length > 0 && (
-          <div className="bg-amber-50 border border-amber-100 rounded-lg p-5">
-            <h2 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
-              <span>⚡</span> 지금 바로 할 수 있는 빠른 개선 방법
-            </h2>
-            <div className="space-y-2">
+          <div className="bg-amber-50 border border-amber-100 rounded-xl p-5">
+            <h2 className="font-bold text-amber-900 mb-3 flex items-center gap-1.5">⚡ 즉시 적용 가능한 개선안</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
               {analysis.quickWins.map((win, i) => (
-                <div key={i} className="flex items-start gap-2.5 text-sm text-amber-800">
+                <div key={i} className="flex items-start gap-2.5 text-sm text-amber-800 bg-white/60 rounded-lg px-3 py-2">
                   <span className="text-amber-500 font-bold flex-shrink-0 mt-0.5">✓</span>
                   <span>{win}</span>
                 </div>
@@ -532,80 +516,54 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
           </div>
         )}
 
-        {/* Detail Dashboard CTA Banner */}
-        <Link href="/detail"
-          className="block bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-950 text-white rounded-lg p-5 transition-all hover:shadow-xl group"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
-              <BarChart3 size={22} className="text-white" />
+        {/* CTA Section */}
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          {/* Detail dashboard link — full width header */}
+          <Link href="/detail"
+            className="flex items-center gap-4 p-5 bg-gray-900 hover:bg-gray-800 text-white transition-colors group"
+          >
+            <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <BarChart3 size={20} />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <p className="font-bold text-base">상세 GEO 대시보드 보기</p>
-                <span className="text-xs bg-gray-800 text-white px-2 py-0.5 rounded-full font-semibold">NEW</span>
+              <div className="flex items-center gap-2">
+                <p className="font-bold">상세 GEO 대시보드</p>
+                <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full font-semibold">NEW</span>
               </div>
-              <p className="text-slate-300 text-sm">AI 플랫폼별 분석 · GEO 체크리스트 · 액션 매트릭스 · 30일 로드맵</p>
+              <p className="text-gray-400 text-xs mt-0.5">경쟁사 분석 · 플랫폼 전략 · 콘텐츠 플랜 · 기술 구현 가이드</p>
             </div>
-            <span className="text-white/40 group-hover:text-white transition-all text-xl">→</span>
+            <span className="text-gray-500 group-hover:text-white transition-colors text-lg">→</span>
+          </Link>
+          {/* Action buttons row */}
+          <div className="grid grid-cols-3 divide-x divide-gray-100">
+            <button onClick={() => onOpenChat()}
+              className="flex flex-col items-center gap-2 py-4 px-3 hover:bg-gray-50 transition-colors group">
+              <span className="text-xl">🤖</span>
+              <div className="text-center">
+                <p className="text-xs font-semibold text-gray-800">AI 전문가</p>
+                <p className="text-xs text-gray-400 mt-0.5 hidden lg:block">대화형 컨설팅</p>
+              </div>
+            </button>
+            <Link href="/studio"
+              className="flex flex-col items-center gap-2 py-4 px-3 hover:bg-gray-50 transition-colors group">
+              <span className="text-xl">🎨</span>
+              <div className="text-center">
+                <p className="text-xs font-semibold text-gray-800">스튜디오</p>
+                <p className="text-xs text-gray-400 mt-0.5 hidden lg:block">참고자료 기반 생성</p>
+              </div>
+            </Link>
+            <Link href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
+              className="flex flex-col items-center gap-2 py-4 px-3 hover:bg-gray-50 transition-colors group">
+              <span className="text-xl">✍️</span>
+              <div className="text-center">
+                <p className="text-xs font-semibold text-gray-800">콘텐츠 생성</p>
+                <p className="text-xs text-gray-400 mt-0.5 hidden lg:block">플랫폼별 맞춤</p>
+              </div>
+            </Link>
           </div>
-        </Link>
-
-        {/* CTA Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {/* AI Agent CTA */}
-          <button
-            onClick={() => onOpenChat()}
-            className="bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 text-white rounded-lg p-4 text-left transition-all hover:shadow-lg group"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-lg">🤖</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm">GEO AI 전문가</p>
-                <p className="text-gray-300 text-xs mt-0.5">대화형 전략 컨설팅</p>
-              </div>
-              <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
-            </div>
-          </button>
-
-          {/* Content Studio CTA */}
-          <Link
-            href="/studio"
-            className="bg-gradient-to-r bg-gray-800 hover:bg-gray-900 text-white rounded-lg p-4 text-left transition-all hover:shadow-lg group block"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-lg">🎨</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm">콘텐츠 스튜디오</p>
-                <p className="text-gray-300 text-xs mt-0.5">이미지·참고자료 기반 생성</p>
-              </div>
-              <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
-            </div>
-          </Link>
-
-          {/* Content Generator CTA */}
-          <Link
-            href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
-            className="bg-gray-900 hover:bg-gray-800 text-white rounded-lg p-4 text-left transition-all group block"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                <FileText size={18} className="text-white" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-sm">콘텐츠 생성기</p>
-                <p className="text-gray-300 text-xs mt-0.5">플랫폼별 맞춤 생성</p>
-              </div>
-              <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
-            </div>
-          </Link>
         </div>
 
-        <p className="text-xs text-center text-gray-400">분석 완료: {formatDate(analysis.analyzedAt)}</p>
+        <p className="text-xs text-center text-gray-400 pb-2">분석 완료: {formatDate(analysis.analyzedAt)}</p>
         </div>{/* end right column */}
       </main>
     </div>
