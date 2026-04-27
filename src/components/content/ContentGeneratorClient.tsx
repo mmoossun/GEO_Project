@@ -23,23 +23,17 @@ function PlatformCard({ platform, selected, onClick }: { platform: PlatformType;
     <button
       onClick={onClick}
       className={cn(
-        'flex flex-col items-start gap-1.5 p-3 rounded-xl border-2 transition-all text-left w-full',
+        'flex items-center gap-2 px-3 py-2.5 rounded-lg border transition-all text-left w-full',
         selected
-          ? 'border-current'
-          : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'
+          ? 'border-[#2563EB] bg-[#EFF6FF]'
+          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
       )}
-      style={selected ? { borderColor: cfg.color, backgroundColor: cfg.bgColor } : {}}
     >
-      <div className="flex items-center gap-2 w-full">
-        <span className="text-base">{cfg.emoji}</span>
-        <span className={cn('font-bold text-xs', selected ? '' : 'text-gray-700')} style={selected ? { color: cfg.color } : {}}>
-          {cfg.name}
-        </span>
-        {selected && (
-          <span className="ml-auto text-xs font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: cfg.color, color: '#fff' }}>선택됨</span>
-        )}
-      </div>
-      <p className="text-xs text-gray-500 leading-relaxed">{cfg.shortDesc}</p>
+      <span className="text-base flex-shrink-0">{cfg.emoji}</span>
+      <span className={cn('font-semibold text-sm', selected ? 'text-[#2563EB]' : 'text-gray-700')}>
+        {cfg.name}
+      </span>
+      {selected && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />}
     </button>
   )
 }
@@ -50,15 +44,15 @@ function DepthButton({ depth, selected, onClick }: { depth: ContentDepth; select
     <button
       onClick={onClick}
       className={cn(
-        'flex-1 flex flex-col items-center gap-1 py-3 px-2 rounded-xl border-2 transition-all',
+        'flex-1 flex flex-col items-center gap-1 py-2.5 px-2 rounded-lg border transition-all',
         selected
-          ? 'border-gray-900 bg-gray-50'
-          : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'
+          ? 'border-[#2563EB] bg-[#EFF6FF]'
+          : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
       )}
     >
-      <span className="text-lg">{cfg.icon}</span>
-      <span className={cn('text-xs font-bold', selected ? 'text-gray-800' : 'text-gray-700')}>{cfg.label}</span>
-      <span className="text-xs text-gray-400">{cfg.charRange}</span>
+      <span className="text-base">{cfg.icon}</span>
+      <span className={cn('text-xs font-bold', selected ? 'text-[#2563EB]' : 'text-gray-600')}>{cfg.label}</span>
+      <span className="text-[10px] text-gray-400">{cfg.charRange}</span>
     </button>
   )
 }
@@ -575,16 +569,16 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
       )}
 
       {/* Main layout */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
+      <div className="max-w-7xl mx-auto px-4 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr] xl:grid-cols-[340px_1fr] gap-6 items-start">
 
           {/* ── LEFT PANEL (Sticky Form) ── */}
-          <div className="lg:sticky lg:top-[65px] space-y-4">
+          <div className="lg:sticky lg:top-[57px] space-y-3">
 
             {/* Platform Selector */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">플랫폼 선택</p>
-              <div className="grid grid-cols-1 gap-2">
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">플랫폼</p>
+              <div className="grid grid-cols-1 gap-1.5">
                 {(Object.keys(PLATFORMS) as PlatformType[]).map(p => (
                   <PlatformCard
                     key={p} platform={p}
@@ -596,7 +590,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Topic + Keywords */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
                   주제 <span className="text-red-400">*</span>
@@ -689,8 +683,8 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Depth */}
-            <div className="bg-white rounded-xl border border-gray-200 p-5">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">콘텐츠 깊이</p>
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2.5">콘텐츠 깊이</p>
               <div className="flex gap-2">
                 {(Object.keys(DEPTH_CONFIG) as ContentDepth[]).map(d => (
                   <DepthButton key={d} depth={d} selected={depth === d} onClick={() => setDepth(d)} />
@@ -740,85 +734,67 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Platform tips */}
-            <div className="rounded-lg border p-4 space-y-2" style={{ backgroundColor: platformCfg.bgColor, borderColor: platformCfg.borderColor }}>
-              <p className="text-xs font-bold" style={{ color: platformCfg.color }}>{platformCfg.emoji} {platformCfg.name} 최적화 팁</p>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-1.5">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{platformCfg.emoji} {platformCfg.name} 팁</p>
               {platformCfg.tips.map((tip, i) => (
-                <p key={i} className="text-xs flex items-start gap-1.5" style={{ color: platformCfg.color }}>
-                  <span className="opacity-60 flex-shrink-0 mt-0.5">•</span>{tip}
+                <p key={i} className="text-xs flex items-start gap-1.5 text-gray-600">
+                  <span className="text-[#2563EB] flex-shrink-0 mt-0.5">•</span>{tip}
                 </p>
               ))}
             </div>
 
-            {/* Mode Toggle */}
+            {/* Mode Toggle + Generate */}
             <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">생성 모드</p>
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">생성 모드</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setQualityMode(false)}
                   className={cn(
-                    'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all',
-                    !qualityMode ? 'border-gray-900 bg-gray-50' : 'border-gray-100 bg-white hover:bg-gray-50'
+                    'flex flex-col items-center gap-1 py-2.5 px-2 rounded-lg border transition-all',
+                    !qualityMode ? 'border-[#2563EB] bg-[#EFF6FF]' : 'border-gray-200 bg-white hover:bg-gray-50'
                   )}
                 >
-                  <Zap size={18} className={!qualityMode ? 'text-gray-900' : 'text-gray-400'} />
-                  <span className={cn('text-xs font-bold', !qualityMode ? 'text-gray-800' : 'text-gray-500')}>빠른 생성</span>
-                  <span className="text-xs text-gray-400">1회 즉시</span>
+                  <Zap size={16} className={!qualityMode ? 'text-[#2563EB]' : 'text-gray-400'} />
+                  <span className={cn('text-xs font-bold', !qualityMode ? 'text-[#2563EB]' : 'text-gray-500')}>빠른 생성</span>
+                  <span className="text-[10px] text-gray-400">1회 즉시</span>
                 </button>
                 <button
                   onClick={() => setQualityMode(true)}
                   className={cn(
-                    'flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all',
-                    qualityMode ? 'border-violet-500 bg-gray-50' : 'border-gray-100 bg-white hover:bg-gray-50'
+                    'flex flex-col items-center gap-1 py-2.5 px-2 rounded-lg border transition-all',
+                    qualityMode ? 'border-[#2563EB] bg-[#EFF6FF]' : 'border-gray-200 bg-white hover:bg-gray-50'
                   )}
                 >
-                  <Award size={18} className={qualityMode ? 'text-gray-700' : 'text-gray-400'} />
-                  <span className={cn('text-xs font-bold', qualityMode ? 'text-gray-800' : 'text-gray-500')}>품질 에이전트</span>
-                  <span className="text-xs text-gray-400">90점 보장</span>
+                  <Award size={16} className={qualityMode ? 'text-[#2563EB]' : 'text-gray-400'} />
+                  <span className={cn('text-xs font-bold', qualityMode ? 'text-[#2563EB]' : 'text-gray-500')}>품질 에이전트</span>
+                  <span className="text-[10px] text-gray-400">90점 보장</span>
                 </button>
               </div>
               {qualityMode && (
-                <div className="flex items-start gap-2 bg-gray-50 rounded-xl p-2.5">
-                  <Award size={13} className="text-violet-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-gray-800 leading-relaxed">
-                    생성 → 자가 평가 → 개선을 반복해 <strong>90점 이상</strong>이 될 때까지 자동으로 개선합니다. (최대 3회)
-                  </p>
-                </div>
+                <p className="text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2 leading-relaxed">
+                  생성 → 자가 평가 → 개선 반복, <strong className="text-gray-700">90점 이상</strong>까지 자동 개선 (최대 5회)
+                </p>
               )}
-            </div>
 
-            {/* Generate Button */}
-            <button
-              onClick={() => qualityMode ? generateWithQuality() : generate()}
-              disabled={loading || !topic.trim()}
-              className={cn(
-                'w-full flex items-center justify-center gap-2.5 py-4 rounded-lg font-bold text-base transition-all',
-                loading || !topic.trim()
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'text-white hover:shadow-xl'
-              )}
-              style={loading || !topic.trim() ? {} : {
-                background: qualityMode
-                  ? 'linear-gradient(135deg, #7C3AED, #9333EA)'
-                  : 'linear-gradient(135deg, #4F46E5, #7C3AED)'
-              }}
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  {qualityMode ? '품질 에이전트 작동 중...' : `생성 중... (${GENERATION_STEPS[loadingStep]?.slice(0, 10)}...)`}
-                </>
-              ) : qualityMode ? (
-                <>
-                  <Award size={18} />
-                  품질 에이전트로 생성 (90점 보장)
-                </>
-              ) : (
-                <>
-                  <Sparkles size={18} />
-                  GEO 최적화 콘텐츠 생성
-                </>
-              )}
-            </button>
+              <button
+                onClick={() => qualityMode ? generateWithQuality() : generate()}
+                disabled={loading || !topic.trim()}
+                className={cn(
+                  'w-full flex items-center justify-center gap-2 py-3.5 rounded-lg font-bold text-sm transition-all',
+                  loading || !topic.trim()
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+                )}
+              >
+                {loading ? (
+                  <><Loader2 size={16} className="animate-spin" />{qualityMode ? '품질 에이전트 작동 중...' : '생성 중...'}</>
+                ) : qualityMode ? (
+                  <><Award size={16} />품질 에이전트로 생성</>
+                ) : (
+                  <><Sparkles size={16} />GEO 최적화 콘텐츠 생성</>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* ── RIGHT PANEL (Result) ── */}
@@ -879,28 +855,26 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
               </div>
             ) : (
               /* Empty state */
-              <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
-                <div className="w-16 h-16 rounded-lg mx-auto mb-4 flex items-center justify-center text-3xl" style={{ backgroundColor: platformCfg.bgColor }}>
+              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                <div className="w-14 h-14 rounded-xl mx-auto mb-5 flex items-center justify-center text-2xl bg-[#EFF6FF]">
                   {platformCfg.emoji}
                 </div>
-                <h3 className="font-bold text-gray-800 mb-2">{platformCfg.name} 콘텐츠를 생성해보세요</h3>
-                <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
-                  {platformCfg.shortDesc}
+                <h3 className="font-bold text-gray-900 mb-2 text-lg">{platformCfg.name} 콘텐츠를 생성해보세요</h3>
+                <p className="text-sm text-gray-500 mb-8 max-w-md mx-auto leading-relaxed">
+                  왼쪽에서 주제를 입력하고 생성 버튼을 누르면<br />GEO 최적화된 콘텐츠가 여기에 표시됩니다.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-sm mx-auto text-left">
+                <div className="grid grid-cols-2 gap-2 max-w-sm mx-auto text-left mb-8">
                   {platformCfg.tips.map((tip, i) => (
-                    <div key={i} className="flex items-start gap-2 text-xs text-gray-600 p-2.5 rounded-xl" style={{ backgroundColor: platformCfg.bgColor }}>
-                      <span style={{ color: platformCfg.color }}>✓</span>
+                    <div key={i} className="flex items-start gap-2 text-xs text-gray-600 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                      <span className="text-[#2563EB] flex-shrink-0">✓</span>
                       {tip}
                     </div>
                   ))}
                 </div>
-                <div className="mt-6 pt-6 border-t border-gray-100">
-                  <p className="text-xs text-gray-400 flex items-center justify-center gap-1.5">
-                    <BarChart3 size={12} />
-                    GEO 최적화 적용 시 AI 인용율 최대 41% 향상 (Princeton 연구, 2024)
-                  </p>
-                </div>
+                <p className="text-xs text-gray-400 flex items-center justify-center gap-1.5">
+                  <BarChart3 size={12} />
+                  GEO 최적화 적용 시 AI 인용율 최대 41% 향상 (Princeton 연구, 2024)
+                </p>
               </div>
             )}
           </div>
