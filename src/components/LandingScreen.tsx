@@ -52,42 +52,42 @@ const FEATURES = [
   },
 ]
 
-// Decorative AI platform icons (desktop only)
+// Decorative AI platform icons (desktop only) — B&W, clearly visible
 const BG_ICONS = [
   {
-    src: 'https://cdn.simpleicons.org/openai/111111',
+    src: 'https://cdn.simpleicons.org/openai/1a1a1a',
     label: 'ChatGPT',
-    className: 'absolute top-[8%] right-[4%] w-16 h-16 opacity-[0.055] rotate-[-10deg]',
+    className: 'absolute top-[6%] right-[3%] w-24 h-24 opacity-[0.12] rotate-[-10deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/perplexity/111111',
+    src: 'https://cdn.simpleicons.org/perplexity/1a1a1a',
     label: 'Perplexity',
-    className: 'absolute top-[30%] left-[3%] w-12 h-12 opacity-[0.06] rotate-[8deg]',
+    className: 'absolute top-[28%] left-[2%] w-20 h-20 opacity-[0.10] rotate-[8deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/googlegemini/111111',
+    src: 'https://cdn.simpleicons.org/googlegemini/1a1a1a',
     label: 'Gemini',
-    className: 'absolute top-[12%] left-[6%] w-14 h-14 opacity-[0.05] rotate-[-6deg]',
+    className: 'absolute top-[8%] left-[5%] w-20 h-20 opacity-[0.09] rotate-[-6deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/anthropic/111111',
+    src: 'https://cdn.simpleicons.org/anthropic/1a1a1a',
     label: 'Claude',
-    className: 'absolute top-[55%] right-[5%] w-13 h-13 opacity-[0.055] rotate-[12deg]',
+    className: 'absolute top-[52%] right-[4%] w-20 h-20 opacity-[0.10] rotate-[14deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/naver/111111',
+    src: 'https://cdn.simpleicons.org/naver/1a1a1a',
     label: 'Naver AI',
-    className: 'absolute top-[68%] left-[4%] w-11 h-11 opacity-[0.06] rotate-[-8deg]',
+    className: 'absolute top-[65%] left-[3%] w-16 h-16 opacity-[0.10] rotate-[-8deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/openai/111111',
+    src: 'https://cdn.simpleicons.org/openai/1a1a1a',
     label: 'ChatGPT 2',
-    className: 'absolute top-[80%] right-[7%] w-10 h-10 opacity-[0.04] rotate-[5deg]',
+    className: 'absolute top-[82%] right-[6%] w-14 h-14 opacity-[0.07] rotate-[6deg]',
   },
   {
-    src: 'https://cdn.simpleicons.org/googlegemini/111111',
+    src: 'https://cdn.simpleicons.org/googlegemini/1a1a1a',
     label: 'Gemini 2',
-    className: 'absolute top-[42%] right-[2%] w-9 h-9 opacity-[0.04] rotate-[-14deg]',
+    className: 'absolute top-[40%] right-[1.5%] w-14 h-14 opacity-[0.07] rotate-[-14deg]',
   },
 ]
 
@@ -146,7 +146,7 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
               src={icon.src}
               alt=""
               className={icon.className}
-              style={{ filter: 'grayscale(100%)' }}
+              style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.08))' }}
             />
           ))}
         </div>
