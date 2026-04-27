@@ -29,26 +29,65 @@ const FEATURES = [
   {
     icon: BarChart3,
     title: 'GEO 점수 분석',
-    desc: '콘텐츠 구조 · E-E-A-T · 기술 신호 · 최신성 · 가독성 5가지 차원을 100점 만점으로 측정합니다.',
+    desc: '콘텐츠 구조 · E-E-A-T · 기술 신호 등 5가지 차원을 100점 만점으로 측정합니다.',
     badge: '5가지 차원',
   },
   {
     icon: FlaskConical,
     title: 'AI 실측 테스트',
-    desc: 'ChatGPT · Perplexity · Gemini · Claude에 직접 질문을 던져 실제 언급 여부를 측정합니다.',
-    badge: '4개 AI 플랫폼',
+    desc: 'ChatGPT · Perplexity · Gemini · Claude에 직접 질문해 실제 언급 여부를 확인합니다.',
+    badge: '4개 플랫폼',
   },
   {
     icon: FileText,
     title: '콘텐츠 생성',
-    desc: '분석 결과를 바탕으로 AI 검색에 최적화된 블로그 글, 기업 콘텐츠를 즉시 생성합니다.',
+    desc: 'AI 검색에 최적화된 블로그·기업 콘텐츠를 플랫폼별 맞춤형으로 즉시 생성합니다.',
     badge: '즉시 생성',
   },
   {
     icon: Zap,
     title: '실행 로드맵',
-    desc: '경쟁사 비교, 플랫폼별 전략, 30일 실행 계획을 상세 대시보드에서 확인할 수 있습니다.',
+    desc: '경쟁사 비교, 플랫폼별 전략, 30일 실행 계획을 상세 대시보드에서 제공합니다.',
     badge: '30일 플랜',
+  },
+]
+
+// Decorative AI platform icons (desktop only)
+const BG_ICONS = [
+  {
+    src: 'https://cdn.simpleicons.org/openai/111111',
+    label: 'ChatGPT',
+    className: 'absolute top-[8%] right-[4%] w-16 h-16 opacity-[0.055] rotate-[-10deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/perplexity/111111',
+    label: 'Perplexity',
+    className: 'absolute top-[30%] left-[3%] w-12 h-12 opacity-[0.06] rotate-[8deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/googlegemini/111111',
+    label: 'Gemini',
+    className: 'absolute top-[12%] left-[6%] w-14 h-14 opacity-[0.05] rotate-[-6deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/anthropic/111111',
+    label: 'Claude',
+    className: 'absolute top-[55%] right-[5%] w-13 h-13 opacity-[0.055] rotate-[12deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/naver/111111',
+    label: 'Naver AI',
+    className: 'absolute top-[68%] left-[4%] w-11 h-11 opacity-[0.06] rotate-[-8deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/openai/111111',
+    label: 'ChatGPT 2',
+    className: 'absolute top-[80%] right-[7%] w-10 h-10 opacity-[0.04] rotate-[5deg]',
+  },
+  {
+    src: 'https://cdn.simpleicons.org/googlegemini/111111',
+    label: 'Gemini 2',
+    className: 'absolute top-[42%] right-[2%] w-9 h-9 opacity-[0.04] rotate-[-14deg]',
   },
 ]
 
@@ -95,11 +134,25 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
         </div>
       </header>
 
-      {/* ── Content ── */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-5 lg:px-8 py-10 lg:py-16">
+      {/* ── Main ── */}
+      <main className="relative flex-1 w-full max-w-5xl mx-auto px-5 lg:px-8 py-10 lg:py-16 overflow-hidden">
 
-        {/* ── Hero + Form ── */}
-        <div className="max-w-xl mx-auto">
+        {/* Background AI icons — desktop only */}
+        <div className="hidden lg:block absolute inset-0 pointer-events-none select-none" aria-hidden>
+          {BG_ICONS.map(icon => (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={icon.label}
+              src={icon.src}
+              alt=""
+              className={icon.className}
+              style={{ filter: 'grayscale(100%)' }}
+            />
+          ))}
+        </div>
+
+        {/* ── Form section — relative z-10 ── */}
+        <div className="relative z-10 max-w-xl mx-auto">
 
           {/* Headline */}
           <div className="text-center mb-7">
@@ -118,8 +171,6 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           {/* Form Card */}
           <div className="bg-white rounded-xl border border-gray-200 p-5">
             <form onSubmit={handleSubmit} className="space-y-3">
-
-              {/* Service name */}
               <input
                 type="text"
                 value={serviceName}
@@ -129,7 +180,6 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
                 disabled={isLoading}
               />
 
-              {/* Category */}
               <div className="relative">
                 <select
                   value={category}
@@ -153,7 +203,6 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
                 </p>
               )}
 
-              {/* URL */}
               <input
                 type="url"
                 value={url}
@@ -195,44 +244,11 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
               </div>
             ))}
           </div>
-
-          {/* History */}
-          {history.length > 0 && (
-            <div className="mt-7">
-              <div className="flex items-center gap-2 mb-2.5">
-                <Clock size={12} className="text-gray-400" />
-                <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">최근 분석</span>
-              </div>
-              <div className="space-y-1.5">
-                {history.map(entry => (
-                  <button
-                    key={entry.id}
-                    onClick={() => setTimeout(() => onAnalyze(entry.serviceName, entry.category), 50)}
-                    className="w-full flex items-center gap-3 bg-white rounded-lg px-4 py-2.5 border border-gray-100 hover:border-gray-300 transition-all text-left group"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-gray-800 truncate">{entry.serviceName}</span>
-                        <span className="text-xs text-gray-400">{entry.categoryLabel}</span>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-0.5">{formatDate(entry.analyzedAt)}</p>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className={cn('text-xs font-bold px-2 py-0.5 rounded-full', GRADE_COLORS[entry.grade] ?? 'text-gray-600 bg-gray-50')}>
-                        {entry.totalScore}점
-                      </span>
-                      <TrendingUp size={13} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* ── Feature Grid ── */}
-        <div className="mt-14 lg:mt-20">
-          <p className="text-center text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">
+        {/* ── Feature Grid — 위치 변경: 히스토리보다 위 ── */}
+        <div className="relative z-10 mt-14 lg:mt-16">
+          <p className="text-center text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5">
             분석 후 이런 것들을 제공합니다
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -255,6 +271,39 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
             })}
           </div>
         </div>
+
+        {/* ── History — 피처 카드 아래 ── */}
+        {history.length > 0 && (
+          <div className="relative z-10 mt-8 max-w-xl mx-auto">
+            <div className="flex items-center gap-2 mb-2.5">
+              <Clock size={12} className="text-gray-400" />
+              <span className="text-xs text-gray-400 font-semibold uppercase tracking-wider">최근 분석</span>
+            </div>
+            <div className="space-y-1.5">
+              {history.map(entry => (
+                <button
+                  key={entry.id}
+                  onClick={() => setTimeout(() => onAnalyze(entry.serviceName, entry.category), 50)}
+                  className="w-full flex items-center gap-3 bg-white rounded-lg px-4 py-2.5 border border-gray-100 hover:border-gray-300 transition-all text-left group"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-sm text-gray-800 truncate">{entry.serviceName}</span>
+                      <span className="text-xs text-gray-400">{entry.categoryLabel}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(entry.analyzedAt)}</p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className={cn('text-xs font-bold px-2 py-0.5 rounded-full', GRADE_COLORS[entry.grade] ?? 'text-gray-600 bg-gray-50')}>
+                      {entry.totalScore}점
+                    </span>
+                    <TrendingUp size={13} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
       </main>
 
