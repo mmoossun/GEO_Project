@@ -4,16 +4,24 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { DetailedDashboard } from '@/components/DetailedDashboard'
 import type { GEOAnalysisResult } from '@/lib/types'
+import type { ResponseShare } from '@/app/api/analyze/combined/route'
 
 export default function DetailPage() {
   const router = useRouter()
   const [analysis, setAnalysis] = useState<GEOAnalysisResult | null>(null)
+  const [responseShare, setResponseShare] = useState<ResponseShare | null>(null)
 
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem('geo_current')
       if (!saved) { router.push('/'); return }
       setAnalysis(JSON.parse(saved))
+
+      const combined = sessionStorage.getItem('geo_combined')
+      if (combined) {
+        const parsed = JSON.parse(combined)
+        if (parsed?.responseShare) setResponseShare(parsed.responseShare)
+      }
     } catch {
       router.push('/')
     }
@@ -27,5 +35,5 @@ export default function DetailPage() {
     </div>
   )
 
-  return <DetailedDashboard analysis={analysis} />
+  return <DetailedDashboard analysis={analysis} responseShare={responseShare} />
 }

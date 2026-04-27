@@ -19,6 +19,7 @@ import type {
   DetailedAnalysis, CompetitorProfile, PlatformStrategy,
   ContentBlueprint, TechImplementation, ChecklistItem, ActionItem,
 } from '@/app/api/analyze/detail/route'
+import type { ResponseShare } from '@/app/api/analyze/combined/route'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -70,7 +71,7 @@ type TabId = (typeof TABS)[number]['id']
 
 // ─── TAB 1: Overview ──────────────────────────────────────────────────────────
 
-function OverviewTab({ d, base }: { d: DetailedAnalysis; base: GEOAnalysisResult }) {
+function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GEOAnalysisResult; responseShare?: ResponseShare | null }) {
   const radarData = base.dimensions.map(dim => ({
     subject: dim.nameKo.replace('E-E-A-T ', ''),
     score: Math.round((dim.score / dim.maxScore) * 100),
@@ -165,6 +166,76 @@ function OverviewTab({ d, base }: { d: DetailedAnalysis; base: GEOAnalysisResult
           <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-indigo-400 inline-block" />내 서비스</span>
         </div>
       </div>
+
+      {/* AI 응답 점유율 */}
+      {responseShare && responseShare.totalResponses > 0 && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm font-bold text-gray-700">AI 응답 점유율</p>
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full"
+              style={{ color: responseShare.benchmarkColor, backgroundColor: `${responseShare.benchmarkColor}18` }}>
+              {responseShare.benchmarkLabel}
+            </span>
+          </div>
+
+          {/* Overall weighted share */}
+          <div className="flex items-center gap-4 mb-4">
+            <div className="text-center">
+              <p className="text-3xl font-extrabold" style={{ color: responseShare.benchmarkColor }}>{responseShare.weightedShareRate}%</p>
+              <p className="text-xs text-gray-400 mt-0.5">가중 점유율</p>
+            </div>
+            <div className="flex-1">
+              <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-1.5">
+                <div className="h-3 rounded-full transition-all duration-700"
+                  style={{ width: `${responseShare.weightedShareRate}%`, backgroundColor: responseShare.benchmarkColor }} />
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">{responseShare.insight}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Platform breakdown */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 mb-2">플랫폼별</p>
+              <div className="space-y-2">
+                {responseShare.byPlatform.filter(p => p.status !== 'skipped').map(p => {
+                  const c = p.shareRate >= 60 ? '#059669' : p.shareRate >= 30 ? '#2563EB' : p.shareRate >= 10 ? '#D97706' : '#EF4444'
+                  return (
+                    <div key={p.platform} className="flex items-center gap-2">
+                      <span className="text-sm w-5 flex-shrink-0">{p.emoji}</span>
+                      <span className="text-xs text-gray-600 w-20 flex-shrink-0">{p.platformKo}</span>
+                      <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-1.5 rounded-full" style={{ width: `${p.shareRate}%`, backgroundColor: c }} />
+                      </div>
+                      <span className="text-xs font-bold w-16 text-right flex-shrink-0" style={{ color: c }}>
+                        {p.shareRate}% ({p.mentionCount}/{p.totalQueries})
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Question type breakdown */}
+            <div>
+              <p className="text-xs font-bold text-gray-500 mb-2">질문 유형별</p>
+              <div className="space-y-2">
+                {responseShare.byQuestionType.map(t => (
+                  <div key={t.type} className="flex items-center gap-2">
+                    <span className="text-xs text-gray-600 w-24 flex-shrink-0">{t.typeKo}</span>
+                    <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className="h-1.5 rounded-full"
+                        style={{ width: `${t.shareRate}%`, backgroundColor: t.shareRate >= 60 ? '#059669' : t.shareRate >= 30 ? '#2563EB' : t.shareRate > 0 ? '#D97706' : '#E5E7EB' }} />
+                    </div>
+                    <span className="text-xs font-bold w-8 text-right flex-shrink-0 text-gray-600">{t.shareRate}%</span>
+                    <span className="text-xs text-gray-300 w-6 text-right flex-shrink-0">×{t.weight}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Strengths / Gaps */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -819,7 +890,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-export function DetailedDashboard({ analysis }: { analysis: GEOAnalysisResult }) {
+export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAnalysisResult; responseShare?: ResponseShare | null }) {
   const [activeTab, setActiveTab] = useState<TabId>('overview')
   const [detail, setDetail] = useState<DetailedAnalysis | null>(null)
   const [loading, setLoading] = useState(true)
@@ -896,7 +967,7 @@ export function DetailedDashboard({ analysis }: { analysis: GEOAnalysisResult })
           })}
         </div>
 
-        {activeTab === 'overview'    && <OverviewTab d={detail} base={analysis} />}
+        {activeTab === 'overview'    && <OverviewTab d={detail} base={analysis} responseShare={responseShare} />}
         {activeTab === 'competitors' && <CompetitorsTab d={detail} />}
         {activeTab === 'platforms'   && <PlatformsTab d={detail} />}
         {activeTab === 'content'     && <ContentTab d={detail} />}
