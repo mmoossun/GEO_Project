@@ -86,10 +86,13 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
       </header>
 
       {/* Hero */}
-      <main className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-xl">
+      <main className="flex-1 flex flex-col items-center justify-center px-4 py-8 lg:py-0">
+        <div className="w-full max-w-6xl lg:flex lg:items-center lg:gap-16 lg:min-h-[calc(100vh-72px)]">
+
+        {/* LEFT: Form */}
+        <div className="w-full lg:flex-1 lg:max-w-lg lg:py-16">
           {/* Badge */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center lg:justify-start mb-6">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-800 bg-gray-50 border border-gray-200 px-3 py-1.5 rounded-full">
               <span className="w-1.5 h-1.5 rounded-full bg-gray-800 animate-pulse" />
               AI 검색 시대의 새로운 기준
@@ -97,11 +100,11 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center leading-tight mb-3">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900 text-center lg:text-left leading-tight mb-3">
             내 서비스, AI 검색에서<br />
             <span className="text-gray-900">얼마나 잘 보이나요?</span>
           </h1>
-          <p className="text-center text-gray-500 text-sm mb-8">
+          <p className="text-center lg:text-left text-gray-500 text-sm mb-8">
             서비스 이름과 카테고리만 입력하면 ChatGPT · Perplexity · Gemini 인용 가능성을 30초 안에 분석해 드립니다.
           </p>
 
@@ -211,53 +214,101 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
             {[
               { value: '5가지', label: '분석 차원' },
               { value: '100점', label: '만점 기준' },
-              { value: '30초', label: '분석 소요 시간' },
+              { value: '30초', label: '분석 소요' },
             ].map((stat, i) => (
-              <div key={i} className="bg-white/60 rounded-xl p-3 text-center border border-white">
+              <div key={i} className="bg-white rounded-xl p-3 text-center border border-gray-200">
                 <p className="font-bold text-gray-900 text-base">{stat.value}</p>
                 <p className="text-xs text-gray-500 mt-0.5">{stat.label}</p>
               </div>
             ))}
           </div>
-        </div>
 
-        {/* History */}
-        {history.length > 0 && (
-          <div className="w-full max-w-xl mt-8">
-            <div className="flex items-center gap-2 mb-3">
-              <Clock size={14} className="text-gray-400" />
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 분석 이력</span>
+          {/* History */}
+          {history.length > 0 && (
+            <div className="mt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Clock size={14} className="text-gray-400" />
+                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 분석 이력</span>
+              </div>
+              <div className="space-y-2">
+                {history.map(entry => (
+                  <button
+                    key={entry.id}
+                    onClick={() => {
+                      setServiceName(entry.serviceName)
+                      setCategory(entry.category)
+                      setTimeout(() => onAnalyze(entry.serviceName, entry.category), 50)
+                    }}
+                    className="w-full flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all text-left group"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-sm text-gray-800 truncate">{entry.serviceName}</span>
+                        <span className="text-xs text-gray-400">{entry.categoryLabel}</span>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-0.5">{formatDate(entry.analyzedAt)}</p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className={cn('text-sm font-bold px-2.5 py-1 rounded-full', GRADE_COLORS[entry.grade] ?? 'text-gray-600 bg-gray-50')}>
+                        {entry.totalScore}점
+                      </span>
+                      <TrendingUp size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>{/* end left */}
+
+        {/* RIGHT: Feature panel — desktop only */}
+        <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-4 lg:py-16">
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">GEO 분석 결과 미리보기</p>
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              {[
+                { label: 'GEO 점수', value: '78', sub: 'B등급', color: '#2563EB' },
+                { label: 'AI 인용 확률', value: '64%', sub: '상위 30%', color: '#059669' },
+                { label: '업계 평균 대비', value: '+12pt', sub: '양호', color: '#059669' },
+                { label: '개선 포인트', value: '3개', sub: '즉시 적용 가능', color: '#D97706' },
+              ].map((s, i) => (
+                <div key={i} className="bg-gray-50 rounded-lg p-3">
+                  <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                  <p className="text-xl font-extrabold" style={{ color: s.color }}>{s.value}</p>
+                  <p className="text-xs text-gray-400">{s.sub}</p>
+                </div>
+              ))}
             </div>
             <div className="space-y-2">
-              {history.map(entry => (
-                <button
-                  key={entry.id}
-                  onClick={() => {
-                    setServiceName(entry.serviceName)
-                    setCategory(entry.category)
-                    // Auto-trigger analysis after state updates
-                    setTimeout(() => onAnalyze(entry.serviceName, entry.category), 50)
-                  }}
-                  className="w-full flex items-center gap-3 bg-white rounded-xl px-4 py-3 border border-gray-100 hover:border-gray-200 hover:bg-gray-50/30 transition-all text-left group"
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-gray-800 truncate">{entry.serviceName}</span>
-                      <span className="text-xs text-gray-400">{entry.categoryLabel}</span>
-                    </div>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDate(entry.analyzedAt)}</p>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className={cn('text-sm font-bold px-2.5 py-1 rounded-full', GRADE_COLORS[entry.grade] ?? 'text-gray-600 bg-gray-50')}>
-                      {entry.totalScore}점
-                    </span>
-                    <TrendingUp size={14} className="text-gray-300 group-hover:text-gray-500 transition-colors" />
-                  </div>
-                </button>
+              {['콘텐츠 구조 최적화', 'FAQ 섹션 추가로 AI 인용율 +28%', 'Schema 마크업 즉시 적용 가능'].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-gray-600">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+                  {item}
+                </div>
               ))}
             </div>
           </div>
-        )}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { emoji: '🤖', label: 'ChatGPT', rate: '62%', color: '#10A37F' },
+              { emoji: '🔍', label: 'Perplexity', rate: '45%', color: '#20808D' },
+              { emoji: '✨', label: 'Gemini', rate: '38%', color: '#4285F4' },
+            ].map((p, i) => (
+              <div key={i} className="bg-white rounded-lg border border-gray-200 p-3 text-center">
+                <p className="text-xl mb-1">{p.emoji}</p>
+                <p className="text-xs font-semibold text-gray-700">{p.label}</p>
+                <p className="text-sm font-extrabold mt-1" style={{ color: p.color }}>{p.rate}</p>
+                <p className="text-xs text-gray-400">인용율</p>
+              </div>
+            ))}
+          </div>
+          <div className="bg-gray-900 rounded-xl p-4 text-white">
+            <p className="text-xs font-bold text-gray-300 mb-2">Princeton KDD 2024 연구 기반</p>
+            <p className="text-sm text-gray-200 leading-relaxed">GEO(Generative Engine Optimization)는 ChatGPT, Perplexity 등 AI 검색 엔진에서의 노출을 최적화하는 새로운 SEO 패러다임입니다.</p>
+          </div>
+        </div>
+
+        </div>{/* end two-col wrapper */}
       </main>
 
       {/* Bottom note */}

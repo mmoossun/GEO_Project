@@ -932,7 +932,7 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
   return (
     <div className="min-h-screen bg-[#F5F5F0]">
       <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">대시보드</span>
@@ -952,7 +952,7 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-5 space-y-5 pb-16">
+      <main className="max-w-7xl mx-auto px-4 py-5 space-y-5 pb-16">
         {/* Tab navigation */}
         <div className="flex gap-1 bg-white rounded-lg p-1.5 border border-gray-100 overflow-x-auto">
           {TABS.map(tab => {

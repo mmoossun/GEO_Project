@@ -165,7 +165,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
     <div className="min-h-screen bg-[#F5F5F0]">
       {/* Sticky Header */}
       <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
             <span className="hidden sm:inline">새 분석</span>
@@ -212,7 +212,85 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-4 pb-24">
+      <main className="max-w-7xl mx-auto px-4 py-6 pb-24 lg:flex lg:gap-6 lg:items-start">
+        {/* ── LEFT SIDEBAR (desktop sticky) ── */}
+        <div className="lg:w-[320px] xl:w-[360px] lg:flex-shrink-0 lg:sticky lg:top-[57px] lg:max-h-[calc(100vh-72px)] lg:overflow-y-auto lg:space-y-4 space-y-4 pb-4 lg:pb-0">
+
+        {/* Score Hero */}
+        <div className="bg-white rounded-lg border border-gray-100 p-6">
+          <div className="flex flex-col sm:flex-row lg:flex-col gap-6 items-center">
+            <div className="flex flex-col items-center flex-shrink-0">
+              <div className="relative">
+                <ScoreArc score={analysis.totalScore} />
+                <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
+                  <span className="text-3xl font-extrabold text-gray-900">{analysis.totalScore}</span>
+                  <span className="text-xs text-gray-400">/ 100</span>
+                  <span className="text-lg font-bold mt-0.5" style={{ color: gradeConfig.color }}>{analysis.grade}</span>
+                </div>
+              </div>
+              <div className="text-center -mt-1">
+                <span className="text-sm font-semibold" style={{ color: gradeConfig.color }}>{analysis.gradeLabel}</span>
+                {scoreDiff != null && (
+                  <div className={cn('flex items-center justify-center gap-1 mt-1 text-xs font-medium', scoreDiff > 0 ? 'text-green-600' : scoreDiff < 0 ? 'text-red-600' : 'text-gray-500')}>
+                    {scoreDiff > 0 ? <TrendingUp size={12} /> : scoreDiff < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
+                    {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff}점
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex-1 space-y-3 w-full">
+              <div className="grid grid-cols-2 gap-2">
+                <div className="bg-blue-50 rounded-xl p-3">
+                  <p className="text-xs text-blue-600 font-semibold mb-0.5">AI 가시성</p>
+                  <p className="font-bold text-blue-800 text-sm">{VISIBILITY_LABELS[analysis.aiVisibilityLevel]}</p>
+                </div>
+                <div className="bg-green-50 rounded-xl p-3">
+                  <p className="text-xs text-green-600 font-semibold mb-0.5">인용 확률</p>
+                  <p className="font-bold text-green-800 text-sm">{analysis.citationProbability}%</p>
+                </div>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">{analysis.summary}</p>
+              <p className="text-xs text-gray-500 italic">{analysis.competitiveInsight}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Radar — desktop sidebar */}
+        <div className="bg-white rounded-lg border border-gray-100 p-4">
+          <p className="text-sm font-bold text-gray-700 mb-2">차원별 균형 분석</p>
+          <div className="h-48">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={radarData}>
+                <PolarGrid stroke="#E5E7EB" />
+                <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
+                <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Benchmark — desktop sidebar */}
+        <div className="bg-white rounded-lg border border-gray-100 p-4">
+          <p className="text-sm font-bold text-gray-700 mb-4">업계 비교</p>
+          <div className="space-y-3">
+            <BenchmarkBar label="상위 10%" score={analysis.topPerformerScore} color="#7C3AED" />
+            <BenchmarkBar label="내 서비스" score={analysis.totalScore} isMe color={getScoreColor(analysis.totalScore)} />
+            <BenchmarkBar label="업계 평균" score={analysis.industryAverage} color="#94A3B8" />
+          </div>
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            {analysis.totalScore > analysis.industryAverage ? (
+              <p className="text-xs text-green-600 font-medium">업계 평균보다 <span className="font-bold">{analysis.totalScore - analysis.industryAverage}점</span> 높아요 🎉</p>
+            ) : (
+              <p className="text-xs text-orange-600 font-medium">업계 평균까지 <span className="font-bold">{analysis.industryAverage - analysis.totalScore}점</span> 부족해요</p>
+            )}
+          </div>
+        </div>
+
+        </div>{/* end left sidebar */}
+
+        {/* ── RIGHT MAIN CONTENT ── */}
+        <div className="flex-1 min-w-0 space-y-4">
+
         {/* Analysis mode transparency banner */}
         {(analysis as GEOAnalysisResult & { analysisMode?: string }).analysisMode === 'estimation' && (
           <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
@@ -231,51 +309,6 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
             </p>
           </div>
         )}
-
-        {/* Score Hero */}
-        <div className="bg-white rounded-lg border border-gray-100 p-6">
-          <div className="flex flex-col sm:flex-row gap-6 items-center">
-            {/* Gauge */}
-            <div className="flex flex-col items-center flex-shrink-0">
-              <div className="relative">
-                <ScoreArc score={analysis.totalScore} />
-                <div className="absolute inset-0 flex flex-col items-center justify-center pb-4">
-                  <span className="text-3xl font-extrabold text-gray-900">{analysis.totalScore}</span>
-                  <span className="text-xs text-gray-400">/ 100</span>
-                  <span className="text-lg font-bold mt-0.5" style={{ color: gradeConfig.color }}>{analysis.grade}</span>
-                </div>
-              </div>
-              <div className="text-center -mt-1">
-                <span className="text-sm font-semibold" style={{ color: gradeConfig.color }}>{analysis.gradeLabel}</span>
-                {scoreDiff != null && (
-                  <div className={cn(
-                    'flex items-center justify-center gap-1 mt-1 text-xs font-medium',
-                    scoreDiff > 0 ? 'text-green-600' : scoreDiff < 0 ? 'text-red-600' : 'text-gray-500'
-                  )}>
-                    {scoreDiff > 0 ? <TrendingUp size={12} /> : scoreDiff < 0 ? <TrendingDown size={12} /> : <Minus size={12} />}
-                    {scoreDiff > 0 ? `+${scoreDiff}` : scoreDiff}점 (이전 대비)
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Quick Stats */}
-            <div className="flex-1 space-y-3 w-full">
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-blue-50 rounded-xl p-3">
-                  <p className="text-xs text-blue-600 font-semibold mb-0.5">AI 가시성</p>
-                  <p className="font-bold text-blue-800">{VISIBILITY_LABELS[analysis.aiVisibilityLevel]}</p>
-                </div>
-                <div className="bg-green-50 rounded-xl p-3">
-                  <p className="text-xs text-green-600 font-semibold mb-0.5">AI 인용 확률</p>
-                  <p className="font-bold text-green-800">{analysis.citationProbability}%</p>
-                </div>
-              </div>
-              <p className="text-sm text-gray-600 leading-relaxed">{analysis.summary}</p>
-              <p className="text-xs text-gray-900 italic">{analysis.competitiveInsight}</p>
-            </div>
-          </div>
-        </div>
 
         {/* ── Combined Analysis Panel ── */}
         {combined && (
@@ -435,44 +468,6 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
           </div>
         )}
 
-        {/* Radar + Benchmark */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Radar */}
-          <div className="bg-white rounded-lg border border-gray-100 p-4">
-            <p className="text-sm font-bold text-gray-700 mb-2">차원별 균형 분석</p>
-            <div className="h-48">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid stroke="#E5E7EB" />
-                  <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
-                  <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
-                </RadarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Benchmark */}
-          <div className="bg-white rounded-lg border border-gray-100 p-4">
-            <p className="text-sm font-bold text-gray-700 mb-4">업계 비교</p>
-            <div className="space-y-3">
-              <BenchmarkBar label="상위 10%" score={analysis.topPerformerScore} color="#7C3AED" />
-              <BenchmarkBar label="내 서비스" score={analysis.totalScore} isMe color={getScoreColor(analysis.totalScore)} />
-              <BenchmarkBar label="업계 평균" score={analysis.industryAverage} color="#94A3B8" />
-            </div>
-            <div className="mt-4 pt-3 border-t border-gray-100">
-              {analysis.totalScore > analysis.industryAverage ? (
-                <p className="text-xs text-green-600 font-medium">
-                  업계 평균보다 <span className="font-bold">{analysis.totalScore - analysis.industryAverage}점</span> 높아요 🎉
-                </p>
-              ) : (
-                <p className="text-xs text-orange-600 font-medium">
-                  업계 평균까지 <span className="font-bold">{analysis.industryAverage - analysis.totalScore}점</span> 부족해요
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Dimension Breakdown */}
         <div className="bg-white rounded-lg border border-gray-100 p-5">
           <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -611,6 +606,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         </div>
 
         <p className="text-xs text-center text-gray-400">분석 완료: {formatDate(analysis.analyzedAt)}</p>
+        </div>{/* end right column */}
       </main>
     </div>
   )
