@@ -125,7 +125,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
           onChange={e => onChange({ topic: e.target.value })}
           placeholder="예) GEO 최적화를 통한 AI 검색 노출 전략, 2025 마케팅 트렌드 분석..."
           rows={2}
-          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-400"
+          className="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#2563EB]/30"
         />
       </div>
 
@@ -140,7 +140,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
               className={cn(
                 'flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all',
                 input.contentPurpose === opt.value
-                  ? 'border-violet-500 bg-gray-50'
+                  ? 'border-[#2563EB] bg-gray-50'
                   : 'border-gray-100 hover:border-gray-200'
               )}
             >
@@ -167,7 +167,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
               className={cn(
                 'py-2 px-1 rounded-xl text-xs font-semibold border-2 transition-all',
                 input.tone === opt.value
-                  ? 'border-violet-500 bg-gray-50 text-gray-800'
+                  ? 'border-[#2563EB] bg-gray-50 text-gray-800'
                   : 'border-gray-100 text-gray-600 hover:bg-gray-50'
               )}
             >
@@ -204,7 +204,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
         {input.images.length === 0 ? (
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-violet-300 hover:text-gray-500 transition-colors"
+            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-[#2563EB]/40 hover:text-gray-500 transition-colors"
           >
             <Upload size={24} />
             <span className="text-sm">클릭하거나 이미지를 끌어다 놓으세요</span>
@@ -227,12 +227,12 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
                       value={img.description}
                       onChange={e => updateImage(img.id, { description: e.target.value })}
                       placeholder="이미지 설명 (내용, 무엇을 보여주는지)"
-                      className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-violet-400 bg-white"
+                      className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#2563EB]/30 bg-white"
                     />
                     <select
                       value={img.purpose}
                       onChange={e => updateImage(img.id, { purpose: e.target.value as ImagePurpose })}
-                      className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
+                      className="w-full px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-[#2563EB]/30"
                     >
                       {Object.entries(IMAGE_PURPOSE_LABELS).map(([val, label]) => (
                         <option key={val} value={val}>{label}</option>
@@ -248,7 +248,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
             {input.images.length < 5 && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-xs text-gray-400 hover:border-violet-300 hover:text-gray-500 transition-colors"
+                className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-xs text-gray-400 hover:border-[#2563EB]/40 hover:text-gray-500 transition-colors"
               >
                 + 이미지 추가
               </button>
@@ -341,7 +341,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
               <select
                 value={input.platform}
                 onChange={e => onChange({ platform: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-1 focus:ring-violet-400"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-1 focus:ring-[#2563EB]/30"
               >
                 <option value="naver_blog">🟢 네이버 블로그</option>
                 <option value="tistory">🟠 티스토리</option>
@@ -358,7 +358,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
                 value={input.targetAudience}
                 onChange={e => onChange({ targetAudience: e.target.value })}
                 placeholder="예) 마케터, 스타트업 창업자, 개발자..."
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-violet-400"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-[#2563EB]/30"
               />
             </div>
             <div>
@@ -368,7 +368,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
                 onChange={e => onChange({ additionalNotes: e.target.value })}
                 placeholder="특별히 포함하거나 강조하고 싶은 내용..."
                 rows={2}
-                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-1 focus:ring-violet-400"
+                className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#2563EB]/30"
               />
             </div>
           </div>
@@ -382,10 +382,9 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
         className={cn(
           'w-full flex items-center justify-center gap-2.5 py-4 rounded-lg font-bold text-base transition-all sticky bottom-0',
           isValid && !generating
-            ? 'text-white hover:shadow-xl'
+            ? 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         )}
-        style={isValid && !generating ? { background: 'linear-gradient(135deg, #7C3AED, #9333EA)' } : {}}
       >
         {generating ? (
           <>

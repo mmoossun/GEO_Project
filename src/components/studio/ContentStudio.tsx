@@ -21,10 +21,10 @@ function GeneratingOverlay({ steps }: { steps: ProgressStep[] }) {
   return (
     <div className="flex flex-col items-center justify-center h-full py-20 gap-8 px-6">
       <div className="relative">
-        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-3xl">
+        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-[#2563EB] to-[#1d4ed8] flex items-center justify-center text-3xl">
           ✨
         </div>
-        <div className="absolute -inset-3 rounded-xl border-4 border-gray-200 border-t-violet-600 animate-spin opacity-60" />
+        <div className="absolute -inset-3 rounded-xl border-4 border-gray-200 border-t-[#2563EB] animate-spin opacity-60" />
       </div>
 
       <div className="text-center space-y-2">
@@ -38,7 +38,7 @@ function GeneratingOverlay({ steps }: { steps: ProgressStep[] }) {
             {step.done
               ? <CheckCircle size={16} className="flex-shrink-0 text-green-500" />
               : i === steps.length - 1
-                ? <Loader2 size={16} className="animate-spin flex-shrink-0 text-violet-500" />
+                ? <Loader2 size={16} className="animate-spin flex-shrink-0 text-[#2563EB]" />
                 : <div className="w-4 h-4 rounded-full border-2 border-gray-200 flex-shrink-0" />
             }
             <span className="truncate">{step.message}</span>
@@ -177,7 +177,7 @@ export function ContentStudio() {
           </Link>
           <div className="w-px h-4 bg-gray-200" />
           <div className="flex items-center gap-2">
-            <PenLine size={16} className="text-violet-500" />
+            <PenLine size={16} className="text-[#2563EB]" />
             <span className="font-bold text-gray-900 text-sm">콘텐츠 스튜디오</span>
             <span className="hidden sm:inline text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full font-medium">
               이미지·참고자료 기반 생성 + 편집
