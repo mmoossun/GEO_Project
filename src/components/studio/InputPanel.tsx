@@ -380,21 +380,16 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
         onClick={onGenerate}
         disabled={!isValid || generating}
         className={cn(
-          'w-full flex items-center justify-center gap-2.5 py-4 rounded-lg font-bold text-base transition-all sticky bottom-0',
+          'w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-semibold text-sm transition-all',
           isValid && !generating
-            ? 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-[0_4px_12px_rgba(37,99,235,0.3)]'
+            ? 'bg-[#2563EB] hover:bg-[#1d4ed8] text-white shadow-[0_4px_12px_rgba(37,99,235,0.25)]'
             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         )}
       >
         {generating ? (
-          <>
-            <Loader2 size={18} className="animate-spin" />
-            AI 콘텐츠 생성 중...
-          </>
+          <><Loader2 size={15} className="animate-spin" />생성 중...</>
         ) : (
-          <>
-            ✨ 콘텐츠 생성하기
-          </>
+          <><span>✨</span>콘텐츠 생성하기</>
         )}
       </button>
     </div>
