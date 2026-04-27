@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { CheckCircle2, XCircle, Loader2, TrendingUp, Zap, Award } from 'lucide-react'
 import { SCORE_LABELS, type ScoreBreakdown, type QualityEvent } from '@/lib/quality-agent'
@@ -42,13 +42,13 @@ function IterationCard({ entry }: { entry: IterationEntry }) {
   return (
     <div className={cn(
       'rounded-xl border p-4 transition-all',
-      entry.pass ? 'border-green-200 bg-green-50' : isActive ? 'border-indigo-200 bg-indigo-50' : 'border-gray-200 bg-white'
+      entry.pass ? 'border-green-200 bg-green-50' : isActive ? 'border-gray-200 bg-gray-50' : 'border-gray-200 bg-white'
     )}>
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">
         <div className={cn(
           'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0',
-          entry.pass ? 'bg-green-500 text-white' : isActive ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-600'
+          entry.pass ? 'bg-green-500 text-white' : isActive ? 'bg-gray-100 text-gray-800' : 'bg-gray-100 text-gray-600'
         )}>
           {entry.pass ? '✓' : entry.iteration}
         </div>
@@ -59,7 +59,7 @@ function IterationCard({ entry }: { entry: IterationEntry }) {
               {entry.iteration === 1 ? '1차 생성' : `${entry.iteration}차 개선`}
             </span>
             {isActive && (
-              <span className="flex items-center gap-1 text-xs text-indigo-600">
+              <span className="flex items-center gap-1 text-xs text-gray-900">
                 <Loader2 size={12} className="animate-spin" />
                 {entry.message ?? '처리 중...'}
               </span>
@@ -165,13 +165,13 @@ export function QualityProgress({ events, finalScore, totalIterations, improveme
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl text-white">
+      <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg text-white">
         <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
           {isDone ? <Award size={20} /> : <Zap size={20} className="animate-pulse" />}
         </div>
         <div>
           <p className="font-bold text-sm">AI 품질 에이전트</p>
-          <p className="text-indigo-200 text-xs">
+          <p className="text-gray-300 text-xs">
             {isDone
               ? `${totalIterations}회 반복 완료 — ${finalScore}점 달성`
               : events.some(e => e.type === 'briefing') && !events.some(e => e.type === 'generating')
@@ -182,7 +182,7 @@ export function QualityProgress({ events, finalScore, totalIterations, improveme
         {isDone && finalScore != null && (
           <div className="ml-auto text-right flex-shrink-0">
             <span className="text-3xl font-extrabold">{finalScore}</span>
-            <span className="text-indigo-200 text-sm">/100</span>
+            <span className="text-gray-300 text-sm">/100</span>
           </div>
         )}
       </div>
@@ -248,8 +248,8 @@ export function QualityProgress({ events, finalScore, totalIterations, improveme
       {/* Loading pulse when still running */}
       {!isDone && (
         <div className="flex items-center justify-center gap-2 py-2">
-          <div className="w-2 h-2 rounded-full bg-indigo-500 animate-bounce" style={{ animationDelay: '0ms' }} />
-          <div className="w-2 h-2 rounded-full bg-indigo-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 rounded-full bg-gray-800 animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 rounded-full bg-gray-700 animate-bounce" style={{ animationDelay: '150ms' }} />
           <div className="w-2 h-2 rounded-full bg-indigo-300 animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       )}

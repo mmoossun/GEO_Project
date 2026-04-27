@@ -1,4 +1,4 @@
-export const CATEGORIES = [
+﻿export const CATEGORIES = [
   { value: 'ecommerce', label: '이커머스/쇼핑', emoji: '🛒', avgScore: 52, topScore: 78, mainIssue: '상품 설명 홍보성 어조' },
   { value: 'saas', label: 'SaaS/소프트웨어', emoji: '💻', avgScore: 55, topScore: 82, mainIssue: '기술 용어 과다 & 구조화 부족' },
   { value: 'fintech', label: '금융/핀테크', emoji: '💰', avgScore: 60, topScore: 85, mainIssue: '규정준수 중심으로 가독성 낮음' },
@@ -24,7 +24,7 @@ export function getCategoryInfo(value: string) {
 }
 
 export const DIMENSION_META = {
-  structure: { nameKo: '콘텐츠 구조', icon: '🗂️', maxScore: 20, color: '#4F46E5', desc: '제목 계층, FAQ, 목록, 답변 캡슐' },
+  structure: { nameKo: '콘텐츠 구조', icon: '🗂️', maxScore: 20, color: '#111111', desc: '제목 계층, FAQ, 목록, 답변 캡슐' },
   eeat: { nameKo: 'E-E-A-T 신뢰성', icon: '🛡️', maxScore: 25, color: '#7C3AED', desc: '저자 정보, 통계, 인용, 비홍보 어조' },
   technical: { nameKo: '기술 신호', icon: '⚙️', maxScore: 20, color: '#0891B2', desc: 'JSON-LD 스키마, 메타태그, 날짜' },
   freshness: { nameKo: '최신성', icon: '🕐', maxScore: 15, color: '#059669', desc: '발행일, 업데이트 빈도, 시의성' },

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { Loader2, CheckCircle2, XCircle, AlertCircle, ChevronDown, ChevronUp, Play, Info, Lightbulb, MessageSquare } from 'lucide-react'
@@ -10,38 +10,38 @@ import type { CitationTestResult, PlatformTestResult, GeneratedQuestion, Service
 function ServiceIntelCard({ intel }: { intel: ServiceIntelligence }) {
   const [open, setOpen] = useState(false)
   return (
-    <div className="bg-indigo-50 border border-indigo-100 rounded-xl overflow-hidden">
+    <div className="bg-gray-50 border border-gray-200 rounded-xl overflow-hidden">
       <button onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-indigo-100/50 transition-colors">
-        <Lightbulb size={14} className="text-indigo-500 flex-shrink-0" />
-        <span className="text-sm font-semibold text-indigo-800 flex-1">
+        className="w-full flex items-center gap-2.5 px-4 py-3 text-left hover:bg-gray-100/50 transition-colors">
+        <Lightbulb size={14} className="text-gray-700 flex-shrink-0" />
+        <span className="text-sm font-semibold text-gray-800 flex-1">
           서비스 분석 결과 ({intel.sourceType === 'url_crawl' ? '🔗 URL 크롤링' : '🤖 AI 추론'})
         </span>
-        {open ? <ChevronUp size={13} className="text-indigo-400" /> : <ChevronDown size={13} className="text-indigo-400" />}
+        {open ? <ChevronUp size={13} className="text-gray-500" /> : <ChevronDown size={13} className="text-gray-500" />}
       </button>
       {open && (
-        <div className="px-4 pb-4 space-y-3 border-t border-indigo-100">
-          <p className="text-xs text-indigo-700 leading-relaxed mt-3">{intel.summary}</p>
+        <div className="px-4 pb-4 space-y-3 border-t border-gray-200">
+          <p className="text-xs text-gray-800 leading-relaxed mt-3">{intel.summary}</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <p className="text-xs font-bold text-indigo-600 mb-1.5">🔧 핵심 기능</p>
+              <p className="text-xs font-bold text-gray-900 mb-1.5">🔧 핵심 기능</p>
               {intel.coreFeatures.map((f, i) => (
-                <p key={i} className="text-xs text-indigo-700 flex items-center gap-1.5 mb-1">
-                  <span className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />{f}
+                <p key={i} className="text-xs text-gray-800 flex items-center gap-1.5 mb-1">
+                  <span className="w-1 h-1 rounded-full bg-gray-700 flex-shrink-0" />{f}
                 </p>
               ))}
             </div>
             <div>
-              <p className="text-xs font-bold text-indigo-600 mb-1.5">💡 핵심 가치</p>
+              <p className="text-xs font-bold text-gray-900 mb-1.5">💡 핵심 가치</p>
               {intel.keyValueProps.map((v, i) => (
-                <p key={i} className="text-xs text-indigo-700 flex items-center gap-1.5 mb-1">
-                  <span className="w-1 h-1 rounded-full bg-indigo-400 flex-shrink-0" />{v}
+                <p key={i} className="text-xs text-gray-800 flex items-center gap-1.5 mb-1">
+                  <span className="w-1 h-1 rounded-full bg-gray-700 flex-shrink-0" />{v}
                 </p>
               ))}
             </div>
           </div>
           {intel.competitors.length > 0 && (
-            <p className="text-xs text-indigo-600">
+            <p className="text-xs text-gray-900">
               <span className="font-semibold">경쟁사:</span> {intel.competitors.join(', ')}
             </p>
           )}
@@ -167,11 +167,11 @@ function StepList({ steps, running }: { steps: Step[]; running: boolean }) {
   return (
     <div className="space-y-2">
       {steps.map((s, i) => (
-        <div key={i} className={cn('flex items-center gap-2 text-sm', s.done ? 'text-green-600' : i === steps.length - 1 && running ? 'text-indigo-600 font-semibold' : 'text-gray-400')}>
+        <div key={i} className={cn('flex items-center gap-2 text-sm', s.done ? 'text-green-600' : i === steps.length - 1 && running ? 'text-gray-900 font-semibold' : 'text-gray-400')}>
           {s.done
             ? <CheckCircle2 size={15} className="text-green-500 flex-shrink-0" />
             : i === steps.length - 1 && running
-              ? <Loader2 size={15} className="animate-spin text-indigo-500 flex-shrink-0" />
+              ? <Loader2 size={15} className="animate-spin text-gray-700 flex-shrink-0" />
               : <div className="w-3.5 h-3.5 rounded-full border-2 border-gray-300 flex-shrink-0" />
           }
           <span>{s.message}</span>
@@ -250,12 +250,12 @@ export function CitationTestPanel({ serviceName, category, url }: Props) {
   const tested = result?.platforms.filter(p => p.status !== 'skipped') ?? []
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 flex items-center gap-2">
             🔬 AI 실측 인용 테스트
-            <span className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-0.5 rounded-full">서비스 분석 → 맞춤 질문</span>
+            <span className="text-xs bg-gray-50 text-gray-800 border border-gray-200 px-2 py-0.5 rounded-full">서비스 분석 → 맞춤 질문</span>
           </h3>
           <p className="text-xs text-gray-500 mt-0.5">
             서비스를 먼저 분석한 뒤 관련 질문 5개를 생성해 4개 AI 플랫폼에 실제로 전송합니다
@@ -263,7 +263,7 @@ export function CitationTestPanel({ serviceName, category, url }: Props) {
         </div>
         {!running && (
           <button onClick={runTest}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold px-4 py-2 rounded-xl shadow-sm transition-all">
+            className="flex items-center gap-2 bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all">
             <Play size={14} />{result ? '재테스트' : '실측 시작'}
           </button>
         )}

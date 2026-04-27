@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -21,20 +21,20 @@ function GeneratingOverlay({ steps }: { steps: ProgressStep[] }) {
   return (
     <div className="flex flex-col items-center justify-center h-full py-20 gap-8 px-6">
       <div className="relative">
-        <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-3xl shadow-lg">
+        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-3xl">
           ✨
         </div>
-        <div className="absolute -inset-3 rounded-3xl border-4 border-violet-200 border-t-violet-600 animate-spin opacity-60" />
+        <div className="absolute -inset-3 rounded-xl border-4 border-gray-200 border-t-violet-600 animate-spin opacity-60" />
       </div>
 
       <div className="text-center space-y-2">
         <p className="font-bold text-gray-900 text-lg">AI가 콘텐츠를 생성하고 있어요</p>
-        <p className="text-sm text-violet-600 font-medium">{lastStep?.message ?? '준비 중...'}</p>
+        <p className="text-sm text-gray-700 font-medium">{lastStep?.message ?? '준비 중...'}</p>
       </div>
 
       <div className="w-full max-w-sm space-y-2">
         {steps.map((step, i) => (
-          <div key={i} className={cn('flex items-center gap-3 text-sm transition-all duration-300', step.done ? 'text-green-600' : i === steps.length - 1 ? 'text-violet-700 font-semibold' : 'text-gray-300')}>
+          <div key={i} className={cn('flex items-center gap-3 text-sm transition-all duration-300', step.done ? 'text-green-600' : i === steps.length - 1 ? 'text-gray-800 font-semibold' : 'text-gray-300')}>
             {step.done
               ? <CheckCircle size={16} className="flex-shrink-0 text-green-500" />
               : i === steps.length - 1
@@ -46,8 +46,8 @@ function GeneratingOverlay({ steps }: { steps: ProgressStep[] }) {
         ))}
       </div>
 
-      <div className="bg-violet-50 border border-violet-100 rounded-xl p-4 max-w-sm w-full">
-        <p className="text-xs text-violet-700 text-center leading-relaxed">
+      <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 max-w-sm w-full">
+        <p className="text-xs text-gray-800 text-center leading-relaxed">
           이미지 분석 + 참고자료 요약 + 3단계 파이프라인을 실행 중입니다.<br />
           약 20-40초 소요됩니다.
         </p>
@@ -167,9 +167,9 @@ export function ContentStudio() {
   const showGenerating = generating
 
   return (
-    <div className="min-h-screen bg-[#F0F4FF] flex flex-col">
+    <div className="min-h-screen bg-[#F5F5F0] flex flex-col">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20 shadow-sm">
+      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
         <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -179,7 +179,7 @@ export function ContentStudio() {
           <div className="flex items-center gap-2">
             <PenLine size={16} className="text-violet-500" />
             <span className="font-bold text-gray-900 text-sm">콘텐츠 스튜디오</span>
-            <span className="hidden sm:inline text-xs bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full font-medium">
+            <span className="hidden sm:inline text-xs bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full font-medium">
               이미지·참고자료 기반 생성 + 편집
             </span>
           </div>
@@ -212,7 +212,7 @@ export function ContentStudio() {
             {showEditor && (
               <button
                 onClick={() => setPanelCollapsed(c => !c)}
-                className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition-colors"
+                className="absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-6 h-12 bg-white border border-gray-200 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
               >
                 {panelCollapsed ? <ChevronRight size={12} /> : <ChevronLeft size={12} />}
               </button>
@@ -233,19 +233,19 @@ export function ContentStudio() {
           {/* ── RIGHT: Editor / Generating / Empty ── */}
           <div className="h-full overflow-hidden">
             {showGenerating ? (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm h-full overflow-y-auto">
+              <div className="bg-white rounded-lg border border-gray-100 h-full overflow-y-auto">
                 <GeneratingOverlay steps={steps} />
               </div>
             ) : error ? (
-              <div className="bg-white rounded-2xl border border-red-100 shadow-sm h-full flex flex-col items-center justify-center gap-4 p-8">
-                <div className="w-14 h-14 bg-red-50 rounded-2xl flex items-center justify-center text-2xl">⚠️</div>
+              <div className="bg-white rounded-lg border border-red-100 h-full flex flex-col items-center justify-center gap-4 p-8">
+                <div className="w-14 h-14 bg-red-50 rounded-lg flex items-center justify-center text-2xl">⚠️</div>
                 <div className="text-center">
                   <p className="font-bold text-gray-800 mb-1">생성 실패</p>
                   <p className="text-sm text-gray-500">{error}</p>
                 </div>
                 <button
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 text-sm font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-xl transition-colors"
+                  className="flex items-center gap-2 text-sm font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-xl transition-colors"
                 >
                   <RotateCcw size={14} /> 다시 시도
                 </button>
@@ -257,8 +257,8 @@ export function ContentStudio() {
               />
             ) : (
               /* Empty state */
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm h-full flex flex-col items-center justify-center gap-6 p-8 text-center">
-                <div className="w-20 h-20 bg-violet-50 rounded-3xl flex items-center justify-center text-4xl">🎨</div>
+              <div className="bg-white rounded-lg border border-gray-100 h-full flex flex-col items-center justify-center gap-6 p-8 text-center">
+                <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center text-4xl">🎨</div>
                 <div>
                   <h2 className="font-bold text-gray-900 text-lg mb-2">콘텐츠 스튜디오</h2>
                   <p className="text-sm text-gray-500 max-w-xs leading-relaxed">

@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import { LandingScreen } from '@/components/LandingScreen'
@@ -130,7 +130,7 @@ export default function Home() {
       )}
 
       {error && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm px-5 py-3 rounded-xl shadow-lg max-w-sm text-center">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-red-600 text-white text-sm px-5 py-3 rounded-xl max-w-sm text-center">
           {error}
           <button onClick={() => setError(null)} className="ml-3 underline text-red-200 hover:text-white">닫기</button>
         </div>

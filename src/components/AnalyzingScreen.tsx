@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { getCategoryInfo } from '@/lib/constants'
@@ -24,13 +24,13 @@ interface AnalyzingScreenProps {
 function TrackStep({ label, status }: { label: string; status: 'done' | 'active' | 'pending' }) {
   return (
     <div className={`flex items-center gap-2.5 text-xs transition-all duration-300 ${
-      status === 'done' ? 'text-green-600' : status === 'active' ? 'text-indigo-600 font-semibold' : 'text-gray-300'
+      status === 'done' ? 'text-green-600' : status === 'active' ? 'text-gray-900 font-semibold' : 'text-gray-300'
     }`}>
       <span className="w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center border">
         {status === 'done'
           ? <span className="text-green-600 w-full h-full rounded-full border border-green-400 flex items-center justify-center text-xs">✓</span>
           : status === 'active'
-            ? <span className="w-full h-full rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
+            ? <span className="w-full h-full rounded-full border-2 border-gray-900 border-t-transparent animate-spin" />
             : <span className="text-gray-300 border-gray-200 w-full h-full rounded-full border flex items-center justify-center" />
         }
       </span>
@@ -69,19 +69,19 @@ export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps)
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#F0F4FF] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
         {/* Animated Icon */}
         <div className="relative w-20 h-20 mx-auto mb-6">
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 animate-ping opacity-20" />
-          <div className="absolute inset-1 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 animate-pulse opacity-40" />
-          <div className="absolute inset-2 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 animate-ping opacity-20" />
+          <div className="absolute inset-1 rounded-lg bg-gradient-to-br from-indigo-500 to-violet-600 animate-pulse opacity-40" />
+          <div className="absolute inset-2 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center">
             <span className="text-2xl">{catInfo.emoji}</span>
           </div>
         </div>
 
         <h2 className="text-xl font-bold text-gray-900 mb-1">
-          <span className="text-indigo-600">{serviceName}</span> 종합 분석 중
+          <span className="text-gray-900">{serviceName}</span> 종합 분석 중
         </h2>
         <p className="text-sm text-gray-500 mb-6">
           GEO 기술 분석과 AI 실측 테스트를 동시에 진행합니다
@@ -96,9 +96,9 @@ export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps)
         {/* Two parallel tracks */}
         <div className="grid grid-cols-2 gap-3">
           {/* GEO Analysis track */}
-          <div className="bg-white rounded-2xl border border-indigo-100 p-4 text-left">
-            <p className="text-xs font-bold text-indigo-700 mb-3 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-pulse" />
+          <div className="bg-white rounded-lg border border-gray-200 p-4 text-left">
+            <p className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-gray-800 rounded-full animate-pulse" />
               GEO 기술 분석
             </p>
             <div className="space-y-2">
@@ -110,9 +110,9 @@ export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps)
           </div>
 
           {/* Citation test track */}
-          <div className="bg-white rounded-2xl border border-violet-100 p-4 text-left">
-            <p className="text-xs font-bold text-violet-700 mb-3 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
+          <div className="bg-white rounded-lg border border-gray-200 p-4 text-left">
+            <p className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 bg-gray-500 rounded-full animate-pulse" />
               AI 실측 테스트
             </p>
             <div className="space-y-2">
@@ -124,8 +124,8 @@ export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps)
           </div>
         </div>
 
-        <div className="mt-5 bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-left">
-          <p className="text-xs text-indigo-700 leading-relaxed">
+        <div className="mt-5 bg-gray-50 border border-gray-200 rounded-xl p-3 text-left">
+          <p className="text-xs text-gray-800 leading-relaxed">
             <span className="font-bold">💡 종합 분석이란?</span> GEO 기술 신호(내부)와 AI 검색 실측(외부)을 교차 검증해 점수의 신뢰도를 높입니다. 약 20-30초 소요됩니다.
           </p>
         </div>

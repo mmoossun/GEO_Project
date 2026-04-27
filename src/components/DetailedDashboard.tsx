@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -86,7 +86,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
           { label: 'AI 인용 확률', value: `${base.citationProbability}%`, sub: '현재 기준', color: '#2563EB' },
           { label: '업계 대비', value: `${base.totalScore >= base.industryAverage ? '+' : ''}${base.totalScore - base.industryAverage}pt`, sub: `업계 평균 ${base.industryAverage}점`, color: base.totalScore >= base.industryAverage ? '#059669' : '#DC2626' },
         ].map((s, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+          <div key={i} className="bg-white rounded-lg border border-gray-100 p-4 text-center">
             <p className="text-2xl font-extrabold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs font-semibold text-gray-600 mt-0.5">{s.label}</p>
             <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>
@@ -96,23 +96,23 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
 
       {/* Radar + Brand Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <p className="text-sm font-bold text-gray-700 mb-3">차원별 균형</p>
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData}>
                 <PolarGrid stroke="#E5E7EB" />
                 <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
-                <Radar dataKey="score" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.15} strokeWidth={2} />
+                <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+        <div className="bg-white rounded-lg border border-gray-100 p-5 space-y-3">
           <p className="text-sm font-bold text-gray-700">브랜드 신뢰 지표</p>
           {[
             { label: '감성 점수', value: d.brandMetrics?.sentimentScore ?? 0, color: '#059669' },
-            { label: '주제 권위', value: d.brandMetrics?.topicalAuthority ?? 0, color: '#4F46E5' },
+            { label: '주제 권위', value: d.brandMetrics?.topicalAuthority ?? 0, color: '#111111' },
             { label: 'AI 인지도', value: d.brandMetrics?.shareOfVoice ?? 0, color: '#7C3AED' },
             { label: '신뢰 점수', value: d.brandMetrics?.trustScore ?? 0, color: '#0891B2' },
           ].map((m, i) => (
@@ -140,7 +140,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
       </div>
 
       {/* Competitive gap bars */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">경쟁 포지션 (차원별)</p>
         <div className="space-y-3">
           {(d.competitiveGap ?? []).map((g, i) => {
@@ -163,13 +163,13 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
         </div>
         <div className="flex gap-4 mt-3 text-xs text-gray-400">
           <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-gray-300 inline-block" />업계 평균</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-indigo-400 inline-block" />내 서비스</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-2 rounded bg-gray-700 inline-block" />내 서비스</span>
         </div>
       </div>
 
       {/* AI 응답 점유율 */}
       {responseShare && responseShare.totalResponses > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-bold text-gray-700">AI 응답 점유율</p>
             <span className="text-xs font-bold px-2.5 py-1 rounded-full"
@@ -239,7 +239,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
 
       {/* Strengths / Gaps */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-green-50 border border-green-100 rounded-2xl p-5">
+        <div className="bg-green-50 border border-green-100 rounded-lg p-5">
           <p className="text-sm font-bold text-green-900 mb-3 flex items-center gap-2"><TrendingUp size={15} />강점 영역</p>
           {(d.strengthAreas ?? []).map((s, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-green-800 mb-2">
@@ -247,7 +247,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
             </div>
           ))}
         </div>
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-5">
+        <div className="bg-red-50 border border-red-100 rounded-lg p-5">
           <p className="text-sm font-bold text-red-900 mb-3 flex items-center gap-2"><TrendingDown size={15} />콘텐츠 공백</p>
           {(d.contentGaps ?? []).map((g, i) => (
             <div key={i} className="flex items-start gap-2 text-sm text-red-800 mb-2">
@@ -287,27 +287,27 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
   return (
     <div className="space-y-5">
       {/* Position summary */}
-      <div className="bg-gradient-to-r from-slate-800 to-indigo-900 rounded-2xl p-5 text-white">
+      <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg p-5 text-white">
         <p className="font-bold text-base mb-2">경쟁적 포지셔닝</p>
         <p className="text-slate-300 text-sm leading-relaxed mb-3">{competitivePosition}</p>
         <div className="bg-white/10 rounded-xl p-3">
-          <p className="text-xs font-bold text-indigo-300 mb-1">🎯 차별화 기회</p>
+          <p className="text-xs font-bold text-gray-400 mb-1">🎯 차별화 기회</p>
           <p className="text-sm text-white leading-relaxed">{winningOpportunity}</p>
         </div>
       </div>
 
       {/* GEO Score comparison bar chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">GEO 점수 비교</p>
         <div className="h-52">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={allServices.map(s => ({ name: s.name, score: s.geoScore, fill: s.isMe ? '#4F46E5' : '#9CA3AF' }))} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
+            <BarChart data={allServices.map(s => ({ name: s.name, score: s.geoScore, fill: s.isMe ? '#111111' : '#9CA3AF' }))} margin={{ top: 5, right: 10, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} angle={-10} textAnchor="end" />
               <YAxis domain={[0, 100]} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v) => [`${v}점`, 'GEO Score']} />
               <Bar dataKey="score" radius={[6, 6, 0, 0]}>
-                {allServices.map((s, i) => <Cell key={i} fill={s.isMe ? '#4F46E5' : '#94A3B8'} />)}
+                {allServices.map((s, i) => <Cell key={i} fill={s.isMe ? '#111111' : '#94A3B8'} />)}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -316,7 +316,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
 
       {/* Per-dimension radar comparison */}
       {competitors.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <p className="text-sm font-bold text-gray-700 mb-4">차원별 비교 ({d.serviceName} vs 1위 경쟁사)</p>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -332,7 +332,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
               })}>
                 <PolarGrid stroke="#E5E7EB" />
                 <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
-                <Radar name={d.serviceName} dataKey="mine" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.15} strokeWidth={2} />
+                <Radar name={d.serviceName} dataKey="mine" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
                 <Radar name={competitors[0]?.name} dataKey="competitor" stroke="#EF4444" fill="#EF4444" fillOpacity={0.1} strokeWidth={2} />
                 <Legend />
               </RadarChart>
@@ -344,7 +344,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
       {/* Competitor cards */}
       <div className="space-y-4">
         {competitors.map((comp, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
               <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-600">{comp.name[0]}</div>
               <div className="flex-1 min-w-0">
@@ -391,7 +391,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
                       <div key={j} className="grid grid-cols-[80px_1fr_1fr] gap-2 items-center text-xs">
                         <span className="text-gray-500">{cd.nameKo}</span>
                         <div>
-                          <div className="h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-indigo-400 rounded-full" style={{ width: `${myPct}%` }} /></div>
+                          <div className="h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-gray-700 rounded-full" style={{ width: `${myPct}%` }} /></div>
                         </div>
                         <div>
                           <div className="h-1.5 bg-gray-100 rounded-full"><div className="h-1.5 bg-red-300 rounded-full" style={{ width: `${compPct}%` }} /></div>
@@ -400,7 +400,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
                     )
                   })}
                   <div className="flex gap-4 text-xs text-gray-400 mt-1">
-                    <span className="flex items-center gap-1"><span className="w-3 h-1.5 rounded bg-indigo-400 inline-block" />{d.serviceName}</span>
+                    <span className="flex items-center gap-1"><span className="w-3 h-1.5 rounded bg-gray-700 inline-block" />{d.serviceName}</span>
                     <span className="flex items-center gap-1"><span className="w-3 h-1.5 rounded bg-red-300 inline-block" />{comp.name}</span>
                   </div>
                 </div>
@@ -411,14 +411,14 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
       </div>
 
       {/* Topical Authority Map */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><BookOpen size={15} />주제 권위 맵</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-xs font-bold text-indigo-700 mb-2">✅ 현재 강점 주제</p>
+            <p className="text-xs font-bold text-gray-800 mb-2">✅ 현재 강점 주제</p>
             <div className="flex flex-wrap gap-1.5">
               {(d.topicalAuthorityMap?.coreTopics ?? []).map((t, i) => (
-                <span key={i} className="text-xs bg-indigo-50 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-full">{t}</span>
+                <span key={i} className="text-xs bg-gray-50 text-gray-800 border border-gray-200 px-2.5 py-1 rounded-full">{t}</span>
               ))}
             </div>
           </div>
@@ -459,7 +459,7 @@ function PlatformsTab({ d }: { d: DetailedAnalysis }) {
   return (
     <div className="space-y-4">
       {/* Score bar chart */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">AI 플랫폼별 현재 가시성</p>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -479,7 +479,7 @@ function PlatformsTab({ d }: { d: DetailedAnalysis }) {
       {/* Strategy cards */}
       <div className="space-y-3">
         {(d.platformStrategies ?? []).map((ps, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
             <button
               className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setSelected(selected === ps.platform ? null : ps.platform)}
@@ -536,7 +536,7 @@ function PlatformsTab({ d }: { d: DetailedAnalysis }) {
                     <p className="text-xs font-bold text-gray-600 mb-2">🎯 이 서비스가 답이 될 프롬프트</p>
                     <div className="space-y-1.5">
                       {ps.targetPrompts.map((p, j) => (
-                        <p key={j} className="text-xs text-gray-700 bg-indigo-50 rounded-lg px-2.5 py-1.5 border border-indigo-100 italic">"{p}"</p>
+                        <p key={j} className="text-xs text-gray-700 bg-gray-50 rounded-lg px-2.5 py-1.5 border border-gray-200 italic">"{p}"</p>
                       ))}
                     </div>
                   </div>
@@ -560,28 +560,28 @@ function ContentTab({ d }: { d: DetailedAnalysis }) {
     'How-To': 'bg-blue-50 text-blue-700 border-blue-200',
     Comparison: 'bg-green-50 text-green-700 border-green-200',
     Definition: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    Guide: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+    Guide: 'bg-gray-50 text-gray-800 border-gray-200',
     'Case-Study': 'bg-orange-50 text-orange-700 border-orange-200',
   }
   const [expanded, setExpanded] = useState<number | null>(0)
 
   return (
     <div className="space-y-4">
-      <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
-        <p className="text-sm font-bold text-indigo-800 mb-1 flex items-center gap-2"><Target size={15} />콘텐츠 플랜이란?</p>
-        <p className="text-xs text-indigo-700 leading-relaxed">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+        <p className="text-sm font-bold text-gray-800 mb-1 flex items-center gap-2"><Target size={15} />콘텐츠 플랜이란?</p>
+        <p className="text-xs text-gray-800 leading-relaxed">
           AI 검색 엔진이 가장 많이 인용하는 콘텐츠 유형과, {d.serviceName}이 직접 답이 되어야 하는 쿼리를 분석해 작성해야 할 콘텐츠를 우선순위별로 제시합니다.
         </p>
       </div>
 
       <div className="space-y-3">
         {(d.contentBlueprint ?? []).map((bp, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
             <button
               className="w-full flex items-start gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === i ? null : i)}
             >
-              <div className="w-7 h-7 rounded-lg bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-700 flex-shrink-0 mt-0.5">{i + 1}</div>
+              <div className="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-800 flex-shrink-0 mt-0.5">{i + 1}</div>
               <div className="flex-1 min-w-0 text-left">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <p className="font-semibold text-sm text-gray-800">{bp.title}</p>
@@ -616,7 +616,7 @@ function ContentTab({ d }: { d: DetailedAnalysis }) {
                     <p className="text-xs font-bold text-gray-600 mb-2">📝 포함해야 할 핵심 포인트</p>
                     {bp.keyPoints.map((p, j) => (
                       <div key={j} className="flex items-start gap-2 text-xs text-gray-700 mb-1.5">
-                        <span className="text-indigo-500 font-bold flex-shrink-0">{j + 1}.</span>{p}
+                        <span className="text-gray-700 font-bold flex-shrink-0">{j + 1}.</span>{p}
                       </div>
                     ))}
                   </div>
@@ -652,14 +652,14 @@ function TechnicalTab({ d }: { d: DetailedAnalysis }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
+      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
         <p className="text-sm font-bold text-gray-700 mb-1 flex items-center gap-2"><Code2 size={15} />기술 구현 가이드</p>
         <p className="text-xs text-gray-500">각 항목을 클릭하면 실제 구현 코드와 설명을 확인할 수 있습니다. 코드는 복사해서 바로 사용할 수 있습니다.</p>
       </div>
 
       <div className="space-y-3">
         {(d.techImplementations ?? []).map((impl, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
             <button
               className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === i ? null : i)}
@@ -678,9 +678,9 @@ function TechnicalTab({ d }: { d: DetailedAnalysis }) {
             {expanded === i && (
               <div className="border-t border-gray-100 px-5 py-5 space-y-4">
                 <div className="flex gap-4">
-                  <div className="flex-1 bg-indigo-50 rounded-xl p-3">
-                    <p className="text-xs font-bold text-indigo-700 mb-1">💡 GEO 효과</p>
-                    <p className="text-sm text-indigo-800 leading-relaxed">{impl.impact}</p>
+                  <div className="flex-1 bg-gray-50 rounded-xl p-3">
+                    <p className="text-xs font-bold text-gray-800 mb-1">💡 GEO 효과</p>
+                    <p className="text-sm text-gray-800 leading-relaxed">{impl.impact}</p>
                   </div>
                   <div className="bg-gray-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 w-24 flex-shrink-0">
                     <span className="text-xs text-gray-500">난이도</span>
@@ -729,7 +729,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
       <div className="flex gap-1.5 bg-gray-100 rounded-xl p-1">
         {([['matrix', '액션 매트릭스'], ['roadmap', '30일 로드맵'], ['checklist', 'GEO 체크리스트']] as const).map(([id, label]) => (
           <button key={id} onClick={() => setExecTab(id)}
-            className={cn('flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all', execTab === id ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700')}>
+            className={cn('flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all', execTab === id ? 'bg-white text-gray-800' : 'text-gray-500 hover:text-gray-700')}>
             {label}
           </button>
         ))}
@@ -737,12 +737,12 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
 
       {execTab === 'matrix' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="bg-white rounded-lg border border-gray-100 p-5">
             <p className="text-sm font-bold text-gray-700 mb-1">Impact × Effort 매트릭스</p>
             <p className="text-xs text-gray-400 mb-4">점을 클릭하면 상세 내용을 확인할 수 있습니다</p>
-            <div className="relative h-72 bg-gray-50 rounded-2xl border border-gray-100 p-4">
+            <div className="relative h-72 bg-gray-50 rounded-lg border border-gray-100 p-4">
               <div className="absolute top-3 left-3 text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">⚡ 빠른 성과</div>
-              <div className="absolute top-3 right-3 text-xs font-semibold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-full">🎯 전략 투자</div>
+              <div className="absolute top-3 right-3 text-xs font-semibold text-gray-700 bg-gray-50 px-2 py-0.5 rounded-full">🎯 전략 투자</div>
               <div className="absolute bottom-3 left-3 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">📌 틈새 채우기</div>
               <div className="absolute bottom-3 right-3 text-xs font-semibold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">💤 재고 필요</div>
               <ResponsiveContainer width="100%" height="100%">
@@ -757,7 +757,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
                     if (!active || !payload?.length) return null
                     const item = payload[0].payload as ActionItem
                     return (
-                      <div className="bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-lg max-w-[200px]">
+                      <div className="bg-white border border-gray-200 rounded-xl px-3 py-2 max-w-[200px]">
                         <p className="text-xs font-bold text-gray-800">{item.title}</p>
                         <p className="text-xs text-gray-500">{item.timeframe} · {item.category}</p>
                       </div>
@@ -772,7 +772,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
               </ResponsiveContainer>
             </div>
             {selected && (
-              <div className="mt-3 bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+              <div className="mt-3 bg-white rounded-xl border border-gray-100 p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 rounded-full flex-shrink-0 mt-1" style={{ backgroundColor: qColors[selected.quadrant] }} />
                   <div className="flex-1">
@@ -800,20 +800,20 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
 
       {execTab === 'roadmap' && (
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-5 text-white">
+          <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-lg p-5 text-white">
             <p className="font-bold text-base mb-1">30일 GEO 개선 로드맵</p>
-            <p className="text-indigo-200 text-sm">현재 {d.baseScore}점 → 목표 {d.potentialScore}점</p>
+            <p className="text-gray-300 text-sm">현재 {d.baseScore}점 → 목표 {d.potentialScore}점</p>
             <div className="flex items-center gap-3 mt-3">
               <div className="flex-1 bg-white/20 rounded-full h-2">
                 <div className="h-2 rounded-full bg-white" style={{ width: `${d.baseScore}%` }} />
               </div>
-              <span className="text-xs text-indigo-200">+{d.potentialScore - d.baseScore}점 향상</span>
+              <span className="text-xs text-gray-300">+{d.potentialScore - d.baseScore}점 향상</span>
             </div>
           </div>
           {(d.roadmap ?? []).map(week => (
-            <div key={week.week} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div key={week.week} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
               <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 border-b border-gray-100">
-                <div className="w-9 h-9 rounded-xl bg-indigo-100 flex items-center justify-center text-sm font-bold text-indigo-700">{week.week}주</div>
+                <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-800">{week.week}주</div>
                 <div className="flex-1">
                   <p className="font-bold text-gray-900 text-sm">{week.label} — {week.focus}</p>
                 </div>
@@ -821,7 +821,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
               </div>
               <div className="px-5 py-4 space-y-2">
                 {week.tasks.map((task, i) => {
-                  const typeColors = { content: '#2563EB', technical: '#7C3AED', authority: '#059669' }
+                  const typeColors = { content: '#2563EB', technical: '#374151', authority: '#059669' }
                   const typeLabels = { content: '콘텐츠', technical: '기술', authority: '권위' }
                   return (
                     <div key={i} className="flex items-center gap-3">
@@ -848,14 +848,14 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
               { label: '경고', count: d.checklistSummary.warning, color: '#D97706', bg: 'bg-amber-50 border-amber-100' },
               { label: '미달', count: d.checklistSummary.fail, color: '#DC2626', bg: 'bg-red-50 border-red-100' },
             ].map((s, i) => (
-              <div key={i} className={cn('rounded-2xl border p-4 text-center', s.bg)}>
+              <div key={i} className={cn('rounded-lg border p-4 text-center', s.bg)}>
                 <p className="text-2xl font-extrabold" style={{ color: s.color }}>{s.count}</p>
                 <p className="text-xs font-semibold text-gray-600 mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
           {Array.from(new Set((d.checklist ?? []).map(c => c.category))).map(cat => (
-            <div key={cat} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+            <div key={cat} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
               <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
                 <p className="text-sm font-bold text-gray-700">{cat}</p>
               </div>
@@ -909,29 +909,29 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
   }, [analysis])
 
   if (loading) return (
-    <div className="min-h-screen bg-[#F0F4FF] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
       <div className="text-center space-y-4">
-        <div className="w-16 h-16 mx-auto rounded-2xl bg-indigo-100 flex items-center justify-center text-3xl animate-pulse">📊</div>
+        <div className="w-16 h-16 mx-auto rounded-lg bg-gray-100 flex items-center justify-center text-3xl animate-pulse">📊</div>
         <p className="font-bold text-gray-900">심층 분석 생성 중...</p>
         <p className="text-sm text-gray-500">경쟁사 비교 · 플랫폼별 전략 · 콘텐츠 플랜 · 기술 구현 가이드</p>
-        <Loader2 size={20} className="animate-spin text-indigo-500 mx-auto" />
+        <Loader2 size={20} className="animate-spin text-gray-700 mx-auto" />
       </div>
     </div>
   )
 
   if (error || !detail) return (
-    <div className="min-h-screen bg-[#F0F4FF] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
       <div className="text-center space-y-3">
         <p className="text-red-600 font-bold">분석 실패</p>
         <p className="text-sm text-gray-500">{error}</p>
-        <Link href="/" className="text-indigo-600 underline text-sm">돌아가기</Link>
+        <Link href="/" className="text-gray-900 underline text-sm">돌아가기</Link>
       </div>
     </div>
   )
 
   return (
-    <div className="min-h-screen bg-[#F0F4FF]">
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20 shadow-sm">
+    <div className="min-h-screen bg-[#F5F5F0]">
+      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -939,9 +939,9 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
           </Link>
           <div className="w-px h-4 bg-gray-200" />
           <div className="flex items-center gap-2">
-            <BarChart3 size={16} className="text-indigo-500" />
+            <BarChart3 size={16} className="text-gray-700" />
             <span className="font-bold text-gray-900 text-sm">{analysis.serviceName}</span>
-            <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full hidden sm:inline">심층 GEO 분석</span>
+            <span className="text-xs bg-gray-50 text-gray-800 px-2 py-0.5 rounded-full hidden sm:inline">심층 GEO 분석</span>
           </div>
           <div className="ml-auto flex items-center gap-2 text-sm">
             <span className="font-bold" style={{ color: getScoreColor(detail.baseScore) }}>{detail.baseScore}점</span>
@@ -954,12 +954,12 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
 
       <main className="max-w-5xl mx-auto px-4 py-5 space-y-5 pb-16">
         {/* Tab navigation */}
-        <div className="flex gap-1 bg-white rounded-2xl p-1.5 border border-gray-100 shadow-sm overflow-x-auto">
+        <div className="flex gap-1 bg-white rounded-lg p-1.5 border border-gray-100 overflow-x-auto">
           {TABS.map(tab => {
             const Icon = tab.icon
             return (
               <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                className={cn('flex items-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0', activeTab === tab.id ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50')}>
+                className={cn('flex items-center gap-1.5 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all whitespace-nowrap flex-shrink-0', activeTab === tab.id ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50')}>
                 <Icon size={13} />
                 {tab.label}
               </button>

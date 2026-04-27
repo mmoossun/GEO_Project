@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import Link from 'next/link'
@@ -92,7 +92,7 @@ function DimensionRow({
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onImprove(`${dim.nameKo} 점수를 높이는 구체적인 방법과 실제 콘텐츠 예시를 알려줘.`) }}
-            className="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg transition-colors"
           >
             <MessageCircle size={13} />
             AI에게 이 부분 개선 방법 물어보기
@@ -162,9 +162,9 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
   }
 
   return (
-    <div className="min-h-screen bg-[#F0F4FF]">
+    <div className="min-h-screen bg-[#F5F5F0]">
       {/* Sticky Header */}
-      <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100 shadow-sm">
+      <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-gray-100">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={onBack} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -181,7 +181,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
               {copied ? <Check size={13} className="text-green-600" /> : <Share2 size={13} />}
               <span className="hidden sm:inline">{copied ? '복사됨' : '공유'}</span>
             </button>
-            <button onClick={onReanalyze} className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-700 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-lg transition-colors">
+            <button onClick={onReanalyze} className="flex items-center gap-1 text-xs text-gray-900 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg transition-colors">
               <RefreshCw size={13} />
               <span className="hidden sm:inline">재분석</span>
             </button>
@@ -196,14 +196,14 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
             )}
             <Link
               href="/detail"
-              className="flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
+              className="flex items-center gap-1 text-xs font-semibold text-white bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 px-3 py-1.5 rounded-lg transition-all"
             >
               <BarChart3 size={13} />
               <span className="hidden sm:inline">상세 분석</span>
             </Link>
             <Link
               href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
-              className="flex items-center gap-1 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 px-2.5 py-1.5 rounded-lg transition-colors"
+              className="flex items-center gap-1 text-xs font-semibold text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-lg transition-colors"
             >
               <Sparkles size={13} />
               <span className="hidden sm:inline">콘텐츠 생성</span>
@@ -233,7 +233,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         )}
 
         {/* Score Hero */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-lg border border-gray-100 p-6">
           <div className="flex flex-col sm:flex-row gap-6 items-center">
             {/* Gauge */}
             <div className="flex flex-col items-center flex-shrink-0">
@@ -272,16 +272,16 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
                 </div>
               </div>
               <p className="text-sm text-gray-600 leading-relaxed">{analysis.summary}</p>
-              <p className="text-xs text-indigo-600 italic">{analysis.competitiveInsight}</p>
+              <p className="text-xs text-gray-900 italic">{analysis.competitiveInsight}</p>
             </div>
           </div>
         </div>
 
         {/* ── Combined Analysis Panel ── */}
         {combined && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-slate-800 to-indigo-900 text-white">
+            <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
               <span className="text-2xl">{combined.combined.gapEmoji}</span>
               <div className="flex-1">
                 <p className="font-bold text-base">{combined.combined.gapLabel}</p>
@@ -296,24 +296,24 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
             <div className="p-5 space-y-4">
               {/* Score comparison */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3">
-                  <p className="text-xs font-semibold text-indigo-600 mb-1">GEO 준비도 (내부 신호)</p>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-gray-900 mb-1">GEO 준비도 (내부 신호)</p>
                   <div className="flex items-end gap-1.5">
-                    <span className="text-2xl font-extrabold text-indigo-700">{combined.combined.geoReadinessScore}</span>
-                    <span className="text-xs text-indigo-400 mb-0.5">/100 · {combined.geoAnalysis.analysisMode === 'real_url' ? '실측' : '추정'}</span>
+                    <span className="text-2xl font-extrabold text-gray-800">{combined.combined.geoReadinessScore}</span>
+                    <span className="text-xs text-gray-500 mb-0.5">/100 · {combined.geoAnalysis.analysisMode === 'real_url' ? '실측' : '추정'}</span>
                   </div>
-                  <div className="mt-1.5 bg-indigo-100 rounded-full h-1.5">
-                    <div className="h-1.5 rounded-full bg-indigo-500 transition-all" style={{ width: `${combined.combined.geoReadinessScore}%` }} />
+                  <div className="mt-1.5 bg-gray-100 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full bg-gray-800 transition-all" style={{ width: `${combined.combined.geoReadinessScore}%` }} />
                   </div>
                 </div>
-                <div className="bg-violet-50 border border-violet-100 rounded-xl p-3">
-                  <p className="text-xs font-semibold text-violet-600 mb-1">AI 실측 인용율 (외부 신호)</p>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                  <p className="text-xs font-semibold text-gray-700 mb-1">AI 실측 인용율 (외부 신호)</p>
                   <div className="flex items-end gap-1.5">
-                    <span className="text-2xl font-extrabold text-violet-700">{combined.combined.citationRate}</span>
-                    <span className="text-xs text-violet-400 mb-0.5">% · {combined.citationTest.hasOpenRouter ? '4플랫폼' : '1플랫폼'} 실측</span>
+                    <span className="text-2xl font-extrabold text-gray-800">{combined.combined.citationRate}</span>
+                    <span className="text-xs text-gray-500 mb-0.5">% · {combined.citationTest.hasOpenRouter ? '4플랫폼' : '1플랫폼'} 실측</span>
                   </div>
-                  <div className="mt-1.5 bg-violet-100 rounded-full h-1.5">
-                    <div className="h-1.5 rounded-full bg-violet-500 transition-all" style={{ width: `${combined.combined.citationRate}%` }} />
+                  <div className="mt-1.5 bg-gray-100 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full bg-gray-500 transition-all" style={{ width: `${combined.combined.citationRate}%` }} />
                   </div>
                 </div>
               </div>
@@ -323,7 +323,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
                 <p className="text-sm font-bold text-gray-800">격차 분석</p>
                 <p className="text-sm text-gray-600 leading-relaxed">{combined.combined.gapInsight}</p>
                 <div className="pt-2 border-t border-gray-100">
-                  <p className="text-xs font-semibold text-indigo-700">👉 권장 전략</p>
+                  <p className="text-xs font-semibold text-gray-800">👉 권장 전략</p>
                   <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">{combined.combined.gapAction}</p>
                 </div>
               </div>
@@ -408,7 +408,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
                   <div className="space-y-2">
                     {combined.combined.unifiedRecommendations.slice(0, 3).map((rec, i) => {
                       const sourceLabel = { geo: '기술분석', citation: '실측결과', combined: '교차분석' }[rec.source]
-                      const sourceBg = { geo: 'bg-indigo-50 text-indigo-700', citation: 'bg-violet-50 text-violet-700', combined: 'bg-pink-50 text-pink-700' }[rec.source]
+                      const sourceBg = { geo: 'bg-gray-50 text-gray-800', citation: 'bg-gray-50 text-gray-800', combined: 'bg-pink-50 text-pink-700' }[rec.source]
                       const pc = getPriorityConfig(rec.priority)
                       return (
                         <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-gray-100">
@@ -438,21 +438,21 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         {/* Radar + Benchmark */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Radar */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-white rounded-lg border border-gray-100 p-4">
             <p className="text-sm font-bold text-gray-700 mb-2">차원별 균형 분석</p>
             <div className="h-48">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
                   <PolarGrid stroke="#E5E7EB" />
                   <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: '#6B7280' }} />
-                  <Radar dataKey="score" stroke="#4F46E5" fill="#4F46E5" fillOpacity={0.15} strokeWidth={2} />
+                  <Radar dataKey="score" stroke="#111111" fill="#111111" fillOpacity={0.15} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
           {/* Benchmark */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
+          <div className="bg-white rounded-lg border border-gray-100 p-4">
             <p className="text-sm font-bold text-gray-700 mb-4">업계 비교</p>
             <div className="space-y-3">
               <BenchmarkBar label="상위 10%" score={analysis.topPerformerScore} color="#7C3AED" />
@@ -474,7 +474,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
         </div>
 
         {/* Dimension Breakdown */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <div className="bg-white rounded-lg border border-gray-100 p-5">
           <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
             <span>📊</span> 5가지 차원 상세 분석
             <span className="text-xs text-gray-400 font-normal ml-1">각 항목을 클릭해 상세 내용을 확인하세요</span>
@@ -488,7 +488,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* Recommendations */}
         {analysis.recommendations.length > 0 && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <div className="bg-white rounded-lg border border-gray-100 p-5">
             <h2 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <span>🎯</span> 핵심 개선 권고사항
             </h2>
@@ -522,7 +522,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* Quick Wins */}
         {analysis.quickWins.length > 0 && (
-          <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
+          <div className="bg-amber-50 border border-amber-100 rounded-lg p-5">
             <h2 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
               <span>⚡</span> 지금 바로 할 수 있는 빠른 개선 방법
             </h2>
@@ -539,16 +539,16 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* Detail Dashboard CTA Banner */}
         <Link href="/detail"
-          className="block bg-gradient-to-r from-slate-800 to-indigo-900 hover:from-slate-900 hover:to-indigo-950 text-white rounded-2xl p-5 transition-all hover:shadow-xl group"
+          className="block bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-950 text-white rounded-lg p-5 transition-all hover:shadow-xl group"
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
+            <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-white/20 transition-colors">
               <BarChart3 size={22} className="text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-1">
                 <p className="font-bold text-base">상세 GEO 대시보드 보기</p>
-                <span className="text-xs bg-indigo-500 text-white px-2 py-0.5 rounded-full font-semibold">NEW</span>
+                <span className="text-xs bg-gray-800 text-white px-2 py-0.5 rounded-full font-semibold">NEW</span>
               </div>
               <p className="text-slate-300 text-sm">AI 플랫폼별 분석 · GEO 체크리스트 · 액션 매트릭스 · 30일 로드맵</p>
             </div>
@@ -561,7 +561,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
           {/* AI Agent CTA */}
           <button
             onClick={() => onOpenChat()}
-            className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group"
+            className="bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 text-white rounded-lg p-4 text-left transition-all hover:shadow-lg group"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -569,7 +569,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">GEO AI 전문가</p>
-                <p className="text-indigo-200 text-xs mt-0.5">대화형 전략 컨설팅</p>
+                <p className="text-gray-300 text-xs mt-0.5">대화형 전략 컨설팅</p>
               </div>
               <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
             </div>
@@ -578,7 +578,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
           {/* Content Studio CTA */}
           <Link
             href="/studio"
-            className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group block"
+            className="bg-gradient-to-r bg-gray-800 hover:bg-gray-900 text-white rounded-lg p-4 text-left transition-all hover:shadow-lg group block"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -586,7 +586,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">콘텐츠 스튜디오</p>
-                <p className="text-purple-200 text-xs mt-0.5">이미지·참고자료 기반 생성</p>
+                <p className="text-gray-300 text-xs mt-0.5">이미지·참고자료 기반 생성</p>
               </div>
               <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
             </div>
@@ -595,7 +595,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
           {/* Content Generator CTA */}
           <Link
             href={`/generate?service=${encodeURIComponent(analysis.serviceName)}&category=${analysis.category}&categoryLabel=${encodeURIComponent(analysis.categoryLabel)}&score=${analysis.totalScore}`}
-            className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-2xl p-4 text-left transition-all hover:shadow-lg group block"
+            className="bg-gray-900 hover:bg-gray-800 text-white rounded-lg p-4 text-left transition-all group block"
           >
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -603,7 +603,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-sm">콘텐츠 생성기</p>
-                <p className="text-emerald-100 text-xs mt-0.5">플랫폼별 맞춤 생성</p>
+                <p className="text-gray-300 text-xs mt-0.5">플랫폼별 맞춤 생성</p>
               </div>
               <span className="text-white/60 group-hover:text-white transition-colors flex-shrink-0">→</span>
             </div>

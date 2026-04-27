@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { MessageCircle, X, Send, Loader2, Copy, Check, ChevronDown } from 'lucide-react'
@@ -9,12 +9,12 @@ import type { ChatMessage, GEOAnalysisResult } from '@/lib/types'
 function parseMarkdown(text: string): string {
   return text
     .replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-900 text-green-300 rounded-lg p-3 text-xs overflow-x-auto my-2 whitespace-pre-wrap"><code>$1</code></pre>')
-    .replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-indigo-700 rounded px-1 py-0.5 text-xs font-mono">$1</code>')
+    .replace(/`([^`]+)`/g, '<code class="bg-gray-100 text-gray-800 rounded px-1 py-0.5 text-xs font-mono">$1</code>')
     .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-gray-900">$1</strong>')
     .replace(/^### (.+)$/gm, '<p class="font-bold text-sm text-gray-800 mt-2 mb-1">$1</p>')
     .replace(/^## (.+)$/gm, '<p class="font-bold text-base text-gray-900 mt-3 mb-1">$1</p>')
     .replace(/^# (.+)$/gm, '<p class="font-bold text-lg text-gray-900 mt-3 mb-1">$1</p>')
-    .replace(/^\d+\. (.+)$/gm, '<div class="flex gap-2 my-0.5"><span class="text-indigo-500 font-semibold flex-shrink-0">•</span><span>$1</span></div>')
+    .replace(/^\d+\. (.+)$/gm, '<div class="flex gap-2 my-0.5"><span class="text-gray-700 font-semibold flex-shrink-0">•</span><span>$1</span></div>')
     .replace(/^[-*] (.+)$/gm, '<div class="flex gap-2 my-0.5"><span class="text-gray-400 flex-shrink-0">·</span><span>$1</span></div>')
     .replace(/\n{2,}/g, '<br class="my-1" />')
     .replace(/\n/g, ' ')
@@ -173,7 +173,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white px-4 py-3 rounded-2xl shadow-xl hover:shadow-2xl transition-all"
+          className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 bg-gradient-to-r from-gray-900 to-gray-800 hover:bg-gray-800 text-white px-4 py-3 rounded-lg shadow-xl hover:shadow-2xl transition-all"
         >
           <MessageCircle size={20} />
           <span className="font-semibold text-sm">GEO AI 전문가</span>
@@ -183,21 +183,21 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
 
       {/* Chat Panel */}
       {open && (
-        <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm sm:max-w-md flex flex-col bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden"
+        <div className="fixed bottom-4 right-4 z-50 w-[calc(100vw-2rem)] max-w-sm sm:max-w-md flex flex-col bg-white rounded-lg shadow-2xl border border-gray-100 overflow-hidden"
           style={{ height: 'min(600px, calc(100dvh - 2rem))' }}
         >
           {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-indigo-600 to-violet-600 flex-shrink-0">
+          <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-gray-900 to-gray-800 flex-shrink-0">
             <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center flex-shrink-0">
               <span className="text-lg">🤖</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-bold text-white text-sm">GEO AI 전문가</p>
-              <p className="text-indigo-200 text-xs truncate">{analysis.serviceName} 전담 컨설턴트</p>
+              <p className="text-gray-300 text-xs truncate">{analysis.serviceName} 전담 컨설턴트</p>
             </div>
             <div className="flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
-              <span className="text-xs text-indigo-200">온라인</span>
+              <span className="text-xs text-gray-300">온라인</span>
               <button onClick={() => setOpen(false)} className="ml-2 text-white/60 hover:text-white transition-colors p-1">
                 <X size={16} />
               </button>
@@ -214,7 +214,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
                     key={action.id}
                     onClick={() => sendMessage(action.prompt)}
                     disabled={streaming}
-                    className="text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1.5 rounded-full transition-colors disabled:opacity-50"
+                    className="text-xs bg-gray-50 text-gray-800 hover:bg-gray-100 border border-gray-200 px-2.5 py-1.5 rounded-full transition-colors disabled:opacity-50"
                   >
                     {action.label}
                   </button>
@@ -232,14 +232,14 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
             {messages.map((msg, i) => (
               <div key={i} className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {msg.role === 'assistant' && (
-                  <div className="w-7 h-7 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
+                  <div className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 mr-2 mt-1">
                     <span className="text-sm">🤖</span>
                   </div>
                 )}
                 <div className={cn(
-                  'max-w-[82%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed',
+                  'max-w-[82%] rounded-lg px-3.5 py-2.5 text-sm leading-relaxed',
                   msg.role === 'user'
-                    ? 'bg-indigo-600 text-white rounded-br-sm'
+                    ? 'bg-gray-900 text-white rounded-br-sm'
                     : 'bg-gray-50 border border-gray-100 rounded-bl-sm text-gray-700'
                 )}>
                   {msg.role === 'assistant' ? (
@@ -279,7 +279,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
                   <button
                     key={s}
                     onClick={() => sendMessage(s)}
-                    className="text-xs text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 px-2.5 py-1 rounded-full transition-colors"
+                    className="text-xs text-gray-900 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-2.5 py-1 rounded-full transition-colors"
                   >
                     {s}
                   </button>
@@ -294,7 +294,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
           {showScrollBtn && (
             <button
               onClick={() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })}
-              className="absolute bottom-20 right-4 w-7 h-7 bg-white border border-gray-200 shadow-sm rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
+              className="absolute bottom-20 right-4 w-7 h-7 bg-white border border-gray-200 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors"
             >
               <ChevronDown size={14} />
             </button>
@@ -311,7 +311,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
                 placeholder="질문하거나 콘텐츠 생성을 요청하세요..."
                 rows={1}
                 disabled={streaming}
-                className="flex-1 resize-none border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent disabled:opacity-60 max-h-32 overflow-y-auto"
+                className="flex-1 resize-none border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent disabled:opacity-60 max-h-32 overflow-y-auto"
                 style={{ minHeight: '42px' }}
               />
               <button
@@ -320,7 +320,7 @@ export function AIAgentChat({ analysis, forceOpen, onForceOpenHandled, initialMe
                 className={cn(
                   'w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all',
                   input.trim() && !streaming
-                    ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'
+                    ? 'bg-gray-900 hover:bg-gray-950 text-white'
                     : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                 )}
               >

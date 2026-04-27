@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Content Strategy Engine — Publishable Quality Standard
  *
  * All content generated must meet this bar:
@@ -44,7 +44,7 @@ export const PLATFORMS: Record<PlatformType, PlatformConfig> = {
     tips: ['코드 블록 필수', '문제→해결 구조', '논리적 흐름', '간결하고 기술적'],
   },
   company: {
-    name: '기업 웹사이트', emoji: '🏢', color: '#4F46E5', bgColor: '#EEF2FF', borderColor: '#C7D2FE',
+    name: '기업 웹사이트', emoji: '🏢', color: '#111111', bgColor: '#EEF2FF', borderColor: '#C7D2FE',
     shortDesc: '브랜드 메시지 · CTA · 신뢰 기반 · E-E-A-T 강화',
     idealDepths: ['medium', 'deep'], defaultTone: 'professional', supportsMarkdown: false,
     hashtagRange: [0, 0],

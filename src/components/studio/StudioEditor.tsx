@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -114,7 +114,7 @@ function ToolbarBtn({ onClick, active, disabled, title, children }: {
       title={title}
       className={cn(
         'p-1.5 rounded-lg transition-colors',
-        active ? 'bg-violet-100 text-violet-700' : 'text-gray-600 hover:bg-gray-100',
+        active ? 'bg-gray-100 text-gray-800' : 'text-gray-600 hover:bg-gray-100',
         disabled && 'opacity-30 cursor-not-allowed'
       )}
     >
@@ -148,7 +148,7 @@ export function StudioEditor({ content, images, onRewriteSection }: StudioEditor
       Image.configure({
         inline: false,
         allowBase64: true,
-        HTMLAttributes: { class: 'rounded-xl max-w-full mx-auto shadow-sm' },
+        HTMLAttributes: { class: 'rounded-xl max-w-full mx-auto' },
       }),
       Placeholder.configure({ placeholder: '내용을 직접 입력하거나 위에서 생성한 콘텐츠를 편집하세요...' }),
       Highlight.configure({ HTMLAttributes: { class: 'bg-yellow-200 rounded px-0.5' } }),
@@ -237,7 +237,7 @@ export function StudioEditor({ content, images, onRewriteSection }: StudioEditor
   if (!editor) return null
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-lg border border-gray-100 overflow-hidden">
       {/* Fixed Toolbar */}
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-gray-100 bg-white flex-wrap sticky top-0 z-10">
         {/* History */}
@@ -323,7 +323,7 @@ export function StudioEditor({ content, images, onRewriteSection }: StudioEditor
           </button>
           <button
             onClick={() => download('markdown')}
-            className="flex items-center gap-1 text-xs font-semibold text-violet-700 bg-violet-50 hover:bg-violet-100 px-2.5 py-1.5 rounded-lg transition-colors"
+            className="flex items-center gap-1 text-xs font-semibold text-gray-800 bg-gray-50 hover:bg-gray-100 px-2.5 py-1.5 rounded-lg transition-colors"
             title="마크다운 다운로드"
           >
             <Download size={12} />

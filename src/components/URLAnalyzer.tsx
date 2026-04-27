@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -91,7 +91,7 @@ function DimensionCard({ dim }: { dim: Dimension }) {
   const Icon = DIMENSION_ICONS[dim.id] ?? BarChart2
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
       <button className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors" onClick={() => setOpen(o => !o)}>
         <div className="p-2 rounded-xl flex-shrink-0" style={{ backgroundColor: `${color}18` }}>
           <Icon size={18} style={{ color }} />
@@ -149,7 +149,7 @@ function RecommendationCard({ rec, idx }: { rec: Recommendation; idx: number }) 
   }[rec.priority]
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: cfg.border }}>
+    <div className="rounded-lg border overflow-hidden" style={{ borderColor: cfg.border }}>
       <button className="w-full flex items-center gap-3 p-4 text-left hover:opacity-90 transition-opacity"
         style={{ backgroundColor: cfg.bg }} onClick={() => setOpen(o => !o)}>
         <span className="text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
@@ -285,9 +285,9 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
   ] as const
 
   return (
-    <div className="min-h-screen bg-[#F0F4FF]">
+    <div className="min-h-screen bg-[#F5F5F0]">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20 shadow-sm">
+      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -295,7 +295,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
           </Link>
           <div className="w-px h-4 bg-gray-200" />
           <div className="flex items-center gap-2">
-            <Globe size={16} className="text-indigo-500" />
+            <Globe size={16} className="text-gray-700" />
             <span className="font-bold text-gray-900 text-sm">URL UI/UX 분석기</span>
           </div>
           {result && (
@@ -310,7 +310,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-5">
         {/* Input Card */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+        <div className="bg-white rounded-lg border border-gray-100 p-6">
           <h1 className="text-lg font-bold text-gray-900 mb-1">URL UI/UX + GEO 분석</h1>
           <p className="text-sm text-gray-500 mb-5">
             URL을 입력하면 페이지를 직접 방문해 <strong>UI/UX 구조</strong>와 <strong>GEO 최적화 상태</strong>를 동시에 분석합니다.
@@ -324,7 +324,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
               onKeyDown={e => e.key === 'Enter' && analyze()}
               placeholder="https://example.com"
               disabled={loading}
-              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-60"
+              className="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:opacity-60"
             />
             <button
               onClick={() => analyze()}
@@ -333,7 +333,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
                 'flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all flex-shrink-0',
                 loading || !url.trim()
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm'
+                  : 'bg-gray-900 hover:bg-gray-950 text-white'
               )}
             >
               {loading ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
@@ -346,7 +346,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
             <span className="text-xs text-gray-400">예시:</span>
             {EXAMPLE_URLS.map(u => (
               <button key={u} onClick={() => analyze(u)} disabled={loading}
-                className="text-xs text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50">
+                className="text-xs text-gray-900 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 px-2.5 py-1 rounded-lg transition-colors disabled:opacity-50">
                 {u.replace('https://', '')}
               </button>
             ))}
@@ -355,12 +355,12 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
         {/* Loading */}
         {loading && (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-10 flex flex-col items-center gap-5">
+          <div className="bg-white rounded-lg border border-gray-100 p-10 flex flex-col items-center gap-5">
             <div className="relative">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center">
-                <Globe size={28} className="text-indigo-500 animate-pulse" />
+              <div className="w-16 h-16 rounded-lg bg-gray-50 flex items-center justify-center">
+                <Globe size={28} className="text-gray-700 animate-pulse" />
               </div>
-              <div className="absolute -inset-2 rounded-2xl border-4 border-indigo-200 border-t-indigo-600 animate-spin" />
+              <div className="absolute -inset-2 rounded-lg border-4 border-gray-200 border-t-indigo-600 animate-spin" />
             </div>
             <div className="text-center">
               <p className="font-semibold text-gray-800">{loadingMsg}</p>
@@ -368,7 +368,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
             </div>
             <div className="flex gap-1.5">
               {LOADING_STEPS.map((s, i) => (
-                <div key={i} className={cn('w-2 h-2 rounded-full transition-all', LOADING_STEPS.indexOf(loadingMsg) >= i ? 'bg-indigo-500' : 'bg-gray-200')} />
+                <div key={i} className={cn('w-2 h-2 rounded-full transition-all', LOADING_STEPS.indexOf(loadingMsg) >= i ? 'bg-gray-800' : 'bg-gray-200')} />
               ))}
             </div>
           </div>
@@ -376,7 +376,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
         {/* Error */}
         {error && (
-          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-700">
+          <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-lg text-red-700">
             <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-sm">분석 실패</p>
@@ -389,7 +389,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
         {result && (
           <div className="space-y-4">
             {/* Score Hero */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <div className="bg-white rounded-lg border border-gray-100 p-6">
               <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
                 {/* Score gauge */}
                 <div className="flex flex-col items-center flex-shrink-0">
@@ -404,7 +404,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
                     <h2 className="font-bold text-gray-900 truncate">{result.pageTitle || '(제목 없음)'}</h2>
                   </div>
                   <a href={result.url} target="_blank" rel="noopener noreferrer"
-                    className="text-xs text-indigo-500 hover:underline truncate block mb-3">{result.url}</a>
+                    className="text-xs text-gray-700 hover:underline truncate block mb-3">{result.url}</a>
                   <p className="text-sm text-gray-600 leading-relaxed">{result.pageInsight}</p>
                 </div>
               </div>
@@ -423,11 +423,11 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 bg-white rounded-2xl p-1.5 border border-gray-100 shadow-sm">
+            <div className="flex gap-2 bg-white rounded-lg p-1.5 border border-gray-100">
               {TABS.map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id as typeof activeTab)}
                   className={cn('flex-1 py-2.5 rounded-xl text-sm font-semibold transition-all',
-                    activeTab === tab.id ? 'bg-indigo-600 text-white shadow-sm' : 'text-gray-600 hover:bg-gray-50')}>
+                    activeTab === tab.id ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-50')}>
                   {tab.label}
                 </button>
               ))}
@@ -437,7 +437,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
             {activeTab === 'overview' && (
               <div className="space-y-4">
                 {/* Dimension score bars */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="bg-white rounded-lg border border-gray-100 p-5">
                   <h2 className="font-bold text-gray-900 mb-4">5가지 차원 점수</h2>
                   <div className="space-y-3">
                     {result.dimensions.map(dim => {
@@ -462,7 +462,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
                 {/* Critical Issues */}
                 {result.criticalIssues.length > 0 && (
-                  <div className="bg-red-50 border border-red-100 rounded-2xl p-5">
+                  <div className="bg-red-50 border border-red-100 rounded-lg p-5">
                     <h2 className="font-bold text-red-900 mb-3 flex items-center gap-2">
                       <XCircle size={16} className="text-red-500" /> 긴급 개선 과제
                     </h2>
@@ -479,7 +479,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
                 {/* Quick Wins */}
                 {result.quickWins.length > 0 && (
-                  <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
+                  <div className="bg-amber-50 border border-amber-100 rounded-lg p-5">
                     <h2 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
                       <Zap size={16} className="text-amber-500" /> 즉시 적용 가능한 개선
                     </h2>
@@ -495,7 +495,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
                 )}
 
                 {/* Page stats */}
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                <div className="bg-white rounded-lg border border-gray-100 p-5">
                   <h2 className="font-bold text-gray-900 mb-3">페이지 기본 정보</h2>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[

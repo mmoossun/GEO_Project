@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useRef, useState } from 'react'
 import { Upload, X, Link2, Loader2, CheckCircle, AlertCircle, Plus, ChevronDown, ChevronUp } from 'lucide-react'
@@ -116,7 +116,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
     <div className="flex flex-col gap-5 h-full overflow-y-auto pr-1">
 
       {/* Topic */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <label className="block text-sm font-bold text-gray-700 mb-2">
           주제 / 제목 <span className="text-red-400">*</span>
         </label>
@@ -130,7 +130,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Content Purpose */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-3">콘텐츠 목적</p>
         <div className="grid grid-cols-1 gap-2">
           {CONTENT_PURPOSE_OPTIONS.map(opt => (
@@ -140,13 +140,13 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
               className={cn(
                 'flex items-center gap-3 p-3 rounded-xl border-2 text-left transition-all',
                 input.contentPurpose === opt.value
-                  ? 'border-violet-500 bg-violet-50'
+                  ? 'border-violet-500 bg-gray-50'
                   : 'border-gray-100 hover:border-gray-200'
               )}
             >
               <span className="text-base">{opt.label.split(' ')[0]}</span>
               <div>
-                <p className={cn('text-xs font-semibold', input.contentPurpose === opt.value ? 'text-violet-700' : 'text-gray-700')}>
+                <p className={cn('text-xs font-semibold', input.contentPurpose === opt.value ? 'text-gray-800' : 'text-gray-700')}>
                   {opt.label.split(' ').slice(1).join(' ')}
                 </p>
                 <p className="text-xs text-gray-400">{opt.desc}</p>
@@ -157,7 +157,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Tone */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <p className="text-sm font-bold text-gray-700 mb-3">톤앤매너</p>
         <div className="grid grid-cols-3 gap-1.5">
           {TONE_OPTIONS.map(opt => (
@@ -167,7 +167,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
               className={cn(
                 'py-2 px-1 rounded-xl text-xs font-semibold border-2 transition-all',
                 input.tone === opt.value
-                  ? 'border-violet-500 bg-violet-50 text-violet-700'
+                  ? 'border-violet-500 bg-gray-50 text-gray-800'
                   : 'border-gray-100 text-gray-600 hover:bg-gray-50'
               )}
             >
@@ -178,7 +178,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Images */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-gray-700">
             이미지 <span className="text-gray-400 font-normal">({input.images.length}/5)</span>
@@ -186,7 +186,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={input.images.length >= 5}
-            className="flex items-center gap-1.5 text-xs font-semibold text-violet-600 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-lg transition-colors disabled:opacity-40"
           >
             <Upload size={12} />
             이미지 추가
@@ -204,7 +204,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
         {input.images.length === 0 ? (
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-violet-300 hover:text-violet-400 transition-colors"
+            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-violet-300 hover:text-gray-500 transition-colors"
           >
             <Upload size={24} />
             <span className="text-sm">클릭하거나 이미지를 끌어다 놓으세요</span>
@@ -248,7 +248,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
             {input.images.length < 5 && (
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-xs text-gray-400 hover:border-violet-300 hover:text-violet-400 transition-colors"
+                className="w-full border border-dashed border-gray-200 rounded-xl py-3 text-xs text-gray-400 hover:border-violet-300 hover:text-gray-500 transition-colors"
               >
                 + 이미지 추가
               </button>
@@ -258,7 +258,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* References */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+      <div className="bg-white rounded-lg border border-gray-100 p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-gray-700">
             참고자료 <span className="text-gray-400 font-normal">({input.references.length}/5)</span>
@@ -326,7 +326,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Advanced Options */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
         <button
           onClick={() => setShowAdvanced(s => !s)}
           className="w-full flex items-center justify-between px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-50 transition-colors"
@@ -380,9 +380,9 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
         onClick={onGenerate}
         disabled={!isValid || generating}
         className={cn(
-          'w-full flex items-center justify-center gap-2.5 py-4 rounded-2xl font-bold text-base transition-all sticky bottom-0',
+          'w-full flex items-center justify-center gap-2.5 py-4 rounded-lg font-bold text-base transition-all sticky bottom-0',
           isValid && !generating
-            ? 'text-white shadow-lg hover:shadow-xl'
+            ? 'text-white hover:shadow-xl'
             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         )}
         style={isValid && !generating ? { background: 'linear-gradient(135deg, #7C3AED, #9333EA)' } : {}}
