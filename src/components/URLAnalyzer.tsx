@@ -91,7 +91,7 @@ function DimensionCard({ dim }: { dim: Dimension }) {
   const Icon = DIMENSION_ICONS[dim.id] ?? BarChart2
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <button className="w-full flex items-center gap-3 p-4 hover:bg-gray-50 transition-colors" onClick={() => setOpen(o => !o)}>
         <div className="p-2 rounded-xl flex-shrink-0" style={{ backgroundColor: `${color}18` }}>
           <Icon size={18} style={{ color }} />
@@ -285,9 +285,9 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
   ] as const
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0]">
+    <div className="min-h-screen bg-[#F5F5F5]">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -310,7 +310,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
       <main className="max-w-4xl mx-auto px-4 py-6 space-y-5">
         {/* Input Card */}
-        <div className="bg-white rounded-lg border border-gray-100 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <h1 className="text-lg font-bold text-gray-900 mb-1">URL UI/UX + GEO 분석</h1>
           <p className="text-sm text-gray-500 mb-5">
             URL을 입력하면 페이지를 직접 방문해 <strong>UI/UX 구조</strong>와 <strong>GEO 최적화 상태</strong>를 동시에 분석합니다.
@@ -355,7 +355,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
 
         {/* Loading */}
         {loading && (
-          <div className="bg-white rounded-lg border border-gray-100 p-10 flex flex-col items-center gap-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-10 flex flex-col items-center gap-5">
             <div className="relative">
               <div className="w-16 h-16 rounded-lg bg-gray-50 flex items-center justify-center">
                 <Globe size={28} className="text-gray-700 animate-pulse" />
@@ -389,7 +389,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
         {result && (
           <div className="space-y-4">
             {/* Score Hero */}
-            <div className="bg-white rounded-lg border border-gray-100 p-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
               <div className="flex flex-col sm:flex-row gap-5 items-start sm:items-center">
                 {/* Score gauge */}
                 <div className="flex flex-col items-center flex-shrink-0">
@@ -437,7 +437,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
             {activeTab === 'overview' && (
               <div className="space-y-4">
                 {/* Dimension score bars */}
-                <div className="bg-white rounded-lg border border-gray-100 p-5">
+                <div className="bg-white rounded-xl border border-gray-200 p-5">
                   <h2 className="font-bold text-gray-900 mb-4">5가지 차원 점수</h2>
                   <div className="space-y-3">
                     {result.dimensions.map(dim => {
@@ -495,7 +495,7 @@ export function URLAnalyzer({ initialUrl }: { initialUrl?: string }) {
                 )}
 
                 {/* Page stats */}
-                <div className="bg-white rounded-lg border border-gray-100 p-5">
+                <div className="bg-white rounded-xl border border-gray-200 p-5">
                   <h2 className="font-bold text-gray-900 mb-3">페이지 기본 정보</h2>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {[

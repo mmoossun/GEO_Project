@@ -73,7 +73,7 @@ function QuestionsPanel({ questions }: { questions: GeneratedQuestion[] }) {
       {open && (
         <div className="px-4 pb-4 space-y-2 border-t border-gray-200 pt-3">
           {questions.map((q, i) => (
-            <div key={i} className="bg-white rounded-lg border border-gray-100 p-3">
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-3">
               <div className="flex items-start gap-2 mb-1.5">
                 <span className="text-xs font-bold text-gray-400 w-5 flex-shrink-0 mt-0.5">Q{i + 1}</span>
                 <p className="text-sm text-gray-800 flex-1 leading-relaxed">"{q.question}"</p>
@@ -250,7 +250,7 @@ export function CitationTestPanel({ serviceName, category, url }: Props) {
   const tested = result?.platforms.filter(p => p.status !== 'skipped') ?? []
 
   return (
-    <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
         <div className="flex-1">
           <h3 className="font-bold text-gray-900 flex items-center gap-2">

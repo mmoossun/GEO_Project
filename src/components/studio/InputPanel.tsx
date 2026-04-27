@@ -116,7 +116,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
     <div className="flex flex-col gap-5 h-full overflow-y-auto pr-1">
 
       {/* Topic */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <label className="block text-sm font-bold text-gray-700 mb-2">
           주제 / 제목 <span className="text-red-400">*</span>
         </label>
@@ -130,7 +130,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Content Purpose */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-3">콘텐츠 목적</p>
         <div className="grid grid-cols-1 gap-2">
           {CONTENT_PURPOSE_OPTIONS.map(opt => (
@@ -157,7 +157,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Tone */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-3">톤앤매너</p>
         <div className="grid grid-cols-3 gap-1.5">
           {TONE_OPTIONS.map(opt => (
@@ -178,7 +178,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Images */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-gray-700">
             이미지 <span className="text-gray-400 font-normal">({input.images.length}/5)</span>
@@ -258,7 +258,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* References */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-bold text-gray-700">
             참고자료 <span className="text-gray-400 font-normal">({input.references.length}/5)</span>
@@ -326,7 +326,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       </div>
 
       {/* Advanced Options */}
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <button
           onClick={() => setShowAdvanced(s => !s)}
           className="w-full flex items-center justify-between px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-50 transition-colors"

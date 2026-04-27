@@ -69,7 +69,7 @@ export function AnalyzingScreen({ serviceName, category }: AnalyzingScreenProps)
   }, [])
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
         {/* Animated Icon */}
         <div className="relative w-20 h-20 mx-auto mb-6">

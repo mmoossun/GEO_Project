@@ -189,7 +189,7 @@ export function QualityProgress({ events, finalScore, totalIterations, improveme
 
       {/* Score progress bar */}
       {entries.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
           <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wider">점수 개선 추이</p>
           <div className="flex items-end gap-3">
             {entries.map(entry => (

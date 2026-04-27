@@ -237,7 +237,7 @@ export function StudioEditor({ content, images, onRewriteSection }: StudioEditor
   if (!editor) return null
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg border border-gray-100 overflow-hidden">
+    <div className="flex flex-col h-full bg-white rounded-xl border border-gray-200 overflow-hidden">
       {/* Fixed Toolbar */}
       <div className="flex items-center gap-0.5 px-3 py-2 border-b border-gray-100 bg-white flex-wrap sticky top-0 z-10">
         {/* History */}

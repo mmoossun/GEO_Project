@@ -167,9 +167,9 @@ export function ContentStudio() {
   const showGenerating = generating
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0] flex flex-col">
+    <div className="min-h-screen bg-[#F5F5F5] flex flex-col">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-[1400px] mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -233,7 +233,7 @@ export function ContentStudio() {
           {/* ── RIGHT: Editor / Generating / Empty ── */}
           <div className="h-full overflow-hidden">
             {showGenerating ? (
-              <div className="bg-white rounded-lg border border-gray-100 h-full overflow-y-auto">
+              <div className="bg-white rounded-xl border border-gray-200 h-full overflow-y-auto">
                 <GeneratingOverlay steps={steps} />
               </div>
             ) : error ? (
@@ -257,7 +257,7 @@ export function ContentStudio() {
               />
             ) : (
               /* Empty state */
-              <div className="bg-white rounded-lg border border-gray-100 h-full flex flex-col items-center justify-center gap-6 p-8 text-center">
+              <div className="bg-white rounded-xl border border-gray-200 h-full flex flex-col items-center justify-center gap-6 p-8 text-center">
                 <div className="w-20 h-20 bg-gray-50 rounded-xl flex items-center justify-center text-4xl">🎨</div>
                 <div>
                   <h2 className="font-bold text-gray-900 text-lg mb-2">콘텐츠 스튜디오</h2>

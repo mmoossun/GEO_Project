@@ -163,7 +163,7 @@ function ContentPreview({ content, platform }: { content: GeneratedContent; plat
   return (
     <div className="space-y-4">
       {/* Title */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <FileText size={15} className="text-gray-400" />
@@ -179,7 +179,7 @@ function ContentPreview({ content, platform }: { content: GeneratedContent; plat
       </div>
 
       {/* Content */}
-      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100 bg-gray-50">
           <div className="flex gap-1 bg-white border border-gray-200 rounded-lg p-0.5">
@@ -224,7 +224,7 @@ function ContentPreview({ content, platform }: { content: GeneratedContent; plat
 
       {/* Hashtags */}
       {content.hashtags.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-100 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Hash size={15} className="text-gray-400" />
@@ -521,9 +521,9 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
   const otherPlatforms = (Object.keys(PLATFORMS) as PlatformType[]).filter(p => p !== platform)
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0]">
+    <div className="min-h-screen bg-[#F5F5F5]">
       {/* Header */}
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />
@@ -556,7 +556,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
       {/* History drawer */}
       {showHistory && history.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 pt-3">
-          <div className="bg-white rounded-lg border border-gray-100 p-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">최근 생성 이력</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
               {history.map(h => (
@@ -582,7 +582,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
           <div className="lg:sticky lg:top-[65px] space-y-4">
 
             {/* Platform Selector */}
-            <div className="bg-white rounded-lg border border-gray-100 p-5">
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">플랫폼 선택</p>
               <div className="grid grid-cols-1 gap-2">
                 {(Object.keys(PLATFORMS) as PlatformType[]).map(p => (
@@ -596,7 +596,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Topic + Keywords */}
-            <div className="bg-white rounded-lg border border-gray-100 p-5 space-y-4">
+            <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
                   주제 <span className="text-red-400">*</span>
@@ -655,7 +655,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
 
                 {/* Keyword suggestions panel */}
                 {showKwPanel && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                  <div className="mt-3 p-3 bg-gray-50 rounded-xl border border-gray-200 space-y-2">
                     {loadingKw ? (
                       <div className="flex items-center gap-2 text-xs text-gray-500">
                         <Loader2 size={12} className="animate-spin" /> 키워드 분석 중...
@@ -689,7 +689,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Depth */}
-            <div className="bg-white rounded-lg border border-gray-100 p-5">
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">콘텐츠 깊이</p>
               <div className="flex gap-2">
                 {(Object.keys(DEPTH_CONFIG) as ContentDepth[]).map(d => (
@@ -699,7 +699,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Advanced Options */}
-            <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <button
                 onClick={() => setShowAdvanced(s => !s)}
                 className="w-full flex items-center justify-between px-5 py-3.5 text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-50 transition-colors"
@@ -750,7 +750,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             </div>
 
             {/* Mode Toggle */}
-            <div className="bg-white rounded-lg border border-gray-100 p-4 space-y-3">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">생성 모드</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -836,7 +836,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             )}
 
             {loading && !qualityMode ? (
-              <div className="bg-white rounded-lg border border-gray-100">
+              <div className="bg-white rounded-xl border border-gray-200">
                 <LoadingAnimation platform={platform} />
               </div>
             ) : loading && qualityMode ? null
@@ -851,7 +851,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
             ) : result ? (
               <div className="space-y-4">
                 {/* Action toolbar */}
-                <div className="bg-white rounded-lg border border-gray-100 p-3 flex flex-wrap items-center gap-2">
+                <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-wrap items-center gap-2">
                   <span className="text-xs font-semibold text-gray-500 mr-1">빠른 수정:</span>
                   <button onClick={() => handleAdjust('shorter')} className="flex items-center gap-1 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 px-3 py-1.5 rounded-lg transition-colors">
                     <Minus size={12} /> 더 짧게
@@ -879,7 +879,7 @@ export function ContentGeneratorClient({ serviceContext }: Props) {
               </div>
             ) : (
               /* Empty state */
-              <div className="bg-white rounded-lg border border-gray-100 p-10 text-center">
+              <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
                 <div className="w-16 h-16 rounded-lg mx-auto mb-4 flex items-center justify-center text-3xl" style={{ backgroundColor: platformCfg.bgColor }}>
                   {platformCfg.emoji}
                 </div>

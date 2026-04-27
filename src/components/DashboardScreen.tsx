@@ -162,7 +162,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0]">
+    <div className="min-h-screen bg-[#F5F5F5]">
       {/* Sticky Header */}
       {/* ── HEADER ── */}
       <header className="sticky top-0 z-20 bg-white border-b border-gray-200">
@@ -305,7 +305,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
 
         {/* ── Combined Analysis Panel ── */}
         {combined && (
-          <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             {/* Header */}
             <div className="flex items-center gap-3 px-5 py-4 bg-gradient-to-r from-gray-900 to-gray-800 text-white">
               <span className="text-2xl">{combined.combined.gapEmoji}</span>
@@ -437,7 +437,7 @@ export function DashboardScreen({ analysis, combined, previousScore, onBack, onR
                       const sourceBg = { geo: 'bg-gray-50 text-gray-800', citation: 'bg-gray-50 text-gray-800', combined: 'bg-pink-50 text-pink-700' }[rec.source]
                       const pc = getPriorityConfig(rec.priority)
                       return (
-                        <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-gray-100">
+                        <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-gray-200">
                           <span className="text-xs font-bold px-2 py-0.5 rounded-full flex-shrink-0 mt-0.5"
                             style={{ color: pc.color, backgroundColor: pc.bg }}>{pc.label}</span>
                           <div className="flex-1 min-w-0">

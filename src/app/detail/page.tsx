@@ -28,7 +28,7 @@ export default function DetailPage() {
   }, [router])
 
   if (!analysis) return (
-    <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
       <div className="text-center">
         <p className="text-gray-500">분석 데이터를 불러오는 중...</p>
       </div>

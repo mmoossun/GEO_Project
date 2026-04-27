@@ -86,7 +86,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
           { label: 'AI 인용 확률', value: `${base.citationProbability}%`, sub: '현재 기준', color: '#2563EB' },
           { label: '업계 대비', value: `${base.totalScore >= base.industryAverage ? '+' : ''}${base.totalScore - base.industryAverage}pt`, sub: `업계 평균 ${base.industryAverage}점`, color: base.totalScore >= base.industryAverage ? '#059669' : '#DC2626' },
         ].map((s, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-100 p-4 text-center">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 p-4 text-center">
             <p className="text-2xl font-extrabold" style={{ color: s.color }}>{s.value}</p>
             <p className="text-xs font-semibold text-gray-600 mt-0.5">{s.label}</p>
             <p className="text-xs text-gray-400 mt-0.5">{s.sub}</p>
@@ -96,7 +96,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
 
       {/* Radar + Brand Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-gray-100 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <p className="text-sm font-bold text-gray-700 mb-3">차원별 균형</p>
           <div className="h-52">
             <ResponsiveContainer width="100%" height="100%">
@@ -108,7 +108,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-100 p-5 space-y-3">
+        <div className="bg-white rounded-xl border border-gray-200 p-5 space-y-3">
           <p className="text-sm font-bold text-gray-700">브랜드 신뢰 지표</p>
           {[
             { label: '감성 점수', value: d.brandMetrics?.sentimentScore ?? 0, color: '#059669' },
@@ -140,7 +140,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
       </div>
 
       {/* Competitive gap bars */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">경쟁 포지션 (차원별)</p>
         <div className="space-y-3">
           {(d.competitiveGap ?? []).map((g, i) => {
@@ -169,7 +169,7 @@ function OverviewTab({ d, base, responseShare }: { d: DetailedAnalysis; base: GE
 
       {/* AI 응답 점유율 */}
       {responseShare && responseShare.totalResponses > 0 && (
-        <div className="bg-white rounded-lg border border-gray-100 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm font-bold text-gray-700">AI 응답 점유율</p>
             <span className="text-xs font-bold px-2.5 py-1 rounded-full"
@@ -297,7 +297,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
       </div>
 
       {/* GEO Score comparison bar chart */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">GEO 점수 비교</p>
         <div className="h-52">
           <ResponsiveContainer width="100%" height="100%">
@@ -316,7 +316,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
 
       {/* Per-dimension radar comparison */}
       {competitors.length > 0 && (
-        <div className="bg-white rounded-lg border border-gray-100 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <p className="text-sm font-bold text-gray-700 mb-4">차원별 비교 ({d.serviceName} vs 1위 경쟁사)</p>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -344,7 +344,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
       {/* Competitor cards */}
       <div className="space-y-4">
         {competitors.map((comp, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="flex items-center gap-3 px-5 py-4 border-b border-gray-100">
               <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-600">{comp.name[0]}</div>
               <div className="flex-1 min-w-0">
@@ -411,7 +411,7 @@ function CompetitorsTab({ d }: { d: DetailedAnalysis }) {
       </div>
 
       {/* Topical Authority Map */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4 flex items-center gap-2"><BookOpen size={15} />주제 권위 맵</p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -459,7 +459,7 @@ function PlatformsTab({ d }: { d: DetailedAnalysis }) {
   return (
     <div className="space-y-4">
       {/* Score bar chart */}
-      <div className="bg-white rounded-lg border border-gray-100 p-5">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
         <p className="text-sm font-bold text-gray-700 mb-4">AI 플랫폼별 현재 가시성</p>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -479,7 +479,7 @@ function PlatformsTab({ d }: { d: DetailedAnalysis }) {
       {/* Strategy cards */}
       <div className="space-y-3">
         {(d.platformStrategies ?? []).map((ps, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <button
               className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setSelected(selected === ps.platform ? null : ps.platform)}
@@ -576,7 +576,7 @@ function ContentTab({ d }: { d: DetailedAnalysis }) {
 
       <div className="space-y-3">
         {(d.contentBlueprint ?? []).map((bp, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <button
               className="w-full flex items-start gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === i ? null : i)}
@@ -659,7 +659,7 @@ function TechnicalTab({ d }: { d: DetailedAnalysis }) {
 
       <div className="space-y-3">
         {(d.techImplementations ?? []).map((impl, i) => (
-          <div key={i} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+          <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <button
               className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50 transition-colors"
               onClick={() => setExpanded(expanded === i ? null : i)}
@@ -737,10 +737,10 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
 
       {execTab === 'matrix' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-lg border border-gray-100 p-5">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
             <p className="text-sm font-bold text-gray-700 mb-1">Impact × Effort 매트릭스</p>
             <p className="text-xs text-gray-400 mb-4">점을 클릭하면 상세 내용을 확인할 수 있습니다</p>
-            <div className="relative h-72 bg-gray-50 rounded-lg border border-gray-100 p-4">
+            <div className="relative h-72 bg-gray-50 rounded-xl border border-gray-200 p-4">
               <div className="absolute top-3 left-3 text-xs font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">⚡ 빠른 성과</div>
               <div className="absolute top-3 right-3 text-xs font-semibold text-gray-700 bg-gray-50 px-2 py-0.5 rounded-full">🎯 전략 투자</div>
               <div className="absolute bottom-3 left-3 text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">📌 틈새 채우기</div>
@@ -772,7 +772,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
               </ResponsiveContainer>
             </div>
             {selected && (
-              <div className="mt-3 bg-white rounded-xl border border-gray-100 p-4">
+              <div className="mt-3 bg-white rounded-xl border border-gray-200 p-4">
                 <div className="flex items-start gap-3">
                   <div className="w-3 h-3 rounded-full flex-shrink-0 mt-1" style={{ backgroundColor: qColors[selected.quadrant] }} />
                   <div className="flex-1">
@@ -787,7 +787,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             {[...(d.actionMatrix ?? [])].sort((a, b) => (b.impact - b.effort * 0.3) - (a.impact - a.effort * 0.3)).slice(0, 8).map((item, i) => (
-              <div key={item.id} className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-100 cursor-pointer hover:border-gray-200" onClick={() => setSelected(item)}>
+              <div key={item.id} className="flex items-center gap-2.5 p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:border-gray-200" onClick={() => setSelected(item)}>
                 <span className="text-xs font-bold text-gray-400 w-4">{i + 1}</span>
                 <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: qColors[item.quadrant] }} />
                 <span className="text-sm text-gray-800 flex-1 truncate">{item.title}</span>
@@ -811,7 +811,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
             </div>
           </div>
           {(d.roadmap ?? []).map(week => (
-            <div key={week.week} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div key={week.week} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="flex items-center gap-3 px-5 py-4 bg-gray-50 border-b border-gray-100">
                 <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-800">{week.week}주</div>
                 <div className="flex-1">
@@ -855,7 +855,7 @@ function ExecutionTab({ d }: { d: DetailedAnalysis }) {
             ))}
           </div>
           {Array.from(new Set((d.checklist ?? []).map(c => c.category))).map(cat => (
-            <div key={cat} className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+            <div key={cat} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
               <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
                 <p className="text-sm font-bold text-gray-700">{cat}</p>
               </div>
@@ -909,7 +909,7 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
   }, [analysis])
 
   if (loading) return (
-    <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
       <div className="text-center space-y-4">
         <div className="w-16 h-16 mx-auto rounded-lg bg-gray-100 flex items-center justify-center text-3xl animate-pulse">📊</div>
         <p className="font-bold text-gray-900">심층 분석 생성 중...</p>
@@ -920,7 +920,7 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
   )
 
   if (error || !detail) return (
-    <div className="min-h-screen bg-[#F5F5F0] flex items-center justify-center">
+    <div className="min-h-screen bg-[#F5F5F5] flex items-center justify-center">
       <div className="text-center space-y-3">
         <p className="text-red-600 font-bold">분석 실패</p>
         <p className="text-sm text-gray-500">{error}</p>
@@ -930,8 +930,8 @@ export function DetailedDashboard({ analysis, responseShare }: { analysis: GEOAn
   )
 
   return (
-    <div className="min-h-screen bg-[#F5F5F0]">
-      <header className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20">
+    <div className="min-h-screen bg-[#F5F5F5]">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-3">
           <Link href="/" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors">
             <ArrowLeft size={16} />

@@ -24,7 +24,6 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
   const [serviceName, setServiceName] = useState('')
   const [category, setCategory] = useState('')
   const [url, setUrl] = useState('')
-  const [showUrl, setShowUrl] = useState(false)
   const [history, setHistory] = useState<HistoryEntry[]>([])
 
   useEffect(() => { setHistory(getHistory().slice(0, 4)) }, [])
@@ -64,10 +63,7 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
         </div>
       </header>
 
-      {/* ── Hero ── */}
       <main className="flex-1 w-full max-w-6xl mx-auto px-6 lg:px-10 py-12 lg:py-20">
-
-        {/* 중앙 정렬 */}
         <div className="flex flex-col items-center text-center">
 
           {/* Label */}
@@ -88,10 +84,8 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           </p>
 
           {/* ── Form Card ── */}
-          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.09)] p-6">
+          <div className="w-full max-w-2xl bg-white rounded-2xl shadow-[0_4px_32px_rgba(0,0,0,0.09)] p-6 mb-6">
             <form onSubmit={handleSubmit} className="space-y-3">
-
-              {/* Service name */}
               <input
                 type="text"
                 value={serviceName}
@@ -101,7 +95,6 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
                 disabled={isLoading}
               />
 
-              {/* Category */}
               <div className="relative">
                 <select
                   value={category}
@@ -121,31 +114,20 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
               </div>
               {selectedCat && (
                 <p className="text-sm text-gray-500 text-left px-1">
-                  {selectedCat.emoji} {selectedCat.label} 업계 평균 <span className="font-bold text-[#2563EB]">{selectedCat.avgScore}점</span>
+                  {selectedCat.emoji} 업계 평균 <span className="font-bold text-[#2563EB]">{selectedCat.avgScore}점</span>
                 </p>
               )}
 
-              {/* URL */}
-              {showUrl ? (
-                <input
-                  type="url"
-                  value={url}
-                  onChange={e => setUrl(e.target.value)}
-                  placeholder="https://example.com (입력 시 더 정확한 분석)"
-                  className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-base text-[#111] placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition"
-                  disabled={isLoading}
-                />
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setShowUrl(true)}
-                  className="text-sm text-gray-400 hover:text-gray-600 transition-colors text-left"
-                >
-                  + 웹사이트 URL 추가 (선택 · 더 정확한 분석)
-                </button>
-              )}
+              {/* URL — 항상 표시 */}
+              <input
+                type="url"
+                value={url}
+                onChange={e => setUrl(e.target.value)}
+                placeholder="웹사이트 URL (선택 · 입력 시 더 정확한 분석)"
+                className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-base text-[#111] placeholder-gray-400 focus:outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/10 transition"
+                disabled={isLoading}
+              />
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={!isValid || isLoading}
@@ -165,24 +147,44 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-2 mt-6 text-sm text-gray-400 flex-wrap justify-center">
-            {[
-              { value: '5가지 차원', label: '분석' },
-              { value: '4개', label: 'AI 플랫폼 실측' },
-              { value: '30초', label: '이내 완료' },
-              { value: '완전 무료' },
-            ].map((s, i) => (
-              <span key={i} className="flex items-center gap-1">
-                {i > 0 && <span className="text-gray-300 mr-1">·</span>}
-                <span className="font-semibold text-gray-600">{s.value}</span>
-                {s.label && <span>{s.label}</span>}
+          <div className="flex items-center gap-1.5 text-sm text-gray-400 flex-wrap justify-center mb-16">
+            {['5가지 차원 분석', '4개 AI 플랫폼 실측', '30초 이내 완료', '완전 무료'].map((s, i) => (
+              <span key={i} className="flex items-center gap-1.5">
+                {i > 0 && <span className="text-gray-300">·</span>}
+                <span className="text-gray-500 font-medium">{s}</span>
               </span>
             ))}
           </div>
 
-          {/* History */}
+          {/* ── Feature Grid (히스토리 위로 이동) ── */}
+          <div className="w-full mb-10">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-5">
+              분석 후 이런 것들을 제공합니다
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-left">
+              {FEATURES.map((f, i) => {
+                const Icon = f.icon
+                return (
+                  <div key={i} className="bg-white rounded-xl p-5 hover:shadow-md transition-all border border-transparent hover:border-gray-100">
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
+                        <Icon size={16} className="text-[#2563EB]" />
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+                        {f.badge}
+                      </span>
+                    </div>
+                    <p className="font-bold text-sm text-[#111] mb-1.5">{f.title}</p>
+                    <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* ── History (피처 카드 아래로 이동) ── */}
           {history.length > 0 && (
-            <div className="mt-8 w-full max-w-2xl">
+            <div className="w-full max-w-2xl">
               <div className="flex items-center gap-2 mb-3 justify-center">
                 <Clock size={13} className="text-gray-400" />
                 <span className="text-sm text-gray-400 font-medium">최근 분석</span>
@@ -203,34 +205,8 @@ export function LandingScreen({ onAnalyze, isLoading }: LandingScreenProps) {
               </div>
             </div>
           )}
-        </div>
 
-        {/* ── Feature Grid ── */}
-        <div className="mt-20 lg:mt-28">
-          <p className="text-center text-xs font-semibold text-gray-400 uppercase tracking-widest mb-6">
-            분석 후 이런 것들을 제공합니다
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            {FEATURES.map((f, i) => {
-              const Icon = f.icon
-              return (
-                <div key={i} className="bg-white rounded-xl p-5 hover:shadow-md transition-all border border-transparent hover:border-gray-100">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] flex items-center justify-center flex-shrink-0">
-                      <Icon size={16} className="text-[#2563EB]" />
-                    </div>
-                    <span className="text-[10px] font-bold text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
-                      {f.badge}
-                    </span>
-                  </div>
-                  <p className="font-bold text-sm text-[#111] mb-1.5">{f.title}</p>
-                  <p className="text-xs text-gray-500 leading-relaxed">{f.desc}</p>
-                </div>
-              )
-            })}
-          </div>
         </div>
-
       </main>
 
       {/* ── Footer ── */}
