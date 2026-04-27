@@ -113,7 +113,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
   const isValid = input.topic.trim().length > 0
 
   return (
-    <div className="flex flex-col gap-5 h-full overflow-y-auto pr-1">
+    <div className="flex flex-col gap-5 h-full overflow-y-auto pr-1 pb-6">
 
       {/* Topic */}
       <div className="bg-white rounded-xl border border-gray-200 p-5">
@@ -388,9 +388,7 @@ export function InputPanel({ input, onChange, onGenerate, generating }: InputPan
       >
         {generating ? (
           <><Loader2 size={15} className="animate-spin" />생성 중...</>
-        ) : (
-          <><span>✨</span>콘텐츠 생성하기</>
-        )}
+        ) : '콘텐츠 생성하기'}
       </button>
     </div>
   )
